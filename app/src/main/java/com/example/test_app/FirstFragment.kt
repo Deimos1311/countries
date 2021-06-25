@@ -25,8 +25,8 @@ class FirstFragment : Fragment() {
 
     private fun initRecyclerView(view: View) {
         val recyclerView: RecyclerView = view.findViewById(R.id.rView)
-        recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(activity)
+        recyclerView.setHasFixedSize(true)
         recyclerView.adapter = CustomAdapter(getCountries())
     }
 

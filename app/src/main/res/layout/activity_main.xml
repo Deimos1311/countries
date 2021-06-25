@@ -6,8 +6,8 @@
 
     <FrameLayout
         android:id="@+id/nHomeContainer"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/count_yourself"
+        android:layout_height="@dimen/count_yourself"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

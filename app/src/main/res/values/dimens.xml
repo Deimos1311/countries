@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="count_yourself">0dp</dimen>
+    <dimen name="main_string_field">100dp</dimen>
+</resources>
