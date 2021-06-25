@@ -1,0 +1,148 @@
+<resources>
+    <string name="app_name">Test_App</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="button">Button</string>
+
+    <string-array name="countries">
+        <item>Australia</item>
+        <item>Austria</item>
+        <item>Azerbaijan</item>
+        <item>Albania</item>
+        <item>Algeria</item>
+        <item>Angola</item>
+        <item>Argentina</item>
+        <item>Armenia</item>
+        <item>Afghanistan</item>
+        <item>Bangladesh</item>
+        <item>Barbados</item>
+        <item>Belarus</item>
+        <item>Belize</item>
+        <item>Belgium</item>
+        <item>Benin</item>
+        <item>Bulgaria</item>
+        <item>Bolivia</item>
+        <item>Bosnia And Herzegovina</item>
+        <item>Botswana</item>
+        <item>Brazil</item>
+        <item>British Virgin Islands</item>
+        <item>Burkina Faso</item>
+        <item>Burundi</item>
+        <item>United Kingdom</item>
+        <item>Hungary</item>
+        <item>Vietnam</item>
+        <item>Gabon</item>
+        <item>Guinea</item>
+        <item>Germany</item>
+        <item>Netherlands</item>
+        <item>Greenland</item>
+        <item>Greece</item>
+        <item>Georgia</item>
+        <item>Denmark</item>
+        <item>Dominican Republic</item>
+        <item>Egypt</item>
+        <item>Zambia</item>
+        <item>Western Sahara</item>
+        <item>Zimbabwe</item>
+        <item>Israel</item>
+        <item>India</item>
+        <item>Indonesia</item>
+        <item>Jordan</item>
+        <item>Iraq</item>
+        <item>Iran</item>
+        <item>Ireland</item>
+        <item>Iceland</item>
+        <item>Spain</item>
+        <item>Italy</item>
+        <item>Yemen</item>
+        <item>Cape Verde</item>
+        <item>Kazakhstan</item>
+        <item>Cambodia</item>
+        <item>Cameroon</item>
+        <item>Canada</item>
+        <item>Qatar</item>
+        <item>Kenya</item>
+        <item>Cyprus</item>
+        <item>China</item>
+        <item>Islands</item>
+        <item>Ivory Coast</item>
+        <item>Cuba</item>
+        <item>Kyrgyzstan</item>
+        <item>Latvia</item>
+        <item>Lesotho</item>
+        <item>Lebanon</item>
+        <item>Lithuania</item>
+        <item>Liechtenstein</item>
+        <item>Luxembourg</item>
+        <item>Mauritius</item>
+        <item>Mauritania</item>
+        <item>Madagascar</item>
+        <item>Malawi</item>
+        <item>Malaysia</item>
+        <item>Mali</item>
+        <item>Maldives</item>
+        <item>Morocco</item>
+        <item>Mexico</item>
+        <item>Mozambique</item>
+        <item>Moldova</item>
+        <item>Monaco</item>
+        <item>Mongolia</item>
+        <item>Myanmar</item>
+        <item>Namibia</item>
+        <item>Nepal</item>
+        <item>Niger</item>
+        <item>Nigeria</item>
+        <item>Norway</item>
+        <item>United Arab Emirates</item>
+        <item>Oman</item>
+        <item>Pakistan</item>
+        <item>Poland</item>
+        <item>Portugal</item>
+        <item>Russia</item>
+        <item>Rwanda</item>
+        <item>Romania</item>
+        <item>Reunion</item>
+        <item>Sao Tome And Principe</item>
+        <item>Saudi Arabia</item>
+        <item>Swaziland</item>
+        <item>Senegal</item>
+        <item>Serbia</item>
+        <item>Singapore</item>
+        <item>Syrian Arab Republic</item>
+        <item>Slovakia</item>
+        <item>Slovenia</item>
+        <item>United States Of America</item>
+        <item>Somalia</item>
+        <item>Sudan</item>
+        <item>Sierra Leone</item>
+        <item>Tajikistan</item>
+        <item>Taiwan</item>
+        <item>Thailand</item>
+        <item>United Rep. Of Tanzania</item>
+        <item>Togo</item>
+        <item>Tunisia</item>
+        <item>Turkmenistan</item>
+        <item>Turkey</item>
+        <item>Uganda</item>
+        <item>Uzbekistan</item>
+        <item>Ukraine</item>
+        <item>Finland</item>
+        <item>France</item>
+        <item>Croatia</item>
+        <item>Central African Republic</item>
+        <item>Chad</item>
+        <item>Montenegro</item>
+        <item>Czech Republic</item>
+        <item>Switzerland</item>
+        <item>Sweden</item>
+        <item>Sri Lanka</item>
+        <item>Equatorial Guinea</item>
+        <item>Estonia</item>
+        <item>Ethiopia</item>
+        <item>South Africa</item>
+        <item>South Korea</item>
+        <item>Jamaica</item>
+        <item>Japan</item>
+    </string-array>
+
+</resources>
