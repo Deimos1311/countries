@@ -10,6 +10,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         style="@style/My_tool"/>
+
     <FrameLayout
         android:id="@+id/nHomeContainer"
         android:layout_width="@dimen/count_yourself"

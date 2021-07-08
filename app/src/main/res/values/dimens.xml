@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="count_yourself">0dp</dimen>
-    <dimen name="main_string_field">150dp</dimen>
-    <dimen name="flag_width">160dp</dimen>
-    <dimen name="flag_height">100dp</dimen>
+    <dimen name="recycler_margin_start">10dp</dimen>
+    <dimen name="recycler_item_height">100dp</dimen>
+    <dimen name="flag_width">100dp</dimen>
+    <dimen name="flag_height">60dp</dimen>
+    <dimen name="text_guideline_image">110dp</dimen>
 </resources>

@@ -6,13 +6,13 @@ import retrofit2.converter.gson.GsonConverterFactory
 object RetrofitClient {
     private var retrofit: Retrofit? = null
 
-    fun getClient(baseURL: String): Retrofit {
+    fun getClient(baseURL: String): Retrofit? {
         if (retrofit == null) {
             retrofit = Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl(baseURL)
                 .build()
         }
-        return retrofit!!
+        return retrofit
     }
 }
