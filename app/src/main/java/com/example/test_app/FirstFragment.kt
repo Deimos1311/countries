@@ -9,29 +9,39 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
-import com.example.test_app.adapter.CustomAdapter
+import com.example.test_app.adapter.CustomCountryAdapter
 import com.example.test_app.common.Common
 import com.example.test_app.model.Country
+import com.example.test_app.room.CountryDAO
+import com.example.test_app.room.CountryDatabase
+import com.example.test_app.room.EntityCountry
 import com.google.android.material.snackbar.Snackbar
 import retrofit2.Call
 import retrofit2.Response
+import com.example.test_app.Constants.NUMBER_OF_COUNTRIES_SAVED_IN_DATABASE
 
 class FirstFragment : Fragment()/*, View.OnClickListener*/ {
-    var listOfCountries: MutableList<Country>? = null
+    var listOfCountries: MutableList<Country> = mutableListOf()
+    val entityListOfCountries: MutableList<EntityCountry> = mutableListOf()
 
     /*
     lateinit var fastButton: Button
 */
     lateinit var toolbar: Toolbar
     lateinit var recyclerView: RecyclerView
-    lateinit var customAdapter: CustomAdapter
+    lateinit var customCountryAdapter: CustomCountryAdapter
     lateinit var linearLayoutManager: LinearLayoutManager
+    var base: CountryDatabase? = null
+    var daoCountry: CountryDAO? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView(view)
 
-        getCountries()
+        base = context?.let { CountryDatabase.init(it) }
+        daoCountry = base?.countryDAO()
+
+        getCountries(daoCountry)
     }
 
     private fun initRecyclerView(view: View) {
@@ -44,7 +54,7 @@ class FirstFragment : Fragment()/*, View.OnClickListener*/ {
         recyclerView.addItemDecoration(decoration)
     }
 
-    private fun getCountries() {
+    private fun getCountries(daoCountry: CountryDAO?) {
         val retrofitData = Common.retrofitService?.getCountryDate()
         val goodSnack: Snackbar = Snackbar.make(
             requireView(), resources.getString(R.string.done_message), Snackbar.LENGTH_SHORT
@@ -57,22 +67,42 @@ class FirstFragment : Fragment()/*, View.OnClickListener*/ {
                 .show()
         }
 
-        retrofitData?.enqueue(object : retrofit2.Callback<MutableList<Country>?> {
+        retrofitData?.enqueue(object : retrofit2.Callback<MutableList<Country>> {
             override fun onResponse(
-                call: Call<MutableList<Country>?>,
-                response: Response<MutableList<Country>?>
+                call: Call<MutableList<Country>>,
+                response: Response<MutableList<Country>>
             ) {
-                listOfCountries = response.body()
+                listOfCountries = response.body() ?: mutableListOf()
+                listOfCountries.take(NUMBER_OF_COUNTRIES_SAVED_IN_DATABASE).forEach {
+                    entityListOfCountries.add(
+                        EntityCountry(
+                            it.countryName,
+                            it.cityName,
+                            it.population,
+                            it.flag,
+/*
+                            it.languages
+*/
+                        )
+                    )
+                }
+                base?.clearAllTables()
+/*
+                daoCountry?.clearPrimaryKey()
+*/
 
-                customAdapter = CustomAdapter(listOfCountries)
-                customAdapter.notifyDataSetChanged()
-                recyclerView.adapter = customAdapter
+                daoCountry?.addAllCountries(entityListOfCountries)
+
+                customCountryAdapter = CustomCountryAdapter()//???????????????????????????
+                customCountryAdapter.addList(listOfCountries)//????????????????????????????
+                customCountryAdapter.notifyDataSetChanged()
+                recyclerView.adapter = customCountryAdapter
                 goodSnack.show()
             }
 
-            override fun onFailure(call: Call<MutableList<Country>?>, t: Throwable) {
+            override fun onFailure(call: Call<MutableList<Country>>, t: Throwable) {
                 badSnack.show()
-                getCountries()
+                getCountries(daoCountry)
             }
         })
     }
@@ -92,20 +122,9 @@ class FirstFragment : Fragment()/*, View.OnClickListener*/ {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        Sort().sorting(customAdapter, listOfCountries, item)
+        Sort().sorting(customCountryAdapter, listOfCountries, item)
         return super.onOptionsItemSelected(item)
     }
-
-// Прошлое задание, по сортировке в 2 кнопки
-// В след мердже удалю
-
-/*        when(item.itemId) {
-            R.id.descending_sort -> listOfCountries?.sortBy { it.population }
-            R.id.ascending_sort -> listOfCountries?.sortByDescending { it.population }
-        }
-        customAdapter.notifyDataSetChanged()
-        return super.onOptionsItemSelected(item)
-    }*/
 
     //todo scroll
 /*    override fun onClick(v: View) {
