@@ -1,20 +1,33 @@
 package com.example.test_app.room
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import com.example.test_app.model.Country
+import androidx.room.*
+import com.example.test_app.room.entity.CountryEntity
+import com.example.test_app.room.entity.CountryLanguageCrossRef
+import com.example.test_app.room.entity.LanguagesListEntity
+import com.example.test_app.room.relations.CountryWithLanguages
+import com.example.test_app.room.relations.LanguageWithCountries
 
 @Dao
 interface CountryDAO {
 
-    @androidx.room.Query("SELECT * FROM countries_table")
-    fun getAllCountries(): MutableList<Country>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    /*suspend */fun addAllCountries(mutableList: MutableList<CountryEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addAllCountries(mutableList: MutableList<EntityCountry>)
+    /*suspend*/ fun addLanguage(mutableList: MutableList<LanguagesListEntity>)
 
-/*    @Query("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'Country_database'")
-    fun clearPrimaryKey()*/
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    /*suspend*/ fun insertCountryLanguageCrossRef(mutableList: MutableList<CountryLanguageCrossRef>)
+
+    @Transaction
+    @Query("SELECT * FROM countries_table")
+    /*suspend*/ fun getAllCountries(): MutableList<CountryEntity>
+
+/*    @Transaction
+    @Query("SELECT * FROM countries_table WHERE countryName = :countryName")
+    suspend fun getLanguagesOfCountry(countryName: String): MutableList<CountryWithLanguages>
+
+    @Transaction
+    @Query("SELECT * FROM languages_table WHERE name = :name")
+    suspend fun getCountriesOfLanguage(name: String): MutableList<LanguageWithCountries>*/
 }

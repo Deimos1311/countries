@@ -3,7 +3,6 @@ package com.example.test_app
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,32 +13,34 @@ import com.example.test_app.common.Common
 import com.example.test_app.model.Country
 import com.example.test_app.room.CountryDAO
 import com.example.test_app.room.CountryDatabase
-import com.example.test_app.room.EntityCountry
+import com.example.test_app.room.entity.CountryEntity
+import com.example.test_app.room.entity.CountryLanguageCrossRef
+import com.example.test_app.room.entity.LanguagesListEntity
 import com.google.android.material.snackbar.Snackbar
 import retrofit2.Call
 import retrofit2.Response
-import com.example.test_app.Constants.NUMBER_OF_COUNTRIES_SAVED_IN_DATABASE
 
-class FirstFragment : Fragment()/*, View.OnClickListener*/ {
+class FirstFragment : Fragment() {
     var listOfCountries: MutableList<Country> = mutableListOf()
-    val entityListOfCountries: MutableList<EntityCountry> = mutableListOf()
 
-    /*
-    lateinit var fastButton: Button
-*/
-    lateinit var toolbar: Toolbar
+    val listOfCountryEntities: MutableList<CountryEntity> = mutableListOf()
+    val listOfLanguagesEntities: MutableList<LanguagesListEntity> = mutableListOf()
+    val crossRef: MutableList<CountryLanguageCrossRef> = mutableListOf()
+
     lateinit var recyclerView: RecyclerView
     lateinit var customCountryAdapter: CustomCountryAdapter
     lateinit var linearLayoutManager: LinearLayoutManager
-    var base: CountryDatabase? = null
+
+    var countryDataBase: CountryDatabase? = null
     var daoCountry: CountryDAO? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView(view)
 
-        base = context?.let { CountryDatabase.init(it) }
-        daoCountry = base?.countryDAO()
+        //daoCountry = context?.let { CountryDatabase.getInstance(it).countryDAO }
+        countryDataBase = context?.let { CountryDatabase.getInstance(it) }
+        daoCountry = countryDataBase?.countryDAO
 
         getCountries(daoCountry)
     }
@@ -55,7 +56,8 @@ class FirstFragment : Fragment()/*, View.OnClickListener*/ {
     }
 
     private fun getCountries(daoCountry: CountryDAO?) {
-        val retrofitData = Common.retrofitService?.getCountryDate()
+        val countryData = Common.retrofitService?.getCountryDate()
+
         val goodSnack: Snackbar = Snackbar.make(
             requireView(), resources.getString(R.string.done_message), Snackbar.LENGTH_SHORT
         )
@@ -67,35 +69,65 @@ class FirstFragment : Fragment()/*, View.OnClickListener*/ {
                 .show()
         }
 
-        retrofitData?.enqueue(object : retrofit2.Callback<MutableList<Country>> {
+        countryData?.enqueue(object : retrofit2.Callback<MutableList<Country>> {
             override fun onResponse(
                 call: Call<MutableList<Country>>,
                 response: Response<MutableList<Country>>
             ) {
                 listOfCountries = response.body() ?: mutableListOf()
-                listOfCountries.take(NUMBER_OF_COUNTRIES_SAVED_IN_DATABASE).forEach {
-                    entityListOfCountries.add(
-                        EntityCountry(
-                            it.countryName,
-                            it.cityName,
-                            it.population,
-                            it.flag,
+
 /*
-                            it.languages
+                crossRef.forEach { daoCountry?.insertCountryLanguageCrossRef(it) }
 */
+
+                listOfCountries.forEach {
+                    crossRef.add(
+                        CountryLanguageCrossRef(
+                            it.countryName,
+                            it.languages.joinToString {item ->
+                                item.name
+                            }
                         )
                     )
                 }
-                base?.clearAllTables()
-/*
-                daoCountry?.clearPrimaryKey()
-*/
+                listOfCountries.forEach {
+                    listOfCountryEntities.add(
+                        CountryEntity(
+                            it.countryName,
+                            it.cityName,
+                            it.population,
+                            it.flag
+                            //it.languages
+                        )
+                    )
+                    (it.languages.forEach { item ->
+                        listOfLanguagesEntities.add(
+                            LanguagesListEntity(
+                                item.iso639_1 ?: "-1",
+                                item.iso639_2,
+                                item.name,
+                                item.nativeName
+                            )
+                        )
+                    })
+                }
 
-                daoCountry?.addAllCountries(entityListOfCountries)
+                countryDataBase?.clearAllTables()
 
-                customCountryAdapter = CustomCountryAdapter()//???????????????????????????
-                customCountryAdapter.addList(listOfCountries)//????????????????????????????
-                customCountryAdapter.notifyDataSetChanged()
+/*                daoCountry?.clearPrimaryKey()*/
+/*                lifecycleScope.launch {
+                    *//*listOfCountryEntities.forEach { _ -> daoCountry?.addAllCountries(listOfCountryEntities) }
+                    listOfLanguagesEntities.forEach { _ -> daoCountry?.addLanguage(listOfLanguagesEntities) }*//*
+                    crossRef.forEach { daoCountry?.insertCountryLanguageCrossRef(it) }
+                }*/
+
+                daoCountry?.insertCountryLanguageCrossRef(crossRef)
+                daoCountry?.addLanguage(listOfLanguagesEntities)
+                daoCountry?.addAllCountries(listOfCountryEntities)
+
+
+                customCountryAdapter = CustomCountryAdapter()
+                customCountryAdapter.addList(listOfCountries)
                 recyclerView.adapter = customCountryAdapter
                 goodSnack.show()
             }
@@ -122,16 +154,8 @@ class FirstFragment : Fragment()/*, View.OnClickListener*/ {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        Sort().sorting(customCountryAdapter, listOfCountries, item)
+        customCountryAdapter.isSorted(item)
         return super.onOptionsItemSelected(item)
     }
-
-    //todo scroll
-/*    override fun onClick(v: View) {
-        fastButton = v.findViewById(R.id.fast_button)
-        recyclerView.smoothScrollToPosition(recyclerView.size)
-        recyclerView.smoothScrollToPosition(recyclerView.size)
-
-    }*/
 }
 
