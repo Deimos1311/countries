@@ -12,4 +12,8 @@ class MainActivity : AppCompatActivity() {
         val toolbar = findViewById<Toolbar>(R.id.mytool)
         setSupportActionBar(toolbar)
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
 }

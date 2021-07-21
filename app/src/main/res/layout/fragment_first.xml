@@ -5,21 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FirstFragment">
-
-<!--    <Button
-        android:id="@+id/fast_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="25dp"
-        android:layout_marginBottom="25dp"
-        app:layout_constraintHorizontal_bias="1"
-        app:layout_constraintVertical_bias="1"
-        android:text="F"
-        app:layout_constraintBottom_toBottomOf="@+id/rView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>-->
+    tools:context=".fragments.start_fragment.FirstFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rView"

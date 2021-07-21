@@ -14,14 +14,14 @@ interface CountryDAO {
     /*suspend */fun addAllCountries(mutableList: MutableList<CountryEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    /*suspend*/ fun addLanguage(mutableList: MutableList<LanguagesListEntity>)
+    /*suspend */fun addLanguage(mutableList: MutableList<LanguagesListEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    /*suspend*/ fun insertCountryLanguageCrossRef(mutableList: MutableList<CountryLanguageCrossRef>)
+    /*suspend */fun insertCountryLanguageCrossRef(mutableList: MutableList<CountryLanguageCrossRef>)
 
     @Transaction
     @Query("SELECT * FROM countries_table")
-    /*suspend*/ fun getAllCountries(): MutableList<CountryEntity>
+    /*suspend */fun getAllCountries(): MutableList<CountryEntity>
 
 /*    @Transaction
     @Query("SELECT * FROM countries_table WHERE countryName = :countryName")

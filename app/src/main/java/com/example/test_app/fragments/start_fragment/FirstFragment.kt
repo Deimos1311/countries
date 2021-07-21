@@ -1,14 +1,20 @@
-package com.example.test_app
+package com.example.test_app.fragments.start_fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
-import com.example.test_app.adapter.CustomCountryAdapter
+import com.example.test_app.COUNTRY_FLAG_BUNDLE_KEY
+import com.example.test_app.COUNTRY_NAME_BUNDLE_KEY
+import com.example.test_app.R
+import com.example.test_app.fragments.start_fragment.CustomCountryAdapter
+import com.example.test_app.room.DatabaseToRecyclerAdapter
 import com.example.test_app.common.Common
 import com.example.test_app.model.Country
 import com.example.test_app.room.CountryDAO
@@ -21,6 +27,7 @@ import retrofit2.Call
 import retrofit2.Response
 
 class FirstFragment : Fragment() {
+    var isSorted: Boolean = false
     var listOfCountries: MutableList<Country> = mutableListOf()
 
     val listOfCountryEntities: MutableList<CountryEntity> = mutableListOf()
@@ -30,6 +37,7 @@ class FirstFragment : Fragment() {
     lateinit var recyclerView: RecyclerView
     lateinit var customCountryAdapter: CustomCountryAdapter
     lateinit var linearLayoutManager: LinearLayoutManager
+    lateinit var dataBaseToRecyclerAdapter: DatabaseToRecyclerAdapter
 
     var countryDataBase: CountryDatabase? = null
     var daoCountry: CountryDAO? = null
@@ -42,7 +50,20 @@ class FirstFragment : Fragment() {
         countryDataBase = context?.let { CountryDatabase.getInstance(it) }
         daoCountry = countryDataBase?.countryDAO
 
+        dataBaseToRecyclerAdapter = DatabaseToRecyclerAdapter()
+        daoCountry?.getAllCountries()?.let { dataBaseToRecyclerAdapter.addList(it) }
+        recyclerView.adapter = dataBaseToRecyclerAdapter
+
+        customCountryAdapter = CustomCountryAdapter()
+        customCountryAdapter.setItemClick {item ->
+            val bundle = Bundle()
+            bundle.putString(COUNTRY_NAME_BUNDLE_KEY, item.countryName)
+            bundle.putString(COUNTRY_FLAG_BUNDLE_KEY, item.flag)
+            findNavController().navigate(R.id.action_firstFragment_to_countryDetailsFragment, bundle)
+        }
+
         getCountries(daoCountry)
+        readingSortedListCountries()
     }
 
     private fun initRecyclerView(view: View) {
@@ -75,21 +96,6 @@ class FirstFragment : Fragment() {
                 response: Response<MutableList<Country>>
             ) {
                 listOfCountries = response.body() ?: mutableListOf()
-
-/*
-                crossRef.forEach { daoCountry?.insertCountryLanguageCrossRef(it) }
-*/
-
-                listOfCountries.forEach {
-                    crossRef.add(
-                        CountryLanguageCrossRef(
-                            it.countryName,
-                            it.languages.joinToString {item ->
-                                item.name
-                            }
-                        )
-                    )
-                }
                 listOfCountries.forEach {
                     listOfCountryEntities.add(
                         CountryEntity(
@@ -103,35 +109,33 @@ class FirstFragment : Fragment() {
                     (it.languages.forEach { item ->
                         listOfLanguagesEntities.add(
                             LanguagesListEntity(
-                                item.iso639_1 ?: "-1",
-                                item.iso639_2,
-                                item.name,
-                                item.nativeName
+                                item.iso639_1 ?: "",
+                                item.iso639_2 ?: "",
+                                item.name ?: "",
+                                item.nativeName ?: ""
                             )
                         )
                     })
                 }
-
-                countryDataBase?.clearAllTables()
-
-/*                daoCountry?.clearPrimaryKey()*/
-/*                lifecycleScope.launch {
-                    *//*listOfCountryEntities.forEach { _ -> daoCountry?.addAllCountries(listOfCountryEntities) }
-                    listOfLanguagesEntities.forEach { _ -> daoCountry?.addLanguage(listOfLanguagesEntities) }*//*
-                    crossRef.forEach { daoCountry?.insertCountryLanguageCrossRef(it) }
-                }*/
+                listOfCountries.forEach {
+                    crossRef.add(
+                        CountryLanguageCrossRef(
+                            it.countryName,
+                            it.languages.joinToString {item ->
+                                item.name ?: ""
+                            }
+                        )
+                    )
+                }
 
                 daoCountry?.insertCountryLanguageCrossRef(crossRef)
                 daoCountry?.addLanguage(listOfLanguagesEntities)
                 daoCountry?.addAllCountries(listOfCountryEntities)
 
-
-                customCountryAdapter = CustomCountryAdapter()
                 customCountryAdapter.addList(listOfCountries)
                 recyclerView.adapter = customCountryAdapter
                 goodSnack.show()
             }
-
             override fun onFailure(call: Call<MutableList<Country>>, t: Throwable) {
                 badSnack.show()
                 getCountries(daoCountry)
@@ -154,8 +158,39 @@ class FirstFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        customCountryAdapter.isSorted(item)
+        if (!isSorted) {
+            item.setIcon(R.drawable.baseline_expand_more_24)
+        } else {
+            item.setIcon(R.drawable.baseline_expand_less_24)
+        }
+        customCountryAdapter.isSorted(isSorted)
+        savingSortedListCountries()
+        isSorted = !isSorted
         return super.onOptionsItemSelected(item)
+    }
+
+    fun savingSortedListCountries() {
+        val sharedPref = activity?.getSharedPreferences("SAVE_SORT", Context.MODE_PRIVATE)
+            ?.edit()
+            ?.putBoolean(getString(R.string.isChecked), isSorted)
+            ?.apply()
+        }
+
+    fun readingSortedListCountries() {
+        val sharedPref = activity?.getSharedPreferences("SAVE_SORT", Context.MODE_PRIVATE)
+        val ret = sharedPref?.getBoolean(getString(R.string.isChecked), isSorted)
+        if (ret != null) {
+            isSorted = ret
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        savingSortedListCountries()
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        savingSortedListCountries()
     }
 }
 

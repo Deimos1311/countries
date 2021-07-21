@@ -5,5 +5,10 @@
     <dimen name="recycler_item_height">100dp</dimen>
     <dimen name="flag_width">100dp</dimen>
     <dimen name="flag_height">60dp</dimen>
+    <dimen name="flag_width_country_details">200dp</dimen>
+    <dimen name="flag_height_country_details">160dp</dimen>
     <dimen name="text_guideline_image">110dp</dimen>
+    <dimen name="country_details_guideline_start_end_item">16dp</dimen>
+    <dimen name="country_details_guideline_top_bottom_item">8dp</dimen>
+    <dimen name="map_height">250dp</dimen>
 </resources>

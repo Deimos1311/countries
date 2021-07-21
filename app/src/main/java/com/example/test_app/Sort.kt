@@ -1,37 +1,25 @@
 package com.example.test_app
 
-import android.view.MenuItem
 import com.example.test_app.model.Country
 
 var flag = false
 
 class Sort {
 
-    private fun ascendingSort(
-        listOfCountries: MutableList<Country>,
-        item: MenuItem
-    ) {
+    fun ascendingSort(listOfCountries: MutableList<Country>) {
         listOfCountries.sortBy { it.population }
-        item.setIcon(R.drawable.baseline_expand_less_24)
     }
 
-    private fun descendingSort(
-        listOfCountries: MutableList<Country>,
-        item: MenuItem
-    ) {
+    fun descendingSort(listOfCountries: MutableList<Country>) {
         listOfCountries.sortByDescending { it.population }
-        item.setIcon(R.drawable.baseline_expand_more_24)
     }
 
-    fun sorting(
-        listOfCountries: MutableList<Country>,
-        item: MenuItem
-    ) {
+    fun sorting(listOfCountries: MutableList<Country>) {
         flag = if (flag) {
-            ascendingSort(listOfCountries, item)
+            ascendingSort(listOfCountries)
             false
         } else {
-            descendingSort(listOfCountries, item)
+            descendingSort(listOfCountries)
             true
         }
     }

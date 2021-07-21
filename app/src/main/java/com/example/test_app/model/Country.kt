@@ -14,5 +14,7 @@ data class Country(
     @SerializedName("flag")
     var flag: String,
     @SerializedName("area")
-    var area: Double
+    var area: Double,
+    @SerializedName("latlng")
+    var location: MutableList<Double>
 )

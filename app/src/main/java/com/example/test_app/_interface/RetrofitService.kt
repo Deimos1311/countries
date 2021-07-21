@@ -1,15 +1,16 @@
 package com.example.test_app._interface
 
 import com.example.test_app.model.Country
-import com.example.test_app.model.Languages
+import com.example.test_app.NetConstants
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Path
 
 interface RetrofitService {
 
-    @GET("rest/v2/all")
+    @GET(NetConstants.GET_COUNTRY_DATE)
     fun getCountryDate(): Call<MutableList<Country>>
 
-    @GET("rest/v2/lang/es")
-    fun getLanguagesDate(): Call<MutableList<Languages>>
+    @GET(NetConstants.GET_COUNTRY_BY_NAME)
+    fun getCountryByName(@Path(NetConstants.PATH_VARIABLE) name: String): Call<MutableList<Country>>
 }

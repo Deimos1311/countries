@@ -5,11 +5,11 @@
     <string name="done_message">Done</string>
     <string name="connect_error_message">Error in getting data from API, trying again</string>
     <string name="no_data">No data available</string>
-<!--    <string name="des_sort">descending sort</string>
-    <string name="asc_sort">ascending sort</string>-->
     <string name="population">Population : %1$s</string>
     <string name="bad_snack_info">More info …</string>
     <string name="bad_snack_inside">Change provider, stupid!</string>
     <string name="empty">No data available</string>
     <string name="sort">Sorting</string>
+    <string name="test">test</string>
+    <string name="isChecked">isChecked</string>
 </resources>
