@@ -3,6 +3,7 @@ package com.example.test_app.fragments.start_fragment
 import android.content.Context
 import android.os.Bundle
 import android.view.*
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -10,18 +11,19 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.test_app.COUNTRY_FLAG_BUNDLE_KEY
 import com.example.test_app.COUNTRY_NAME_BUNDLE_KEY
 import com.example.test_app.R
-import com.example.test_app.fragments.start_fragment.CustomCountryAdapter
-import com.example.test_app.room.DatabaseToRecyclerAdapter
 import com.example.test_app.common.Common
 import com.example.test_app.model.Country
 import com.example.test_app.room.CountryDAO
 import com.example.test_app.room.CountryDatabase
+import com.example.test_app.room.DatabaseToRecyclerAdapter
 import com.example.test_app.room.entity.CountryEntity
 import com.example.test_app.room.entity.CountryLanguageCrossRef
 import com.example.test_app.room.entity.LanguagesListEntity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import retrofit2.Call
 import retrofit2.Response
@@ -42,11 +44,16 @@ class FirstFragment : Fragment() {
     var countryDataBase: CountryDatabase? = null
     var daoCountry: CountryDAO? = null
 
+    lateinit var srFirstFragment: SwipeRefreshLayout
+    lateinit var progressBar: ProgressBar
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView(view)
 
-        //daoCountry = context?.let { CountryDatabase.getInstance(it).countryDAO }
+        progressBar = view.findViewById(R.id.progress_first_fragment)
+        srFirstFragment = view.findViewById(R.id.sr_first_fragment)
+
         countryDataBase = context?.let { CountryDatabase.getInstance(it) }
         daoCountry = countryDataBase?.countryDAO
 
@@ -55,14 +62,22 @@ class FirstFragment : Fragment() {
         recyclerView.adapter = dataBaseToRecyclerAdapter
 
         customCountryAdapter = CustomCountryAdapter()
-        customCountryAdapter.setItemClick {item ->
+        customCountryAdapter.setItemClick { item ->
             val bundle = Bundle()
             bundle.putString(COUNTRY_NAME_BUNDLE_KEY, item.countryName)
             bundle.putString(COUNTRY_FLAG_BUNDLE_KEY, item.flag)
-            findNavController().navigate(R.id.action_firstFragment_to_countryDetailsFragment, bundle)
+            findNavController().navigate(
+                R.id.action_firstFragment_to_countryDetailsFragment,
+                bundle
+            )
         }
 
-        getCountries(daoCountry)
+        srFirstFragment.setOnRefreshListener {
+            customCountryAdapter.clear(listOfCountries)
+            getCountries(daoCountry, true)
+        }
+
+        getCountries(daoCountry, false)
         readingSortedListCountries()
     }
 
@@ -76,7 +91,9 @@ class FirstFragment : Fragment() {
         recyclerView.addItemDecoration(decoration)
     }
 
-    private fun getCountries(daoCountry: CountryDAO?) {
+    private fun getCountries(daoCountry: CountryDAO?, isRefreshing: Boolean) {
+        progressBar.visibility = if (isRefreshing) View.GONE else View.VISIBLE
+
         val countryData = Common.retrofitService?.getCountryDate()
 
         val goodSnack: Snackbar = Snackbar.make(
@@ -121,7 +138,7 @@ class FirstFragment : Fragment() {
                     crossRef.add(
                         CountryLanguageCrossRef(
                             it.countryName,
-                            it.languages.joinToString {item ->
+                            it.languages.joinToString { item ->
                                 item.name ?: ""
                             }
                         )
@@ -132,13 +149,19 @@ class FirstFragment : Fragment() {
                 daoCountry?.addLanguage(listOfLanguagesEntities)
                 daoCountry?.addAllCountries(listOfCountryEntities)
 
+                srFirstFragment.isRefreshing = false
+
                 customCountryAdapter.addList(listOfCountries)
                 recyclerView.adapter = customCountryAdapter
                 goodSnack.show()
+                progressBar.visibility = View.GONE
             }
+
             override fun onFailure(call: Call<MutableList<Country>>, t: Throwable) {
                 badSnack.show()
-                getCountries(daoCountry)
+                //getCountries(daoCountry, true)
+                srFirstFragment.isRefreshing = false
+                progressBar.visibility = View.GONE
             }
         })
     }
@@ -174,7 +197,7 @@ class FirstFragment : Fragment() {
             ?.edit()
             ?.putBoolean(getString(R.string.isChecked), isSorted)
             ?.apply()
-        }
+    }
 
     fun readingSortedListCountries() {
         val sharedPref = activity?.getSharedPreferences("SAVE_SORT", Context.MODE_PRIVATE)
@@ -188,9 +211,9 @@ class FirstFragment : Fragment() {
         super.onPause()
         savingSortedListCountries()
     }
+
     override fun onDestroy() {
         super.onDestroy()
         savingSortedListCountries()
     }
 }
-

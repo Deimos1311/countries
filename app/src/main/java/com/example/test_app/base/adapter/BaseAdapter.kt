@@ -28,4 +28,8 @@ abstract class BaseAdapter<ItemType> : RecyclerView.Adapter<RecyclerView.ViewHol
         dataList.addAll(list)
         notifyDataSetChanged()
     }
+
+    open fun clear(list: MutableList<ItemType>) {
+        dataList.clear()
+    }
 }

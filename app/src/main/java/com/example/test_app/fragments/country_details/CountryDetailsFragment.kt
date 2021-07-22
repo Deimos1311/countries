@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
@@ -41,6 +43,9 @@ class CountryDetailsFragment : Fragment() {
     lateinit var recyclerView: RecyclerView
     lateinit var linearLayoutManager: LinearLayoutManager
 
+    lateinit var progressBar: ProgressBar
+    lateinit var frame: FrameLayout
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -53,6 +58,7 @@ class CountryDetailsFragment : Fragment() {
         mapView = view.findViewById(R.id.map_country_details)
         mapView.onCreate(savedInstanceState)
 
+
         return view
     }
 
@@ -63,6 +69,9 @@ class CountryDetailsFragment : Fragment() {
         tvCountryName = view.findViewById(R.id.country_name_details)
         ivFlag = view.findViewById(R.id.flag_details)
         srCountryDetails = view.findViewById(R.id.sr_country_details)
+        progressBar = view.findViewById(R.id.progress_bar)
+        frame = view.findViewById(R.id.frame)
+
         tvCountryName.text = countryName
 
         val url = flag
@@ -76,14 +85,15 @@ class CountryDetailsFragment : Fragment() {
             .load(Uri.parse(url), ivFlag)
 
         srCountryDetails.setOnRefreshListener {
-            getCountryByName()
+            listOfCountries.clear()
+            getCountryByName(true)
         }
 
         mapView.getMapAsync(OnMapReadyCallback {
             googleMap = it
         })
 
-        getCountryByName()
+        getCountryByName(false)
     }
 
     private fun initRecyclerView(view: View) {
@@ -93,7 +103,9 @@ class CountryDetailsFragment : Fragment() {
         recyclerView.layoutManager = linearLayoutManager
     }
 
-    private fun getCountryByName() {
+    private fun getCountryByName(isRefresh: Boolean) {
+        progressBar.visibility = if (isRefresh) View.GONE else View.VISIBLE
+
         val countryLanguages = Common.retrofitService?.getCountryByName(countryName)
 
         countryLanguages?.enqueue(object : retrofit2.Callback<MutableList<Country>> {
@@ -108,27 +120,44 @@ class CountryDetailsFragment : Fragment() {
 
                 srCountryDetails.isRefreshing = false
 
-                val position1 = LatLng(
+                val position = LatLng(
                     listOfCountries[0].location[0],
                     listOfCountries[0].location[1]
                 )
 
                 googleMap.addMarker(
                     MarkerOptions().position(
-                        position1
+                        position
                     )
                 )
-                googleMap.moveCamera(
-                    CameraUpdateFactory.newLatLng(position1)
-                )
 
-                //googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position1, 10f))
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, CAMERA_ZOOM))
+
+                progressBar.visibility = View.GONE
+                frame.visibility = View.GONE
             }
 
             override fun onFailure(call: Call<MutableList<Country>>, t: Throwable) {
                 Toast.makeText(context, "somth wrong", Toast.LENGTH_SHORT).show()
                 srCountryDetails.isRefreshing = false
+                progressBar.visibility = View.GONE
+                frame.visibility = View.GONE
             }
         })
+    }
+
+    override fun onResume() {
+        mapView.onResume()
+        super.onResume()
+    }
+
+    override fun onLowMemory() {
+        mapView.onLowMemory()
+        super.onLowMemory()
+    }
+
+    override fun onDestroy() {
+        mapView.onDestroy()
+        super.onDestroy()
     }
 }

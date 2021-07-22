@@ -11,4 +11,5 @@
     <dimen name="country_details_guideline_start_end_item">16dp</dimen>
     <dimen name="country_details_guideline_top_bottom_item">8dp</dimen>
     <dimen name="map_height">250dp</dimen>
+    <dimen name="progress_width_height">50dp</dimen>
 </resources>

@@ -16,5 +16,9 @@
     <fragment
         android:id="@+id/countryDetailsFragment"
         android:name="com.example.test_app.fragments.country_details.CountryDetailsFragment"
-        android:label="CountryDetailsFragment" />
+        android:label="CountryDetailsFragment" >
+        <action
+            android:id="@+id/action_countryDetailsFragment_to_firstFragment"
+            app:destination="@id/firstFragment" />
+    </fragment>
 </navigation>
