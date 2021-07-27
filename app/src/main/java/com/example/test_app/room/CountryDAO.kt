@@ -6,6 +6,7 @@ import com.example.test_app.room.entity.CountryLanguageCrossRef
 import com.example.test_app.room.entity.LanguagesListEntity
 import com.example.test_app.room.relations.CountryWithLanguages
 import com.example.test_app.room.relations.LanguageWithCountries
+import io.reactivex.rxjava3.core.Flowable
 
 @Dao
 interface CountryDAO {
@@ -21,7 +22,7 @@ interface CountryDAO {
 
     @Transaction
     @Query("SELECT * FROM countries_table")
-    /*suspend */fun getAllCountries(): MutableList<CountryEntity>
+    /*suspend */fun getAllCountries(): Flowable<MutableList<CountryEntity>>
 
 /*    @Transaction
     @Query("SELECT * FROM countries_table WHERE countryName = :countryName")

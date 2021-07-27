@@ -3,6 +3,7 @@ package com.example.test_app.fragments.start_fragment
 import android.content.Context
 import android.os.Bundle
 import android.view.*
+import android.widget.FrameLayout
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -16,21 +17,20 @@ import com.example.test_app.COUNTRY_FLAG_BUNDLE_KEY
 import com.example.test_app.COUNTRY_NAME_BUNDLE_KEY
 import com.example.test_app.R
 import com.example.test_app.common.Common
-import com.example.test_app.model.Country
+import com.example.test_app.ext.createDialog
+import com.example.test_app.ext.showDialogWithOneButton
 import com.example.test_app.room.CountryDAO
 import com.example.test_app.room.CountryDatabase
 import com.example.test_app.room.DatabaseToRecyclerAdapter
 import com.example.test_app.room.entity.CountryEntity
 import com.example.test_app.room.entity.CountryLanguageCrossRef
 import com.example.test_app.room.entity.LanguagesListEntity
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import retrofit2.Call
-import retrofit2.Response
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 class FirstFragment : Fragment() {
     var isSorted: Boolean = false
-    var listOfCountries: MutableList<Country> = mutableListOf()
 
     val listOfCountryEntities: MutableList<CountryEntity> = mutableListOf()
     val listOfLanguagesEntities: MutableList<LanguagesListEntity> = mutableListOf()
@@ -47,18 +47,30 @@ class FirstFragment : Fragment() {
     lateinit var srFirstFragment: SwipeRefreshLayout
     lateinit var progressBar: ProgressBar
 
+    lateinit var flFirstFragment: FrameLayout
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView(view)
 
         progressBar = view.findViewById(R.id.progress_first_fragment)
         srFirstFragment = view.findViewById(R.id.sr_first_fragment)
+        flFirstFragment = view.findViewById(R.id.frame_first_fragment)
 
         countryDataBase = context?.let { CountryDatabase.getInstance(it) }
         daoCountry = countryDataBase?.countryDAO
 
         dataBaseToRecyclerAdapter = DatabaseToRecyclerAdapter()
-        daoCountry?.getAllCountries()?.let { dataBaseToRecyclerAdapter.addList(it) }
+
+        daoCountry?.getAllCountries()
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribeOn(Schedulers.io())
+            ?.subscribe({ list ->
+                dataBaseToRecyclerAdapter.addList(list)
+            }, { throwable ->
+                throwable.printStackTrace()
+            })
+
         recyclerView.adapter = dataBaseToRecyclerAdapter
 
         customCountryAdapter = CustomCountryAdapter()
@@ -73,12 +85,17 @@ class FirstFragment : Fragment() {
         }
 
         srFirstFragment.setOnRefreshListener {
-            customCountryAdapter.clear(listOfCountries)
+            customCountryAdapter.clear()
             getCountries(daoCountry, true)
         }
 
         getCountries(daoCountry, false)
         readingSortedListCountries()
+        activity?.showDialogWithOneButton(
+            getString(R.string.first_fragment_dialog_title),
+            getString(R.string.first_fragment_dialog_description),
+            R.string.button_dialog_with_one_button, null
+        )
     }
 
     private fun initRecyclerView(view: View) {
@@ -94,8 +111,6 @@ class FirstFragment : Fragment() {
     private fun getCountries(daoCountry: CountryDAO?, isRefreshing: Boolean) {
         progressBar.visibility = if (isRefreshing) View.GONE else View.VISIBLE
 
-        val countryData = Common.retrofitService?.getCountryDate()
-
         val goodSnack: Snackbar = Snackbar.make(
             requireView(), resources.getString(R.string.done_message), Snackbar.LENGTH_SHORT
         )
@@ -107,20 +122,17 @@ class FirstFragment : Fragment() {
                 .show()
         }
 
-        countryData?.enqueue(object : retrofit2.Callback<MutableList<Country>> {
-            override fun onResponse(
-                call: Call<MutableList<Country>>,
-                response: Response<MutableList<Country>>
-            ) {
-                listOfCountries = response.body() ?: mutableListOf()
-                listOfCountries.forEach {
+        Common.retrofitService?.getCountryDate()
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribeOn(Schedulers.io())
+            ?.subscribe({ response ->
+                response.forEach {
                     listOfCountryEntities.add(
                         CountryEntity(
                             it.countryName,
                             it.cityName,
                             it.population,
                             it.flag
-                            //it.languages
                         )
                     )
                     (it.languages.forEach { item ->
@@ -134,7 +146,7 @@ class FirstFragment : Fragment() {
                         )
                     })
                 }
-                listOfCountries.forEach {
+                response.forEach {
                     crossRef.add(
                         CountryLanguageCrossRef(
                             it.countryName,
@@ -151,19 +163,22 @@ class FirstFragment : Fragment() {
 
                 srFirstFragment.isRefreshing = false
 
-                customCountryAdapter.addList(listOfCountries)
+                customCountryAdapter.addList(response)
                 recyclerView.adapter = customCountryAdapter
                 goodSnack.show()
-                progressBar.visibility = View.GONE
-            }
 
-            override fun onFailure(call: Call<MutableList<Country>>, t: Throwable) {
-                badSnack.show()
-                //getCountries(daoCountry, true)
-                srFirstFragment.isRefreshing = false
                 progressBar.visibility = View.GONE
-            }
-        })
+                flFirstFragment.visibility = View.GONE
+            }, { throwable ->
+                throwable.printStackTrace()
+
+                badSnack.show()
+                getCountries(daoCountry, true)
+                srFirstFragment.isRefreshing = false
+
+                progressBar.visibility = View.GONE
+                flFirstFragment.visibility = View.GONE
+            })
     }
 
     override fun onCreateView(
@@ -212,8 +227,17 @@ class FirstFragment : Fragment() {
         savingSortedListCountries()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        if (createDialog(requireActivity()).isShowing) createDialog(requireActivity()).dismiss()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         savingSortedListCountries()
+    }
+
+    fun fillingDatabase() {
+
     }
 }

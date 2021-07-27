@@ -33,7 +33,8 @@ class CustomCountryAdapter : BaseAdapter<Country>() {
             //holder.languages.text = dataList[position].languages.joinToString()
             holder.countryName.text = dataList[position].countryName
             holder.population.text = holder.itemView.context.getString(
-                R.string.population, dataList[position].population.toString())
+                R.string.population, dataList[position].population.toString()
+            )
 
             if (dataList[position].cityName.isEmpty()) {
                 holder.cityName.text = holder.itemView.context.getString(R.string.empty)
@@ -51,7 +52,9 @@ class CustomCountryAdapter : BaseAdapter<Country>() {
                 )
                 .load(Uri.parse(url), holder.flag)
 
-            holder.itemView.setOnClickListener { onItemClickListener?.invoke(dataList[position])}
+            holder.itemView.setOnClickListener {
+                onItemClickListener?.invoke(dataList[position])
+            }
         }
     }
 

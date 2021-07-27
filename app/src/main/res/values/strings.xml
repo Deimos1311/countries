@@ -12,4 +12,8 @@
     <string name="sort">Sorting</string>
     <string name="test">test</string>
     <string name="isChecked">isChecked</string>
+    <string name="button_dialog_with_one_button">OK</string>
+    <string name="first_fragment_dialog_description">There is some description that i did not come up with, but someday it will definitely be</string>
+    <string name="first_fragment_dialog_title">Greeting!</string>
+    <string name="progress_bar_scale_width">100%</string>
 </resources>

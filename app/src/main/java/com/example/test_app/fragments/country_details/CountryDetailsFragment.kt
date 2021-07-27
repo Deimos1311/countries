@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.test_app.*
 import com.example.test_app.common.Common
-import com.example.test_app.model.Country
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -24,8 +23,8 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import retrofit2.Call
-import retrofit2.Response
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 class CountryDetailsFragment : Fragment() {
 
@@ -37,7 +36,6 @@ class CountryDetailsFragment : Fragment() {
     private lateinit var mapView: MapView
     private lateinit var googleMap: GoogleMap
 
-    private var listOfCountries: MutableList<Country> = mutableListOf()
     lateinit var countryDetailsFragmentAdapter: CountryDetailsFragmentAdapter
 
     lateinit var recyclerView: RecyclerView
@@ -85,7 +83,7 @@ class CountryDetailsFragment : Fragment() {
             .load(Uri.parse(url), ivFlag)
 
         srCountryDetails.setOnRefreshListener {
-            listOfCountries.clear()
+            countryDetailsFragmentAdapter.clear()
             getCountryByName(true)
         }
 
@@ -106,23 +104,19 @@ class CountryDetailsFragment : Fragment() {
     private fun getCountryByName(isRefresh: Boolean) {
         progressBar.visibility = if (isRefresh) View.GONE else View.VISIBLE
 
-        val countryLanguages = Common.retrofitService?.getCountryByName(countryName)
-
-        countryLanguages?.enqueue(object : retrofit2.Callback<MutableList<Country>> {
-            override fun onResponse(
-                call: Call<MutableList<Country>>,
-                response: Response<MutableList<Country>>
-            ) {
-                listOfCountries = response.body() ?: mutableListOf()
+        Common.retrofitService?.getCountryByName(countryName)
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribeOn(Schedulers.io())
+            ?.subscribe({ response ->
                 countryDetailsFragmentAdapter = CountryDetailsFragmentAdapter()
-                countryDetailsFragmentAdapter.addList(listOfCountries[0].languages)
+                countryDetailsFragmentAdapter.addList(response[0].languages)
                 recyclerView.adapter = countryDetailsFragmentAdapter
 
                 srCountryDetails.isRefreshing = false
 
                 val position = LatLng(
-                    listOfCountries[0].location[0],
-                    listOfCountries[0].location[1]
+                    response[0].location[0],
+                    response[0].location[1]
                 )
 
                 googleMap.addMarker(
@@ -135,29 +129,29 @@ class CountryDetailsFragment : Fragment() {
 
                 progressBar.visibility = View.GONE
                 frame.visibility = View.GONE
-            }
+            }, { throwable ->
+                throwable.printStackTrace()
 
-            override fun onFailure(call: Call<MutableList<Country>>, t: Throwable) {
                 Toast.makeText(context, "somth wrong", Toast.LENGTH_SHORT).show()
                 srCountryDetails.isRefreshing = false
+
                 progressBar.visibility = View.GONE
                 frame.visibility = View.GONE
-            }
-        })
+            })
     }
 
-    override fun onResume() {
-        mapView.onResume()
-        super.onResume()
-    }
+override fun onResume() {
+    mapView.onResume()
+    super.onResume()
+}
 
-    override fun onLowMemory() {
-        mapView.onLowMemory()
-        super.onLowMemory()
-    }
+override fun onLowMemory() {
+    mapView.onLowMemory()
+    super.onLowMemory()
+}
 
-    override fun onDestroy() {
-        mapView.onDestroy()
-        super.onDestroy()
-    }
+override fun onDestroy() {
+    mapView.onDestroy()
+    super.onDestroy()
+}
 }
