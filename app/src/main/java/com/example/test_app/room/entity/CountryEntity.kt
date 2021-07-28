@@ -14,6 +14,4 @@ data class CountryEntity(
     val cityName: String,
     @ColumnInfo(name = "population")
     val population: Int,
-    @ColumnInfo(name = "flag")
-    val flag: String,
 )

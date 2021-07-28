@@ -5,7 +5,13 @@
 
     <item
         android:id="@+id/sort"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:icon="@drawable/twotone_radio_button_unchecked_white_24"
         android:title="@string/sort"/>
+
+    <item
+        android:id="@+id/search"
+        app:showAsAction="ifRoom"
+        android:title="@string/searching"
+        app:actionViewClass="androidx.appcompat.widget.SearchView" />
 </menu>

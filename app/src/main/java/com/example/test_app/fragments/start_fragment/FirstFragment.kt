@@ -1,11 +1,14 @@
 package com.example.test_app.fragments.start_fragment
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -19,6 +22,7 @@ import com.example.test_app.R
 import com.example.test_app.common.Common
 import com.example.test_app.ext.createDialog
 import com.example.test_app.ext.showDialogWithOneButton
+import com.example.test_app.model.Country
 import com.example.test_app.room.CountryDAO
 import com.example.test_app.room.CountryDatabase
 import com.example.test_app.room.DatabaseToRecyclerAdapter
@@ -27,7 +31,9 @@ import com.example.test_app.room.entity.CountryLanguageCrossRef
 import com.example.test_app.room.entity.LanguagesListEntity
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.*
 
 class FirstFragment : Fragment() {
     var isSorted: Boolean = false
@@ -35,6 +41,9 @@ class FirstFragment : Fragment() {
     val listOfCountryEntities: MutableList<CountryEntity> = mutableListOf()
     val listOfLanguagesEntities: MutableList<LanguagesListEntity> = mutableListOf()
     val crossRef: MutableList<CountryLanguageCrossRef> = mutableListOf()
+
+    var list: MutableList<Country> = mutableListOf()
+    lateinit var tempList: MutableList<Country>
 
     lateinit var recyclerView: RecyclerView
     lateinit var customCountryAdapter: CustomCountryAdapter
@@ -49,6 +58,8 @@ class FirstFragment : Fragment() {
 
     lateinit var flFirstFragment: FrameLayout
 
+    private val compositeDisposable = CompositeDisposable()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView(view)
@@ -59,9 +70,7 @@ class FirstFragment : Fragment() {
 
         countryDataBase = context?.let { CountryDatabase.getInstance(it) }
         daoCountry = countryDataBase?.countryDAO
-
         dataBaseToRecyclerAdapter = DatabaseToRecyclerAdapter()
-
         daoCountry?.getAllCountries()
             ?.observeOn(AndroidSchedulers.mainThread())
             ?.subscribeOn(Schedulers.io())
@@ -122,7 +131,7 @@ class FirstFragment : Fragment() {
                 .show()
         }
 
-        Common.retrofitService?.getCountryDate()
+        val subscription = Common.retrofitService?.getCountryDate()
             ?.observeOn(AndroidSchedulers.mainThread())
             ?.subscribeOn(Schedulers.io())
             ?.subscribe({ response ->
@@ -131,8 +140,7 @@ class FirstFragment : Fragment() {
                         CountryEntity(
                             it.countryName,
                             it.cityName,
-                            it.population,
-                            it.flag
+                            it.population
                         )
                     )
                     (it.languages.forEach { item ->
@@ -161,9 +169,11 @@ class FirstFragment : Fragment() {
                 daoCountry?.addLanguage(listOfLanguagesEntities)
                 daoCountry?.addAllCountries(listOfCountryEntities)
 
+
                 srFirstFragment.isRefreshing = false
 
                 customCountryAdapter.addList(response)
+                tempList = response
                 recyclerView.adapter = customCountryAdapter
                 goodSnack.show()
 
@@ -179,6 +189,7 @@ class FirstFragment : Fragment() {
                 progressBar.visibility = View.GONE
                 flFirstFragment.visibility = View.GONE
             })
+        compositeDisposable.add(subscription)
     }
 
     override fun onCreateView(
@@ -193,6 +204,42 @@ class FirstFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.toolbar, menu)
+
+        val searchView = menu.findItem(R.id.search).actionView as SearchView
+
+        searchView.queryHint = "Search country"
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                Log.d(TAG, "onQueryTextSubmit: $query")
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                Log.d(TAG, "onQueryTextChange: $newText")
+
+                val searchText = newText?.lowercase(Locale.getDefault())
+
+                list.clear()
+
+                if (searchText!!.isNotEmpty()) {
+                    tempList.forEach {
+                        if (it.countryName.lowercase(Locale.getDefault()).contains(searchText)) {
+                            list.add(it)
+                        }
+                    }
+                    customCountryAdapter.clear()
+                    customCountryAdapter.addList(list)
+                } else {
+                    customCountryAdapter.clear()
+                    list.addAll(tempList)
+                    customCountryAdapter.addList(list)
+                }
+
+                return false
+            }
+        })
+        return super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -228,16 +275,13 @@ class FirstFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
+        compositeDisposable.clear()
         if (createDialog(requireActivity()).isShowing) createDialog(requireActivity()).dismiss()
+        super.onDestroyView()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         savingSortedListCountries()
-    }
-
-    fun fillingDatabase() {
-
     }
 }

@@ -16,4 +16,6 @@
     <string name="first_fragment_dialog_description">There is some description that i did not come up with, but someday it will definitely be</string>
     <string name="first_fragment_dialog_title">Greeting!</string>
     <string name="progress_bar_scale_width">100%</string>
+    <string name="app_label">test_app</string>
+    <string name="searching">Searching</string>
 </resources>
