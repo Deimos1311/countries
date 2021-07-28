@@ -31,9 +31,11 @@ import com.example.test_app.room.entity.CountryLanguageCrossRef
 import com.example.test_app.room.entity.LanguagesListEntity
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.ObservableOnSubscribe
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.*
+import java.util.concurrent.TimeUnit
 
 class FirstFragment : Fragment() {
     var isSorted: Boolean = false
@@ -209,38 +211,45 @@ class FirstFragment : Fragment() {
 
         searchView.queryHint = "Search country"
 
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                Log.d(TAG, "onQueryTextSubmit: $query")
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                Log.d(TAG, "onQueryTextChange: $newText")
-
-                val searchText = newText?.lowercase(Locale.getDefault())
-
-                list.clear()
-
-                if (searchText!!.isNotEmpty()) {
-                    tempList.forEach {
-                        if (it.countryName.lowercase(Locale.getDefault()).contains(searchText)) {
-                            list.add(it)
-                        }
-                    }
-                    customCountryAdapter.clear()
-                    customCountryAdapter.addList(list)
-                } else {
-                    customCountryAdapter.clear()
-                    list.addAll(tempList)
-                    customCountryAdapter.addList(list)
+        Observable.create(ObservableOnSubscribe<String> { subscriber ->
+            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    subscriber.onNext(query)
+                    return false
                 }
 
-                return false
-            }
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    subscriber.onNext(newText)
+
+                    list.clear()
+
+                    if (newText!!.lowercase().isNotEmpty()) {
+                        tempList.forEach {
+                            if (it.countryName.lowercase().contains(newText)) {
+                                list.add(it)
+                            }
+                        }
+                        customCountryAdapter.clear()
+                        customCountryAdapter.addList(list)
+                    } else {
+                        customCountryAdapter.clear()
+                        list.addAll(tempList)
+                        customCountryAdapter.addList(list)
+                    }
+
+                    return false
+                }
+            })
         })
+            .debounce(300, TimeUnit.MILLISECONDS)
+            .distinctUntilChanged()
+            .filter { text -> text.isNotBlank() }
+            .subscribe { text ->
+                Log.d(TAG, "subscriber: $text")
+            }
         return super.onCreateOptionsMenu(menu, inflater)
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (!isSorted) {
