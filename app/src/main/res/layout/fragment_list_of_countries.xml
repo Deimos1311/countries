@@ -3,10 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/list_of_countries_fragment">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/sr_first_fragment"
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -14,10 +15,10 @@
 
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context=".fragments.start_fragment.FirstFragment">
+            tools:context=".fragments.list_of_countries.LIstOfCountriesFragment">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rView"
+                android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -29,7 +30,7 @@
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <FrameLayout
-        android:id="@+id/frame_first_fragment"
+        android:id="@+id/frame_with_progress"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/progress_background"
@@ -41,12 +42,12 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ProgressBar
-            android:id="@+id/progress_first_fragment"
+            android:id="@+id/progress_bar"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             android:layout_width="@dimen/progress_bar_width"
             android:layout_height="@dimen/progress_bar_height"
             android:layout_gravity="center"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="@dimen/progress_in_frame_margin"
             android:indeterminate="true"
             android:indeterminateBehavior="repeat"
             android:indeterminateDrawable="@drawable/progress_bar_style"

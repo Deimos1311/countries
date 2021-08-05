@@ -1,4 +1,4 @@
-package com.example.test_app.fragments.start_fragment
+package com.example.test_app.fragments.list_of_countries
 
 import android.net.Uri
 import android.view.LayoutInflater
@@ -13,7 +13,7 @@ import com.example.test_app.base.adapter.BaseAdapter
 import com.example.test_app.model.Country
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 
-class CustomCountryAdapter : BaseAdapter<Country>() {
+class ListOfCountriesAdapter : BaseAdapter<Country>() {
 
     class CountryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val countryName: TextView = itemView.findViewById(R.id.countryName)
@@ -29,20 +29,21 @@ class CustomCountryAdapter : BaseAdapter<Country>() {
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val item = dataList[position]
+
         if (holder is CountryViewHolder) {
-            //holder.languages.text = dataList[position].languages.joinToString()
-            holder.countryName.text = dataList[position].countryName
+            holder.countryName.text = item.countryName
             holder.population.text = holder.itemView.context.getString(
-                R.string.population, dataList[position].population.toString()
+                R.string.population, item.population.toString()
             )
 
-            if (dataList[position].cityName.isEmpty()) {
+            if (item.cityName.isEmpty()) {
                 holder.cityName.text = holder.itemView.context.getString(R.string.empty)
             } else {
-                holder.cityName.text = dataList[position].cityName
+                holder.cityName.text = item.cityName
             }
 
-            val url = dataList[position].flag
+            item.flag
             GlideToVectorYou
                 .init()
                 .with(holder.itemView.context)
@@ -50,10 +51,10 @@ class CustomCountryAdapter : BaseAdapter<Country>() {
                     R.drawable.ic_launcher_foreground,
                     R.drawable.twotone_error_black_18
                 )
-                .load(Uri.parse(url), holder.flag)
+                .load(Uri.parse(item.flag), holder.flag)
 
             holder.itemView.setOnClickListener {
-                onItemClickListener?.invoke(dataList[position])
+                onItemClickListener?.invoke(item)
             }
         }
     }
@@ -64,6 +65,7 @@ class CustomCountryAdapter : BaseAdapter<Country>() {
         } else {
             Sort().descendingSort(dataList)
         }
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0, dataList.size)
+        //notifyDataSetChanged()
     }
 }

@@ -1,5 +1,6 @@
 package com.example.test_app.base.adapter
 
+import android.annotation.SuppressLint
 import androidx.recyclerview.widget.RecyclerView
 
 abstract class BaseAdapter<ItemType> : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -21,16 +22,20 @@ abstract class BaseAdapter<ItemType> : RecyclerView.Adapter<RecyclerView.ViewHol
     open fun refresh(list: MutableList<ItemType>) {
         dataList.clear()
         dataList.addAll(list)
-        notifyDataSetChanged()
+        //notifyDataSetChanged()
+        notifyItemRangeChanged(0, dataList.size)
     }
 
     open fun addList(list: MutableList<ItemType>) {
         dataList.addAll(list)
-        notifyDataSetChanged()
+        //notifyDataSetChanged()
+        notifyItemRangeChanged(0, dataList.size)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     open fun clear() {
         dataList.clear()
-        //notifyDataSetChanged()
+        notifyDataSetChanged()
+        //notifyItemRangeChanged(0, dataList.size)
     }
 }

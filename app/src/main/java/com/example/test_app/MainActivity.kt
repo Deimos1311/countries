@@ -3,27 +3,30 @@ package com.example.test_app
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.FragmentManager
-import androidx.navigation.findNavController
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import java.util.*
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 
 class MainActivity : AppCompatActivity() {
-    private var countClickToExit = 0
+
+    lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment)
 
         val toolbar = findViewById<Toolbar>(R.id.mytool)
         setSupportActionBar(toolbar)
     }
 
     override fun onBackPressed() {
-        countClickToExit++
-
-        val handler = android.os.Handler()
-        handler.postDelayed({countClickToExit = 0}, 5000)
-        if (countClickToExit == 2) super.onBackPressed() else if (countClickToExit == 1) handler.postDelayed({countClickToExit = 0}, 5000)
+        if (navController.popBackStack(R.id.mapFragment, true)) {
+            navController.navigate(R.id.list_of_countries)
+        } else if (!navController.popBackStack()) {
+            super.onBackPressed()
+            super.onPause()
+            super.onStop()
+            super.onDestroy()
+        }
     }
 }

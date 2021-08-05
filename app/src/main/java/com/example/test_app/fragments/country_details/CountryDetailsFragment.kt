@@ -5,74 +5,51 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.test_app.*
-import com.example.test_app.common.Common
+import com.example.test_app.base.mvp.BaseMvpFragment
+import com.example.test_app.databinding.FragmentCountryDetailsBinding
+import com.example.test_app.model.Country
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.schedulers.Schedulers
 
-class CountryDetailsFragment : Fragment() {
+class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDetailsView {
 
-    private lateinit var srCountryDetails: SwipeRefreshLayout
-    private lateinit var ivFlag: ImageView
-    private lateinit var tvCountryName: AppCompatTextView
+    var binding: FragmentCountryDetailsBinding? = null
+
     private lateinit var countryName: String
     private lateinit var flag: String
-    private lateinit var mapView: MapView
     private lateinit var googleMap: GoogleMap
 
     lateinit var countryDetailsFragmentAdapter: CountryDetailsFragmentAdapter
 
-    lateinit var recyclerView: RecyclerView
     lateinit var linearLayoutManager: LinearLayoutManager
-
-    lateinit var progressBar: ProgressBar
-    lateinit var frame: FrameLayout
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_country_details, container, false)
+        binding = FragmentCountryDetailsBinding.inflate(inflater, container, false)
 
         countryName = arguments?.getString(COUNTRY_NAME_BUNDLE_KEY, DEFAULT_VALUE) ?: ERROR
         flag = arguments?.getString(COUNTRY_FLAG_BUNDLE_KEY, DEFAULT_VALUE) ?: ERROR
 
+        binding?.mapView?.onCreate(savedInstanceState)
 
-        mapView = view.findViewById(R.id.map_country_details)
-        mapView.onCreate(savedInstanceState)
-
-
-        return view
+        return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        getPresenter().attachView(this)
         initRecyclerView(view)
 
-        tvCountryName = view.findViewById(R.id.country_name_details)
-        ivFlag = view.findViewById(R.id.flag_details)
-        srCountryDetails = view.findViewById(R.id.sr_country_details)
-        progressBar = view.findViewById(R.id.progress_bar)
-        frame = view.findViewById(R.id.frame)
+        binding?.countryName?.text = countryName
 
-        tvCountryName.text = countryName
-
-        val url = flag
         GlideToVectorYou
             .init()
             .with(this.context)
@@ -80,78 +57,83 @@ class CountryDetailsFragment : Fragment() {
                 R.drawable.ic_launcher_foreground,
                 R.drawable.twotone_error_black_18
             )
-            .load(Uri.parse(url), ivFlag)
+            .load(Uri.parse(flag), binding?.flag)
 
-        srCountryDetails.setOnRefreshListener {
-            countryDetailsFragmentAdapter.clear()
-            getCountryByName(true)
-        }
-
-        mapView.getMapAsync(OnMapReadyCallback {
+        binding?.mapView?.getMapAsync(OnMapReadyCallback {
             googleMap = it
         })
 
-        getCountryByName(false)
+        binding?.swipeRefresh?.setOnRefreshListener {
+            //countryDetailsFragmentAdapter.clear()
+            getPresenter().getCountryByName(countryName, true)
+        }
+
+        getPresenter().getCountryByName(countryName, false)
     }
 
     private fun initRecyclerView(view: View) {
-        recyclerView = view.findViewById(R.id.rView_country_details)
-        recyclerView.setHasFixedSize(true)
+        binding?.recyclerView?.setHasFixedSize(true)
         linearLayoutManager = LinearLayoutManager(activity)
-        recyclerView.layoutManager = linearLayoutManager
+        binding?.recyclerView?.layoutManager = linearLayoutManager
     }
 
-    private fun getCountryByName(isRefresh: Boolean) {
-        progressBar.visibility = if (isRefresh) View.GONE else View.VISIBLE
-
-        Common.retrofitService?.getCountryByName(countryName)
-            ?.observeOn(AndroidSchedulers.mainThread())
-            ?.subscribeOn(Schedulers.io())
-            ?.subscribe({ response ->
-                countryDetailsFragmentAdapter = CountryDetailsFragmentAdapter()
-                countryDetailsFragmentAdapter.addList(response[0].languages)
-                recyclerView.adapter = countryDetailsFragmentAdapter
-
-                srCountryDetails.isRefreshing = false
-
-                val position = LatLng(
-                    response[0].location[0],
-                    response[0].location[1]
-                )
-
-                googleMap.addMarker(
-                    MarkerOptions().position(
-                        position
-                    )
-                )
-
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, CAMERA_ZOOM))
-
-                progressBar.visibility = View.GONE
-                frame.visibility = View.GONE
-            }, { throwable ->
-                throwable.printStackTrace()
-
-                Toast.makeText(context, "somth wrong", Toast.LENGTH_SHORT).show()
-                srCountryDetails.isRefreshing = false
-
-                progressBar.visibility = View.GONE
-                frame.visibility = View.GONE
-            })
+    override fun onResume() {
+        binding?.mapView?.onResume()
+        super.onResume()
     }
 
-override fun onResume() {
-    mapView.onResume()
-    super.onResume()
-}
+    override fun onLowMemory() {
+        binding?.mapView?.onLowMemory()
+        super.onLowMemory()
+    }
 
-override fun onLowMemory() {
-    mapView.onLowMemory()
-    super.onLowMemory()
-}
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
+    }
 
-override fun onDestroy() {
-    mapView.onDestroy()
-    super.onDestroy()
-}
+    override fun onDestroy() {
+        binding?.mapView?.onDestroy()
+        super.onDestroy()
+    }
+
+    override fun createPresenter() {
+        mPresenter = CountryDetailsPresenter()
+    }
+
+    override fun getPresenter(): CountryDetailsPresenter = mPresenter as CountryDetailsPresenter
+
+    override fun showCountryInfo(country: Country, location: LatLng) {
+        countryDetailsFragmentAdapter = CountryDetailsFragmentAdapter()
+        countryDetailsFragmentAdapter.addList(country.languages)
+        binding?.recyclerView?.adapter = countryDetailsFragmentAdapter
+
+        binding?.swipeRefresh?.isRefreshing = false
+
+        googleMap.addMarker(
+            MarkerOptions().position(
+                location
+            )
+        )
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, CAMERA_ZOOM))
+
+        binding?.frameWithProgress?.visibility = View.GONE
+    }
+
+    override fun internetError() {
+        Toast.makeText(context, getString(R.string.somth_wrong), Toast.LENGTH_SHORT).show()
+        binding?.swipeRefresh?.isRefreshing = false
+        binding?.frameWithProgress?.visibility = View.GONE
+    }
+
+    override fun showError(error: String) {
+    }
+
+    override fun showProgress() {
+        binding?.progressBar?.visibility = View.VISIBLE
+    }
+
+    override fun hideProgress() {
+        binding?.progressBar?.visibility = View.GONE
+    }
 }

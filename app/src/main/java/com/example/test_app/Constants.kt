@@ -10,3 +10,8 @@ const val CAMERA_ZOOM = 4f
 
 //dialog
 const val DIALOG_WIDTH_DELTA_7 = 0.7
+
+//connection
+const val RETRY = 5L
+const val MIN_SEARCH_STRING_LENGTH = 3
+const val DEBOUNCE_TIME = 300L

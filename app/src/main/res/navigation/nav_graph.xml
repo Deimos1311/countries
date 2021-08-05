@@ -3,22 +3,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/firstFragment">
+    app:startDestination="@id/start_screen">
     <fragment
-        android:id="@+id/firstFragment"
-        android:name="com.example.test_app.fragments.start_fragment.FirstFragment"
-        android:label="fragment_first"
-        tools:layout="@layout/fragment_first">
+        android:id="@+id/start_screen"
+        android:name="com.example.test_app.fragments.start_screen.StartScreenFragment"
+        android:label="fragment_start_screen">
+        <action
+            android:id="@+id/action_start_screen_to_first_fragment"
+            app:destination="@id/list_of_countries" />
+        <action
+            android:id="@+id/action_start_screen_to_mapFragment"
+            app:destination="@id/mapFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/list_of_countries"
+        android:name="com.example.test_app.fragments.list_of_countries.LIstOfCountriesFragment"
+        android:label="fragment_list_of_countries">
         <action
             android:id="@+id/action_firstFragment_to_countryDetailsFragment"
-            app:destination="@id/countryDetailsFragment" />
+            app:destination="@id/country_details_fragment" />
     </fragment>
     <fragment
-        android:id="@+id/countryDetailsFragment"
+        android:id="@+id/country_details_fragment"
         android:name="com.example.test_app.fragments.country_details.CountryDetailsFragment"
-        android:label="CountryDetailsFragment" >
-        <action
-            android:id="@+id/action_countryDetailsFragment_to_firstFragment"
-            app:destination="@id/firstFragment" />
-    </fragment>
+        android:label="fragment_country_details" />
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.example.test_app.fragments.map.MapFragment"
+        android:label="MapFragment" />
+
 </navigation>
