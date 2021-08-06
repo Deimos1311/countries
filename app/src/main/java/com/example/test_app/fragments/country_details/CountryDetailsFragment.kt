@@ -6,10 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.test_app.*
 import com.example.test_app.base.mvp.BaseMvpFragment
 import com.example.test_app.databinding.FragmentCountryDetailsBinding
+import com.example.test_app.dto.CountryDTO
 import com.example.test_app.model.Country
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -67,7 +69,6 @@ class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDet
             //countryDetailsFragmentAdapter.clear()
             getPresenter().getCountryByName(countryName, true)
         }
-
         getPresenter().getCountryByName(countryName, false)
     }
 
@@ -103,7 +104,7 @@ class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDet
 
     override fun getPresenter(): CountryDetailsPresenter = mPresenter as CountryDetailsPresenter
 
-    override fun showCountryInfo(country: Country, location: LatLng) {
+    override fun showCountryInfo(country: CountryDTO, location: LatLng) {
         countryDetailsFragmentAdapter = CountryDetailsFragmentAdapter()
         countryDetailsFragmentAdapter.addList(country.languages)
         binding?.recyclerView?.adapter = countryDetailsFragmentAdapter
@@ -116,6 +117,15 @@ class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDet
             )
         )
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, CAMERA_ZOOM))
+        googleMap.setOnMapClickListener {
+            val bundle = Bundle()
+            bundle.putDouble(LATITUDE, location.latitude)
+            bundle.putDouble(LONGITUDE, location.longitude)
+            findNavController().navigate(
+                R.id.action_country_details_fragment_to_mapFragment,
+                bundle
+            )
+        }
 
         binding?.frameWithProgress?.visibility = View.GONE
     }

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import com.example.test_app.ext.showDialogWithOneButton
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,12 +18,18 @@ class MainActivity : AppCompatActivity() {
 
         val toolbar = findViewById<Toolbar>(R.id.mytool)
         setSupportActionBar(toolbar)
+
+        showDialogWithOneButton(
+            getString(R.string.first_fragment_dialog_title),
+            getString(R.string.first_fragment_dialog_description),
+            R.string.button_dialog_with_one_button, null
+        )
     }
 
     override fun onBackPressed() {
-        if (navController.popBackStack(R.id.mapFragment, true)) {
+       /* if (navController.popBackStack(R.id.mapFragment, true)) {
             navController.navigate(R.id.list_of_countries)
-        } else if (!navController.popBackStack()) {
+        } else*/ if (!navController.popBackStack()) {
             super.onBackPressed()
             super.onPause()
             super.onStop()

@@ -22,11 +22,18 @@
         <action
             android:id="@+id/action_firstFragment_to_countryDetailsFragment"
             app:destination="@id/country_details_fragment" />
+        <action
+            android:id="@+id/action_list_of_countries_to_mapFragment"
+            app:destination="@id/mapFragment" />
     </fragment>
     <fragment
         android:id="@+id/country_details_fragment"
         android:name="com.example.test_app.fragments.country_details.CountryDetailsFragment"
-        android:label="fragment_country_details" />
+        android:label="fragment_country_details" >
+        <action
+            android:id="@+id/action_country_details_fragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+    </fragment>
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.example.test_app.fragments.map.MapFragment"

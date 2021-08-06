@@ -10,10 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.test_app.R
 import com.example.test_app.Sort
 import com.example.test_app.base.adapter.BaseAdapter
+import com.example.test_app.dto.CountryDTO
 import com.example.test_app.model.Country
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 
-class ListOfCountriesAdapter : BaseAdapter<Country>() {
+class ListOfCountriesAdapter : BaseAdapter<CountryDTO>() {
 
     class CountryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val countryName: TextView = itemView.findViewById(R.id.countryName)

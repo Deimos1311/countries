@@ -103,6 +103,8 @@ dependencies {
     //Maps
     implementation "com.google.android.gms:play-services-maps:$maps_version"
 
+    //Vector
+
     implementation "androidx.legacy:legacy-support-v4:$legacy_version"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"

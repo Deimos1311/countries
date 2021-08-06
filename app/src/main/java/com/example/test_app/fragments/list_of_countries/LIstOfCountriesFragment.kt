@@ -15,8 +15,8 @@ import com.example.test_app.*
 import com.example.test_app.base.mvp.BaseMvpFragment
 import com.example.test_app.common.Common
 import com.example.test_app.databinding.FragmentListOfCountriesBinding
+import com.example.test_app.dto.CountryDTO
 import com.example.test_app.ext.createDialog
-import com.example.test_app.ext.showDialogWithOneButton
 import com.example.test_app.model.Country
 import com.example.test_app.room.CountryDAO
 import com.example.test_app.room.CountryDatabase
@@ -24,6 +24,7 @@ import com.example.test_app.room.DatabaseToRecyclerAdapter
 import com.example.test_app.room.entity.CountryEntity
 import com.example.test_app.room.entity.CountryLanguageCrossRef
 import com.example.test_app.room.entity.LanguagesListEntity
+import com.example.test_app.transformers.transform
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
@@ -39,8 +40,8 @@ class LIstOfCountriesFragment : BaseMvpFragment<ListOfCountriesView>(), ListOfCo
 
     var isSorted: Boolean = false
 
-    var searchList: MutableList<Country> = mutableListOf()
-    var tempList: MutableList<Country> = mutableListOf()
+    var searchList: MutableList<CountryDTO> = mutableListOf()
+    var tempList: MutableList<CountryDTO> = mutableListOf()
 
     lateinit var listOfCountriesAdapter: ListOfCountriesAdapter
     lateinit var linearLayoutManager: LinearLayoutManager
@@ -84,12 +85,6 @@ class LIstOfCountriesFragment : BaseMvpFragment<ListOfCountriesView>(), ListOfCo
                 bundle
             )
         }
-
-        activity?.showDialogWithOneButton(
-            getString(R.string.first_fragment_dialog_title),
-            getString(R.string.first_fragment_dialog_description),
-            R.string.button_dialog_with_one_button, null
-        )
 
         countryDataBase = context?.let { CountryDatabase.getInstance(it) }
         daoCountry = countryDataBase?.countryDAO
@@ -174,14 +169,23 @@ class LIstOfCountriesFragment : BaseMvpFragment<ListOfCountriesView>(), ListOfCo
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (!isSorted) {
-            item.setIcon(R.drawable.baseline_expand_more_24)
-        } else {
-            item.setIcon(R.drawable.baseline_expand_less_24)
+        if (item.itemId == R.id.sort) {
+            if (!isSorted) {
+                item.setIcon(R.drawable.baseline_expand_more_24)
+            } else {
+                item.setIcon(R.drawable.baseline_expand_less_24)
+            }
+
+            listOfCountriesAdapter.isSorted(isSorted)
+            //savingSortedListCountries()
+            isSorted = !isSorted
+
+        } else if (item.itemId == R.id.map_toolbar) {
+            findNavController().navigate(
+                R.id.action_list_of_countries_to_mapFragment
+            )
         }
-        listOfCountriesAdapter.isSorted(isSorted)
-        //savingSortedListCountries()
-        isSorted = !isSorted
+
         return super.onOptionsItemSelected(item)
     }
 
@@ -234,7 +238,7 @@ class LIstOfCountriesFragment : BaseMvpFragment<ListOfCountriesView>(), ListOfCo
     }
 
     @SuppressLint("ShowToast")
-    override fun showListOfCountries(listOfCountries: MutableList<Country>) {
+    override fun showListOfCountries(listOfCountries: MutableList<CountryDTO>) {
         snackbar = Snackbar.make(
             requireView(),
             resources.getString(R.string.done_message),

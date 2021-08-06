@@ -7,9 +7,9 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.test_app.R
 import com.example.test_app.base.adapter.BaseAdapter
-import com.example.test_app.model.LanguagesList
+import com.example.test_app.model.Language
 
-class CountryDetailsFragmentAdapter: BaseAdapter<LanguagesList>() {
+class CountryDetailsFragmentAdapter: BaseAdapter<Language>() {
 
     class CountryDetailsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvLanguages: AppCompatTextView = itemView.findViewById(R.id.language)

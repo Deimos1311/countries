@@ -4,17 +4,17 @@ import com.google.gson.annotations.SerializedName
 
 data class Country(
     @SerializedName("name")
-    val countryName: String,
+    val countryName: String?,
     @SerializedName("capital")
-    var cityName: String,
+    var cityName: String?,
     @SerializedName("population")
-    var population: Int,
+    var population: Int?,
     @SerializedName("languages")
-    var languages: MutableList<LanguagesList>,
+    var languages: MutableList<Language>?,
     @SerializedName("flag")
-    var flag: String,
+    var flag: String?,
     @SerializedName("area")
-    var area: Double,
+    var area: Double?,
     @SerializedName("latlng")
-    var location: MutableList<Double>
+    var location: MutableList<Double>?
 )

@@ -6,12 +6,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.test_app.MainActivity
-import com.example.test_app.R
+import com.example.test_app.*
 import com.example.test_app.base.mvp.BaseMvpFragment
 import com.example.test_app.databinding.FragmentMapBinding
-import com.example.test_app.fragments.list_of_countries.LIstOfCountriesFragment
-import com.example.test_app.fragments.start_screen.StartScreenFragment
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
@@ -20,6 +18,10 @@ import com.google.android.gms.maps.model.MarkerOptions
 class MapFragment : BaseMvpFragment<MapView>(), MapView {
 
     var binding: FragmentMapBinding? = null
+    var latitude: Double = 0.0
+    var longitude: Double = 0.0
+
+    lateinit var loc: LatLng
 
     private lateinit var googleMap: GoogleMap
 
@@ -33,6 +35,9 @@ class MapFragment : BaseMvpFragment<MapView>(), MapView {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentMapBinding.inflate(inflater, container, false)
+
+        latitude = arguments?.getDouble(LATITUDE, DEFAULT_VALUE_DOUBLE) ?: ERROR_DOUBLE
+        longitude = arguments?.getDouble(LONGITUDE, DEFAULT_VALUE_DOUBLE) ?: ERROR_DOUBLE
 
         binding?.map?.onCreate(savedInstanceState)
 
@@ -80,6 +85,15 @@ class MapFragment : BaseMvpFragment<MapView>(), MapView {
         googleMap.addMarker(
             MarkerOptions().position(
                 location
+            )
+        )
+
+        googleMap.animateCamera(
+            CameraUpdateFactory.newLatLngZoom(
+                LatLng(
+                    latitude,
+                    longitude
+                ), CAMERA_ZOOM
             )
         )
     }

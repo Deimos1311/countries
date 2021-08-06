@@ -3,6 +3,7 @@ package com.example.test_app.fragments.map
 import com.example.test_app.R
 import com.example.test_app.base.mvp.BaseMvpPresenter
 import com.example.test_app.common.Common
+import com.example.test_app.transformers.transformToMutableList
 import com.google.android.gms.maps.model.LatLng
 import io.reactivex.rxjava3.core.Flowable
 
@@ -15,6 +16,7 @@ class MapPresenter : BaseMvpPresenter<MapView>() {
                /* ?.onErrorResumeNext {
                     Flowable.just(mutableListOf())
                 }*/)
+                ?.map { it.transformToMutableList() }
                 ?.subscribe({
                     it.forEach { item ->
                         if (item.location.size == 2) {
