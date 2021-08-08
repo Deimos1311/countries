@@ -39,6 +39,9 @@ class StartScreenFragment : BaseMvpFragment<StartScreenView>(), StartScreenView 
         binding?.buttonToMap?.setOnClickListener {
             findNavController().navigate(R.id.action_start_screen_to_mapFragment)
         }
+        binding?.buttonToMyLocationMap?.setOnClickListener {
+            findNavController().navigate(R.id.action_start_screen_to_myLocation)
+        }
     }
 
     override fun createPresenter() {

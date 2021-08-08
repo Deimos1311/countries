@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_start_screen_to_mapFragment"
             app:destination="@id/mapFragment" />
+        <action
+            android:id="@+id/action_start_screen_to_myLocation"
+            app:destination="@id/myLocation" />
     </fragment>
     <fragment
         android:id="@+id/list_of_countries"
@@ -38,5 +41,9 @@
         android:id="@+id/mapFragment"
         android:name="com.example.test_app.fragments.map.MapFragment"
         android:label="MapFragment" />
+    <fragment
+        android:id="@+id/myLocation"
+        android:name="com.example.test_app.fragments.my_location_map.MyLocationFragment"
+        android:label="fragment_my_location" />
 
 </navigation>

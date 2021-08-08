@@ -2,6 +2,8 @@ package com.example.test_app.fragments.list_of_countries
 
 import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -17,14 +19,12 @@ import com.example.test_app.common.Common
 import com.example.test_app.databinding.FragmentListOfCountriesBinding
 import com.example.test_app.dto.CountryDTO
 import com.example.test_app.ext.createDialog
-import com.example.test_app.model.Country
 import com.example.test_app.room.CountryDAO
 import com.example.test_app.room.CountryDatabase
 import com.example.test_app.room.DatabaseToRecyclerAdapter
 import com.example.test_app.room.entity.CountryEntity
 import com.example.test_app.room.entity.CountryLanguageCrossRef
 import com.example.test_app.room.entity.LanguagesListEntity
-import com.example.test_app.transformers.transform
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
@@ -50,6 +50,8 @@ class LIstOfCountriesFragment : BaseMvpFragment<ListOfCountriesView>(), ListOfCo
     var countryDataBase: CountryDatabase? = null
     var daoCountry: CountryDAO? = null
 
+    //lateinit var sharedPreferences: SharedPreferences
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -58,11 +60,14 @@ class LIstOfCountriesFragment : BaseMvpFragment<ListOfCountriesView>(), ListOfCo
         binding = FragmentListOfCountriesBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
+        //getSortStatus()
         return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
         getPresenter().attachView(this)
         initRecyclerView(view)
 
@@ -100,7 +105,8 @@ class LIstOfCountriesFragment : BaseMvpFragment<ListOfCountriesView>(), ListOfCo
             }, { throwable ->
                 throwable.printStackTrace()
             })
-        //readingSortedListCountries()
+
+
     }
 
     private fun initRecyclerView(view: View) {
@@ -114,6 +120,7 @@ class LIstOfCountriesFragment : BaseMvpFragment<ListOfCountriesView>(), ListOfCo
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.toolbar, menu)
+
 
         val searchView = menu.findItem(R.id.search).actionView as SearchView
 
@@ -177,7 +184,7 @@ class LIstOfCountriesFragment : BaseMvpFragment<ListOfCountriesView>(), ListOfCo
             }
 
             listOfCountriesAdapter.isSorted(isSorted)
-            //savingSortedListCountries()
+            //saveSortStatus()
             isSorted = !isSorted
 
         } else if (item.itemId == R.id.map_toolbar) {
@@ -186,27 +193,38 @@ class LIstOfCountriesFragment : BaseMvpFragment<ListOfCountriesView>(), ListOfCo
             )
         }
 
+       /* if (sharedPreferences.contains("SortStatus")) {
+            Log.d("MYAAPP", "DATAISHERE")
+        }*/
+
         return super.onOptionsItemSelected(item)
     }
 
-    /*fun savingSortedListCountries() {
-        val sharedPref = activity?.getSharedPreferences("SAVE_SORT", Context.MODE_PRIVATE)
-            ?.edit()
-            ?.putBoolean(getString(R.string.isChecked), isSorted)
-            ?.apply()
+    /**not working yet*/
+    /*fun saveSortStatus() {
+        sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putBoolean("SortStatus", isSorted)
+            apply()
+        }
     }
 
-    fun readingSortedListCountries() {
-        val sharedPref = activity?.getSharedPreferences("SAVE_SORT", Context.MODE_PRIVATE)
-        val ret = sharedPref?.getBoolean(getString(R.string.isChecked), isSorted)
-        if (ret != null) {
-            isSorted = ret
-        }
+    fun getSortStatus() {
+        sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val value = sharedPreferences.getBoolean("SortStatus", false)
+        isSorted = value
     }*/
+
+    override fun onResume() {
+        super.onResume()
+    }
 
     override fun onPause() {
         super.onPause()
-        //savingSortedListCountries()
+    }
+
+    override fun onStop() {
+        super.onStop()
     }
 
     override fun onDestroyView() {
@@ -218,7 +236,6 @@ class LIstOfCountriesFragment : BaseMvpFragment<ListOfCountriesView>(), ListOfCo
 
     override fun onDestroy() {
         super.onDestroy()
-        //savingSortedListCountries()
     }
 
     override fun createPresenter() {

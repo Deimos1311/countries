@@ -61,18 +61,18 @@ class MapFragment : BaseMvpFragment<MapView>(), MapView {
     }
 
     override fun onLowMemory() {
-        binding?.map?.onResume()
+        binding?.map?.onLowMemory()
         super.onLowMemory()
-    }
-
-    override fun onDestroy() {
-        binding?.map?.onDestroy()
-        super.onDestroy()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
+    }
+
+    override fun onDestroy() {
+        binding?.map?.onDestroy()
+        super.onDestroy()
     }
 
     override fun createPresenter() {

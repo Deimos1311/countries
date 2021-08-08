@@ -1,7 +1,6 @@
 package com.example.test_app
 
 import com.example.test_app.dto.CountryDTO
-import com.example.test_app.model.Country
 
 class Sort {
 
