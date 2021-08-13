@@ -12,7 +12,6 @@ import com.example.test_app.*
 import com.example.test_app.base.mvp.BaseMvpFragment
 import com.example.test_app.databinding.FragmentCountryDetailsBinding
 import com.example.test_app.dto.CountryDTO
-import com.example.test_app.model.Country
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -40,7 +39,7 @@ class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDet
         countryName = arguments?.getString(COUNTRY_NAME_BUNDLE_KEY, DEFAULT_VALUE) ?: ERROR
         flag = arguments?.getString(COUNTRY_FLAG_BUNDLE_KEY, DEFAULT_VALUE) ?: ERROR
 
-        binding?.mapView?.onCreate(savedInstanceState)
+        //binding?.mapView?.onCreate(savedInstanceState)
 
         return binding?.root
     }
@@ -61,9 +60,9 @@ class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDet
             )
             .load(Uri.parse(flag), binding?.flag)
 
-        binding?.mapView?.getMapAsync(OnMapReadyCallback {
+        /*binding?.mapView?.getMapAsync(OnMapReadyCallback {
             googleMap = it
-        })
+        })*/
 
         binding?.swipeRefresh?.setOnRefreshListener {
             //countryDetailsFragmentAdapter.clear()
@@ -79,12 +78,12 @@ class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDet
     }
 
     override fun onResume() {
-        binding?.mapView?.onResume()
+        //binding?.mapView?.onResume()
         super.onResume()
     }
 
     override fun onLowMemory() {
-        binding?.mapView?.onLowMemory()
+        //binding?.mapView?.onLowMemory()
         super.onLowMemory()
     }
 
@@ -94,7 +93,7 @@ class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDet
     }
 
     override fun onDestroy() {
-        binding?.mapView?.onDestroy()
+        //binding?.mapView?.onDestroy()
         super.onDestroy()
     }
 

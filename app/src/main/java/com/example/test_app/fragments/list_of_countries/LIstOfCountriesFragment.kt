@@ -1,38 +1,32 @@
 package com.example.test_app.fragments.list_of_countries
 
-import android.annotation.SuppressLint
-import android.content.ContentValues.TAG
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
-import com.example.test_app.*
-import com.example.test_app.base.mvp.BaseMvpFragment
-import com.example.test_app.common.Common
+import com.example.test_app.COUNTRY_FLAG_BUNDLE_KEY
+import com.example.test_app.COUNTRY_NAME_BUNDLE_KEY
+import com.example.test_app.R
+import com.example.test_app.base.mvvm.Outcome
 import com.example.test_app.databinding.FragmentListOfCountriesBinding
 import com.example.test_app.dto.CountryDTO
 import com.example.test_app.ext.createDialog
-import com.example.test_app.room.CountryDAO
-import com.example.test_app.room.CountryDatabase
 import com.example.test_app.room.DatabaseToRecyclerAdapter
 import com.example.test_app.room.entity.CountryEntity
-import com.example.test_app.room.entity.CountryLanguageCrossRef
-import com.example.test_app.room.entity.LanguagesListEntity
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
-import java.util.concurrent.TimeUnit
 
-class LIstOfCountriesFragment : BaseMvpFragment<ListOfCountriesView>(), ListOfCountriesView {
+class LIstOfCountriesFragment : Fragment() {
     var searchSubject = BehaviorSubject.create<String>()
     private var binding: FragmentListOfCountriesBinding? = null
 
@@ -47,10 +41,20 @@ class LIstOfCountriesFragment : BaseMvpFragment<ListOfCountriesView>(), ListOfCo
     lateinit var linearLayoutManager: LinearLayoutManager
     lateinit var dataBaseToRecyclerAdapter: DatabaseToRecyclerAdapter
 
-    var countryDataBase: CountryDatabase? = null
-    var daoCountry: CountryDAO? = null
+    var compositeDis = CompositeDisposable()
+
+
+    private var viewModel: ListOfCountriesViewModel = ListOfCountriesViewModel(SavedStateHandle())
+
+    var liveD: LiveData<MutableList<CountryEntity>>? = null
+    var test: MutableList<CountryEntity> = mutableListOf()
 
     //lateinit var sharedPreferences: SharedPreferences
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,19 +70,73 @@ class LIstOfCountriesFragment : BaseMvpFragment<ListOfCountriesView>(), ListOfCo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
-        getPresenter().attachView(this)
         initRecyclerView(view)
 
-        getPresenter().getListOfCountries()
-        getPresenter().addListOfCountriesToDatabase()
-
         listOfCountriesAdapter = ListOfCountriesAdapter()
+        dataBaseToRecyclerAdapter = DatabaseToRecyclerAdapter()
+
+        //viewModel.getCountryByName()
+
+        //daoCountry?.getAllCountries()
+        /* liveD = daoCountry?.getAllCountries()
+         liveD?.observe(viewLifecycleOwner, {
+             dataBaseToRecyclerAdapter.addList(it)
+         })*/
+
+        viewModel.getListOfCountries()
+        viewModel.listOfCountriesLiveData.observe(viewLifecycleOwner, {
+            when (it) {
+                is Outcome.Progress -> {
+                    if (binding?.swipeRefresh?.isRefreshing == false) {
+                        binding?.progressBar?.isVisible = it.loading
+                        binding?.frameWithProgress?.isVisible = it.loading
+                    }
+                }
+                is Outcome.Success -> {
+                }
+                is Outcome.Next -> {
+                    viewModel.addListOfCountriesToDatabase(it.data)
+                    tempList = it.data
+
+                    snackbar = Snackbar.make(
+                        requireView(),
+                        resources.getString(R.string.done_message),
+                        Snackbar.LENGTH_SHORT
+                    )
+                    snackbar.show()
+
+                    listOfCountriesAdapter.addList(it.data)
+
+                    binding?.recyclerView?.adapter = listOfCountriesAdapter
+                    binding?.swipeRefresh?.isRefreshing = false
+                }
+                is Outcome.Failure -> {
+
+                    it.exception.printStackTrace()
+
+                    snackbar = Snackbar.make(
+                        requireView(),
+                        resources.getText(R.string.connect_error_message),
+                        Snackbar.LENGTH_LONG
+                    )
+                    snackbar.show()
+                    snackbar.setAction(R.string.bad_snack_info) {
+                        Toast.makeText(
+                            context,
+                            getString(R.string.bad_snack_inside),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    binding?.recyclerView?.adapter = dataBaseToRecyclerAdapter
+
+                    binding?.swipeRefresh?.isRefreshing = false
+                }
+            }
+        })
 
         binding?.swipeRefresh?.setOnRefreshListener {
             listOfCountriesAdapter.clear()
-            getPresenter().getListOfCountries()
+            viewModel.getListOfCountries()
         }
 
         listOfCountriesAdapter.setItemClick { item ->
@@ -90,23 +148,6 @@ class LIstOfCountriesFragment : BaseMvpFragment<ListOfCountriesView>(), ListOfCo
                 bundle
             )
         }
-
-        countryDataBase = context?.let { CountryDatabase.getInstance(it) }
-        daoCountry = countryDataBase?.countryDAO
-
-        binding?.progressBar?.visibility = View.VISIBLE
-
-        dataBaseToRecyclerAdapter = DatabaseToRecyclerAdapter()
-        daoCountry?.getAllCountries()
-            ?.observeOn(AndroidSchedulers.mainThread())
-            ?.subscribeOn(Schedulers.io())
-            ?.subscribe({ list ->
-                dataBaseToRecyclerAdapter.addList(list)
-            }, { throwable ->
-                throwable.printStackTrace()
-            })
-
-
     }
 
     private fun initRecyclerView(view: View) {
@@ -121,7 +162,6 @@ class LIstOfCountriesFragment : BaseMvpFragment<ListOfCountriesView>(), ListOfCo
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.toolbar, menu)
 
-
         val searchView = menu.findItem(R.id.search).actionView as SearchView
 
         searchView.queryHint = getString(R.string.search_by_country_name)
@@ -129,12 +169,12 @@ class LIstOfCountriesFragment : BaseMvpFragment<ListOfCountriesView>(), ListOfCo
         instantSearch()
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                searchSubject.onNext(query)
+                viewModel.searchSubject.onNext(query)
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                searchSubject.onNext(newText)
+                viewModel.searchSubject.onNext(newText)
                 return true
             }
         })
@@ -160,19 +200,19 @@ class LIstOfCountriesFragment : BaseMvpFragment<ListOfCountriesView>(), ListOfCo
                     listOfCountriesAdapter.addList(searchList)
                 }
             }
-            .observeOn(Schedulers.io())
-            .filter { it.length >= MIN_SEARCH_STRING_LENGTH }
-            .debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS)
-            .distinctUntilChanged()
-            .flatMap {
-                Common.retrofitService?.getCountryByName(it)?.toObservable()
-                    ?.onErrorResumeNext { Observable.just(mutableListOf()) }
-            }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { text ->
-                Log.d(TAG, "subscriber: $text")
-            }
+        /*.observeOn(Schedulers.io())
+        .filter { it.length >= MIN_SEARCH_STRING_LENGTH }
+        .debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS)
+        .distinctUntilChanged()
+        .flatMap {
+            Common.retrofitService?.getCountryByName(it)?.toObservable()
+                ?.onErrorResumeNext { Observable.just(mutableListOf()) }
+        }
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe { text ->
+            Log.d(TAG, "subscriber: $text")
+        }*/
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -193,9 +233,9 @@ class LIstOfCountriesFragment : BaseMvpFragment<ListOfCountriesView>(), ListOfCo
             )
         }
 
-       /* if (sharedPreferences.contains("SortStatus")) {
-            Log.d("MYAAPP", "DATAISHERE")
-        }*/
+        /* if (sharedPreferences.contains("SortStatus")) {
+             Log.d("MYAAPP", "DATAISHERE")
+         }*/
 
         return super.onOptionsItemSelected(item)
     }
@@ -228,7 +268,6 @@ class LIstOfCountriesFragment : BaseMvpFragment<ListOfCountriesView>(), ListOfCo
     }
 
     override fun onDestroyView() {
-        //compositeDisposable.clear()
         if (createDialog(requireActivity()).isShowing) createDialog(requireActivity()).dismiss()
         super.onDestroyView()
         binding = null
@@ -236,70 +275,5 @@ class LIstOfCountriesFragment : BaseMvpFragment<ListOfCountriesView>(), ListOfCo
 
     override fun onDestroy() {
         super.onDestroy()
-    }
-
-    override fun createPresenter() {
-        mPresenter = ListOfCountriesPresenter()
-    }
-
-    override fun getPresenter(): ListOfCountriesPresenter = mPresenter as ListOfCountriesPresenter
-
-    override fun populateDatabases(
-        listOfCountryEntities: MutableList<CountryEntity>,
-        listOfLanguagesEntities: MutableList<LanguagesListEntity>,
-        crossRef: MutableList<CountryLanguageCrossRef>
-    ) {
-        daoCountry?.addAllCountries(listOfCountryEntities)
-        daoCountry?.insertCountryLanguageCrossRef(crossRef)
-        daoCountry?.addLanguage(listOfLanguagesEntities)
-    }
-
-    @SuppressLint("ShowToast")
-    override fun showListOfCountries(listOfCountries: MutableList<CountryDTO>) {
-        snackbar = Snackbar.make(
-            requireView(),
-            resources.getString(R.string.done_message),
-            Snackbar.LENGTH_SHORT
-        )
-
-        snackbar.show()
-
-        listOfCountriesAdapter.addList(listOfCountries)
-        binding?.recyclerView?.adapter = listOfCountriesAdapter
-
-        tempList = listOfCountries
-
-        binding?.progressBar?.visibility = View.GONE
-        binding?.frameWithProgress?.visibility = View.GONE
-        binding?.swipeRefresh?.isRefreshing = false
-    }
-
-    @SuppressLint("ShowToast")
-    override fun showError(error: String) {
-        snackbar = Snackbar.make(
-            requireView(),
-            resources.getText(R.string.connect_error_message),
-            Snackbar.LENGTH_LONG
-        )
-        snackbar.show()
-        snackbar.setAction(R.string.bad_snack_info) {
-            Toast.makeText(
-                context,
-                getString(R.string.bad_snack_inside),
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-
-        binding?.recyclerView?.adapter = dataBaseToRecyclerAdapter
-
-        binding?.progressBar?.visibility = View.GONE
-        binding?.frameWithProgress?.visibility = View.GONE
-        binding?.swipeRefresh?.isRefreshing = false
-    }
-
-    override fun showProgress() {
-    }
-
-    override fun hideProgress() {
     }
 }

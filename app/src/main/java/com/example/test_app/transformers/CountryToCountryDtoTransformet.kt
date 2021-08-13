@@ -21,7 +21,7 @@ fun Country.transform(): CountryDTO {
     return countryDTO
 }
 
-fun MutableList<Country>.transformToMutableList(): MutableList<CountryDTO> {
+fun MutableList<Country>.transformToMutableListDto(): MutableList<CountryDTO> {
     val countryListDTO = mutableListOf<CountryDTO>()
 
     for (countryModel in this) {

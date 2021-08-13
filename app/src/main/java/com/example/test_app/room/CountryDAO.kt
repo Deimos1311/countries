@@ -1,28 +1,35 @@
 package com.example.test_app.room
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.test_app.room.entity.CountryEntity
 import com.example.test_app.room.entity.CountryLanguageCrossRef
 import com.example.test_app.room.entity.LanguagesListEntity
-import com.example.test_app.room.relations.CountryWithLanguages
-import com.example.test_app.room.relations.LanguageWithCountries
 import io.reactivex.rxjava3.core.Flowable
 
 @Dao
 interface CountryDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    /*suspend */fun addAllCountries(mutableList: MutableList<CountryEntity>)
+    fun addAllCountries(mutableList: MutableList<CountryEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    /*suspend */fun addLanguage(mutableList: MutableList<LanguagesListEntity>)
+    fun addLanguage(mutableList: MutableList<LanguagesListEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    /*suspend */fun insertCountryLanguageCrossRef(mutableList: MutableList<CountryLanguageCrossRef>)
+    fun insertCountryLanguageCrossRef(mutableList: MutableList<CountryLanguageCrossRef>)
 
     @Transaction
     @Query("SELECT * FROM countries_table")
-    /*suspend */fun getAllCountries(): Flowable<MutableList<CountryEntity>>
+    fun getAllCountries(): LiveData<MutableList<CountryEntity>> //Flowable<MutableList<CountryEntity>>
+
+    @Transaction
+    @Query("SELECT * FROM languages_table")
+    fun getLanguages(): LiveData<MutableList<LanguagesListEntity>>
+
+    @Transaction
+    @Query("SELECT * FROM cross_reference_table")
+    fun getCrossRef(): LiveData<MutableList<CountryLanguageCrossRef>>
 
 /*    @Transaction
     @Query("SELECT * FROM countries_table WHERE countryName = :countryName")

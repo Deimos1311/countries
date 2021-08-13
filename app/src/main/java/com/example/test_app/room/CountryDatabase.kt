@@ -25,7 +25,7 @@ abstract class CountryDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: CountryDatabase? = null
 
-        fun getInstance(context: Context):CountryDatabase {
+        fun getInstance(context: Context): CountryDatabase {
             synchronized(this) {
                 return INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext,
@@ -33,8 +33,8 @@ abstract class CountryDatabase : RoomDatabase() {
                     "Country_database"
                 ).allowMainThreadQueries()
                     .build().also {
-                    INSTANCE = it
-                }
+                        INSTANCE = it
+                    }
             }
         }
     }

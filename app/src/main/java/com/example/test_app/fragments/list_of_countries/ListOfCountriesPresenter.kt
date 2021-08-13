@@ -1,21 +1,14 @@
 package com.example.test_app.fragments.list_of_countries
 
+import com.example.test_app.CountryApp
+import com.example.test_app.CountryApp.Companion.daoCountry
 import com.example.test_app.RETRY
 import com.example.test_app.base.mvp.BaseMvpPresenter
 import com.example.test_app.common.Common
-import com.example.test_app.dto.CountryDTO
-import com.example.test_app.model.Country
 import com.example.test_app.room.entity.CountryEntity
 import com.example.test_app.room.entity.CountryLanguageCrossRef
 import com.example.test_app.room.entity.LanguagesListEntity
-import com.example.test_app.transformers.transform
-import com.example.test_app.transformers.transformToMutableList
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.schedulers.Schedulers
-import io.reactivex.rxjava3.subjects.BehaviorSubject
-import java.util.concurrent.TimeUnit
-
+import com.example.test_app.transformers.transformToMutableListDto
 
 class ListOfCountriesPresenter : BaseMvpPresenter<ListOfCountriesView>() {
 
@@ -28,7 +21,7 @@ class ListOfCountriesPresenter : BaseMvpPresenter<ListOfCountriesView>() {
         addDisposable(
             inBackground(Common.retrofitService?.getCountryDate())
                 ?.retry(RETRY)
-                ?.map { it.transformToMutableList() }
+                ?.map { it.transformToMutableListDto() }
                 ?.subscribe({ response ->
                     getView()?.showListOfCountries(response)
                 }, { throwable ->
@@ -41,7 +34,7 @@ class ListOfCountriesPresenter : BaseMvpPresenter<ListOfCountriesView>() {
     fun addListOfCountriesToDatabase() {
 
         inBackground(Common.retrofitService?.getCountryDate())
-            ?.map { it.transformToMutableList() } //???????????????????????????? which implementation
+            ?.map { it.transformToMutableListDto() } //???????????????????????????? which implementation
             ?.subscribe({ response ->
                 response.forEach {
                     listOfCountryEntities.add(
@@ -51,7 +44,7 @@ class ListOfCountriesPresenter : BaseMvpPresenter<ListOfCountriesView>() {
                             it.population
                         )
                     )
-                    (it.languages.transformToMutableList().forEach { item ->
+                    (it.languages.transformToMutableListDto().forEach { item ->
                         listOfLanguagesEntities.add(
                             LanguagesListEntity(
                                 item.iso639_1,
@@ -72,6 +65,7 @@ class ListOfCountriesPresenter : BaseMvpPresenter<ListOfCountriesView>() {
                         )
                     )
                 }
+
                 getView()?.populateDatabases(
                     listOfCountryEntities, listOfLanguagesEntities, crossRef
                 )

@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
+        android:name=".CountryApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -32,6 +33,3 @@
     </application>
 
 </manifest>
-
-<!--    для чего нужны закомменченные строки? на сайте android.dev вроде сказано, что они для работы
-    со строкой поиска, но она и так работает-->

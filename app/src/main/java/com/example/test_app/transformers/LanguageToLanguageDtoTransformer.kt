@@ -16,7 +16,7 @@ fun Language.transform(): LanguageDTO {
     return languageDTO
 }
 
-fun MutableList<Language>.transformToMutableList(): MutableList<LanguageDTO> {
+fun MutableList<Language>.transformToMutableListDto(): MutableList<LanguageDTO> {
     val languageListDTO = mutableListOf<LanguageDTO>()
 
     for (languageModel in this) {

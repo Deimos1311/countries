@@ -2,7 +2,7 @@ package com.example.test_app.fragments.country_details
 
 import com.example.test_app.base.mvp.BaseMvpPresenter
 import com.example.test_app.common.Common
-import com.example.test_app.transformers.transformToMutableList
+import com.example.test_app.transformers.transformToMutableListDto
 import com.google.android.gms.maps.model.LatLng
 
 class CountryDetailsPresenter : BaseMvpPresenter<CountryDetailsView>() {
@@ -13,7 +13,7 @@ class CountryDetailsPresenter : BaseMvpPresenter<CountryDetailsView>() {
             inBackground(
                 handleProgress(Common.retrofitService?.getCountryByName(countryName), isRefresh)
             )
-                ?.map { it.transformToMutableList() }
+                ?.map { it.transformToMutableListDto() }
                 ?.subscribe({
                     getView()?.showCountryInfo(
                         it[0],
