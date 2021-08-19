@@ -1,7 +1,7 @@
 package com.example.test_app.fragments.list_of_countries
 
 import com.example.test_app.CountryApp
-import com.example.test_app.CountryApp.Companion.daoCountry
+//import com.example.test_app.CountryApp.Companion.daoCountry
 import com.example.test_app.RETRY
 import com.example.test_app.base.mvp.BaseMvpPresenter
 import com.example.test_app.common.Common

@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.test_app.R
 import com.example.test_app.base.adapter.BaseAdapter
+import com.example.test_app.dto.CountryDTO
 import com.example.test_app.room.entity.CountryEntity
 
 class DatabaseToRecyclerAdapter: BaseAdapter<CountryEntity>() {

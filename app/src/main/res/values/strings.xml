@@ -24,9 +24,6 @@
     <string name="map">map</string>
     <string name="map_toolbar">Map</string>
     <string name="my_location">My location</string>
-    <string name="sliders">sliders</string>
-    <array name="initial_slider_values">
-        <item>0</item>
-        <item>10</item>
-    </array>
+    <string name="sliders">Sliders</string>
+    <string name="search">Search</string>
 </resources>

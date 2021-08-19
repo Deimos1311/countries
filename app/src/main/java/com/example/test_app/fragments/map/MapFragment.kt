@@ -21,9 +21,7 @@ class MapFragment : BaseMvpFragment<MapView>(), MapView {
     var latitude: Double = 0.0
     var longitude: Double = 0.0
 
-    lateinit var loc: LatLng
-
-    private lateinit var googleMap: GoogleMap
+    private var googleMap: GoogleMap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +49,6 @@ class MapFragment : BaseMvpFragment<MapView>(), MapView {
         binding?.map?.getMapAsync(OnMapReadyCallback {
             googleMap = it
         })
-
         getPresenter().getMap()
     }
 
@@ -68,6 +65,7 @@ class MapFragment : BaseMvpFragment<MapView>(), MapView {
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
+        googleMap = null
     }
 
     override fun onDestroy() {
@@ -82,13 +80,13 @@ class MapFragment : BaseMvpFragment<MapView>(), MapView {
     override fun getPresenter(): MapPresenter = mPresenter as MapPresenter
 
     override fun showMap(location: LatLng) {
-        googleMap.addMarker(
+        googleMap?.addMarker(
             MarkerOptions().position(
                 location
             )
         )
 
-        googleMap.animateCamera(
+        googleMap?.animateCamera(
             CameraUpdateFactory.newLatLngZoom(
                 LatLng(
                     latitude,

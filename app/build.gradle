@@ -67,6 +67,7 @@ dependencies {
     def rxjava_android_version = "3.0.0"
     def rxjava_retrofit_adapter_version = "3.0.0"
     def room_rxjava3_version = "2.3.0"
+    def koin_version = "3.1.2"
 
     //RxJava
     implementation "io.reactivex.rxjava3:rxjava:$rxjava_version"
@@ -105,6 +106,12 @@ dependencies {
     //Maps
     implementation "com.google.android.gms:play-services-maps:$maps_version"
     implementation "com.google.android.gms:play-services-location:$location_version"
+
+    //Koin
+    implementation "io.insert-koin:koin-core:$koin_version"
+    implementation "io.insert-koin:koin-android:$koin_version"
+    implementation "io.insert-koin:koin-android-compat:$koin_version"
+    implementation "io.insert-koin:koin-androidx-workmanager:$koin_version"
 
     implementation "androidx.legacy:legacy-support-v4:$legacy_version"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"

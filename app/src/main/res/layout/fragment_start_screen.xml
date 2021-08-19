@@ -37,16 +37,4 @@
         android:text="@string/my_location"
         tools:visibility="visible" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button_sliders"
-        android:background="@drawable/start_button_background"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="300dp"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:text="@string/sliders"
-        tools:visibility="visible" />
-
 </FrameLayout>

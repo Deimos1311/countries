@@ -5,9 +5,7 @@ import android.view.*
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,38 +20,42 @@ import com.example.test_app.ext.createDialog
 import com.example.test_app.room.DatabaseToRecyclerAdapter
 import com.example.test_app.room.entity.CountryEntity
 import com.google.android.material.snackbar.Snackbar
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.subjects.BehaviorSubject
+import org.koin.androidx.scope.ScopeFragment
+import org.koin.androidx.viewmodel.ext.android.stateViewModel
 
-class LIstOfCountriesFragment : Fragment() {
-    var searchSubject = BehaviorSubject.create<String>()
+class LIstOfCountriesFragment : ScopeFragment() {
+    //var searchSubject = BehaviorSubject.create<String>()
     private var binding: FragmentListOfCountriesBinding? = null
 
     lateinit var snackbar: Snackbar
 
     var isSorted: Boolean = false
 
-    var searchList: MutableList<CountryDTO> = mutableListOf()
-    var tempList: MutableList<CountryDTO> = mutableListOf()
+    //search country by name
+    var searchListByName: MutableList<CountryDTO> = mutableListOf()
+    var temporalList: MutableList<CountryDTO> = mutableListOf()
 
+    //adapter
     lateinit var listOfCountriesAdapter: ListOfCountriesAdapter
     lateinit var linearLayoutManager: LinearLayoutManager
     lateinit var dataBaseToRecyclerAdapter: DatabaseToRecyclerAdapter
 
     var compositeDis = CompositeDisposable()
 
-
-    private var viewModel: ListOfCountriesViewModel = ListOfCountriesViewModel(SavedStateHandle())
+    private val viewModel:ListOfCountriesViewModel by stateViewModel()
 
     var liveD: LiveData<MutableList<CountryEntity>>? = null
     var test: MutableList<CountryEntity> = mutableListOf()
+
+    var populationFromSlider: MutableList<Float> = mutableListOf()
+
+    var sortedList: MutableList<CountryDTO> = mutableListOf()
 
     //lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
     override fun onCreateView(
@@ -72,31 +74,44 @@ class LIstOfCountriesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView(view)
 
+        findNavController().currentBackStackEntry?.savedStateHandle
+            ?.getLiveData<MutableList<Float>>("Population")
+            ?.observe(viewLifecycleOwner) { population ->
+                /*populationFromSlider = population
+                viewModel.searchByPopulation(tempListByName, populationFromSlider, sortedList)*/
+
+                Toast.makeText(requireContext(), "$population", Toast.LENGTH_SHORT).show()
+/*                listOfCountriesAdapter.clear()
+                listOfCountriesAdapter.addList(sortedList)*/
+            }
+
+        findNavController().currentBackStackEntry?.savedStateHandle
+            ?.getLiveData<MutableList<Float>>("Area")
+            ?.observe(viewLifecycleOwner) { area ->
+                Toast.makeText(requireContext(), "$area", Toast.LENGTH_SHORT).show()
+            }
+
         listOfCountriesAdapter = ListOfCountriesAdapter()
         dataBaseToRecyclerAdapter = DatabaseToRecyclerAdapter()
-
-        //viewModel.getCountryByName()
-
-        //daoCountry?.getAllCountries()
-        /* liveD = daoCountry?.getAllCountries()
-         liveD?.observe(viewLifecycleOwner, {
-             dataBaseToRecyclerAdapter.addList(it)
-         })*/
 
         viewModel.getListOfCountries()
         viewModel.listOfCountriesLiveData.observe(viewLifecycleOwner, {
             when (it) {
                 is Outcome.Progress -> {
+
                     if (binding?.swipeRefresh?.isRefreshing == false) {
                         binding?.progressBar?.isVisible = it.loading
                         binding?.frameWithProgress?.isVisible = it.loading
                     }
+
                 }
-                is Outcome.Success -> {
-                }
+                is Outcome.Success -> {}
                 is Outcome.Next -> {
-                    viewModel.addListOfCountriesToDatabase(it.data)
-                    tempList = it.data
+
+                    listOfCountriesAdapter.clear()
+
+                    temporalList = it.data
+                    viewModel.instantSearch(searchListByName, temporalList)
 
                     snackbar = Snackbar.make(
                         requireView(),
@@ -109,8 +124,11 @@ class LIstOfCountriesFragment : Fragment() {
 
                     binding?.recyclerView?.adapter = listOfCountriesAdapter
                     binding?.swipeRefresh?.isRefreshing = false
+
                 }
                 is Outcome.Failure -> {
+
+                    viewModel.getListOfCountriesFromDB()
 
                     it.exception.printStackTrace()
 
@@ -127,15 +145,39 @@ class LIstOfCountriesFragment : Fragment() {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                    binding?.recyclerView?.adapter = dataBaseToRecyclerAdapter
 
                     binding?.swipeRefresh?.isRefreshing = false
+
                 }
             }
         })
 
+        viewModel.listOfCountriesGetFromDBLiveData.observe(viewLifecycleOwner, {
+            when (it) {
+                is Outcome.Progress -> {}
+                is Outcome.Next -> {
+
+                    dataBaseToRecyclerAdapter.addList(it.data)
+                    binding?.recyclerView?.adapter = dataBaseToRecyclerAdapter
+
+                }
+                is Outcome.Success -> {}
+                is Outcome.Failure -> {}
+            }
+        })
+
+        //todo debug adding data to db when refresh without crash listOfCountriesFragment
+        viewModel.addListOfCountriesToDB()
+        viewModel.listOfCountriesAddToDBLiveData.observe(viewLifecycleOwner, {
+            when (it) {
+                is Outcome.Progress -> {}
+                is Outcome.Next -> {}
+                is Outcome.Success -> {}
+                is Outcome.Failure -> {}
+            }
+        })
+
         binding?.swipeRefresh?.setOnRefreshListener {
-            listOfCountriesAdapter.clear()
             viewModel.getListOfCountries()
         }
 
@@ -166,7 +208,6 @@ class LIstOfCountriesFragment : Fragment() {
 
         searchView.queryHint = getString(R.string.search_by_country_name)
 
-        instantSearch()
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 viewModel.searchSubject.onNext(query)
@@ -175,62 +216,37 @@ class LIstOfCountriesFragment : Fragment() {
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 viewModel.searchSubject.onNext(newText)
+                listOfCountriesAdapter.clear()
+                listOfCountriesAdapter.addList(searchListByName)
                 return true
             }
         })
     }
 
-    fun instantSearch() {
-        searchSubject
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext { query ->
-                searchList.clear()
-
-                if (query.lowercase().isNotEmpty()) {
-                    tempList.forEach {
-                        if (it.countryName.lowercase().contains(query)) {
-                            searchList.add(it)
-                        }
-                    }
-                    listOfCountriesAdapter.clear()
-                    listOfCountriesAdapter.addList(searchList)
-                } else {
-                    listOfCountriesAdapter.clear()
-                    searchList.addAll(tempList)
-                    listOfCountriesAdapter.addList(searchList)
-                }
-            }
-        /*.observeOn(Schedulers.io())
-        .filter { it.length >= MIN_SEARCH_STRING_LENGTH }
-        .debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS)
-        .distinctUntilChanged()
-        .flatMap {
-            Common.retrofitService?.getCountryByName(it)?.toObservable()
-                ?.onErrorResumeNext { Observable.just(mutableListOf()) }
-        }
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe { text ->
-            Log.d(TAG, "subscriber: $text")
-        }*/
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.sort) {
-            if (!isSorted) {
-                item.setIcon(R.drawable.baseline_expand_more_24)
-            } else {
-                item.setIcon(R.drawable.baseline_expand_less_24)
+        when (item.itemId) {
+            R.id.sort -> {
+                if (!isSorted) {
+                    item.setIcon(R.drawable.baseline_expand_more_24)
+                } else {
+                    item.setIcon(R.drawable.baseline_expand_less_24)
+                }
+
+                listOfCountriesAdapter.isSorted(isSorted)
+                //saveSortStatus()
+                isSorted = !isSorted
+
             }
-
-            listOfCountriesAdapter.isSorted(isSorted)
-            //saveSortStatus()
-            isSorted = !isSorted
-
-        } else if (item.itemId == R.id.map_toolbar) {
-            findNavController().navigate(
-                R.id.action_list_of_countries_to_mapFragment
-            )
+            R.id.map_toolbar -> {
+                findNavController().navigate(
+                    R.id.action_list_of_countries_to_mapFragment
+                )
+            }
+            R.id.sliders_search -> {
+                findNavController().navigate(
+                    R.id.action_list_of_countries_to_slidersFragment
+                )
+            }
         }
 
         /* if (sharedPreferences.contains("SortStatus")) {
@@ -240,6 +256,7 @@ class LIstOfCountriesFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
+    //todo sharedprefs
     /**not working yet*/
     /*fun saveSortStatus() {
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)

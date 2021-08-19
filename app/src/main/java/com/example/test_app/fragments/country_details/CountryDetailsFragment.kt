@@ -39,7 +39,7 @@ class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDet
         countryName = arguments?.getString(COUNTRY_NAME_BUNDLE_KEY, DEFAULT_VALUE) ?: ERROR
         flag = arguments?.getString(COUNTRY_FLAG_BUNDLE_KEY, DEFAULT_VALUE) ?: ERROR
 
-        //binding?.mapView?.onCreate(savedInstanceState)
+        binding?.mapView?.onCreate(savedInstanceState)
 
         return binding?.root
     }
@@ -60,12 +60,12 @@ class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDet
             )
             .load(Uri.parse(flag), binding?.flag)
 
-        /*binding?.mapView?.getMapAsync(OnMapReadyCallback {
+        binding?.mapView?.getMapAsync(OnMapReadyCallback {
             googleMap = it
-        })*/
+        })
 
         binding?.swipeRefresh?.setOnRefreshListener {
-            //countryDetailsFragmentAdapter.clear()
+            countryDetailsFragmentAdapter.clear()
             getPresenter().getCountryByName(countryName, true)
         }
         getPresenter().getCountryByName(countryName, false)
@@ -78,22 +78,23 @@ class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDet
     }
 
     override fun onResume() {
-        //binding?.mapView?.onResume()
+        binding?.mapView?.onResume()
         super.onResume()
     }
 
     override fun onLowMemory() {
-        //binding?.mapView?.onLowMemory()
+        binding?.mapView?.onLowMemory()
         super.onLowMemory()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
+
     }
 
     override fun onDestroy() {
-        //binding?.mapView?.onDestroy()
+        binding?.mapView?.onDestroy()
         super.onDestroy()
     }
 

@@ -2,6 +2,7 @@ package com.example.test_app.room
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.example.test_app.base.mvvm.Outcome
 import com.example.test_app.room.entity.CountryEntity
 import com.example.test_app.room.entity.CountryLanguageCrossRef
 import com.example.test_app.room.entity.LanguagesListEntity
@@ -21,11 +22,11 @@ interface CountryDAO {
 
     @Transaction
     @Query("SELECT * FROM countries_table")
-    fun getAllCountries(): LiveData<MutableList<CountryEntity>> //Flowable<MutableList<CountryEntity>>
+    fun getAllCountries(): Flowable<MutableList<CountryEntity>> //LiveData<MutableList<CountryEntity>>
 
     @Transaction
     @Query("SELECT * FROM languages_table")
-    fun getLanguages(): LiveData<MutableList<LanguagesListEntity>>
+    fun getLanguages(): Flowable<MutableList<LanguagesListEntity>>
 
     @Transaction
     @Query("SELECT * FROM cross_reference_table")

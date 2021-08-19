@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.test_app.MainActivity
 import com.example.test_app.R
@@ -14,10 +15,6 @@ import com.example.test_app.databinding.FragmentStartScreenBinding
 class StartScreenFragment : BaseMvpFragment<StartScreenView>(), StartScreenView {
 
     private var binding: FragmentStartScreenBinding? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,9 +38,6 @@ class StartScreenFragment : BaseMvpFragment<StartScreenView>(), StartScreenView 
         }
         binding?.buttonToMyLocationMap?.setOnClickListener {
             findNavController().navigate(R.id.action_start_screen_to_myLocation)
-        }
-        binding?.buttonSliders?.setOnClickListener {
-            findNavController().navigate(R.id.action_start_screen_to_slidersFragment)
         }
     }
 

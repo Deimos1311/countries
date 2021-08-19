@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import com.example.test_app.common.Common
 import com.example.test_app.databinding.FragmentSlidersBinding
 import com.example.test_app.dto.CountryDTO
@@ -16,7 +18,8 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 class SlidersFragment : Fragment() {
 
     var binding: FragmentSlidersBinding? = null
-    var list: MutableList<CountryDTO> = mutableListOf()
+    var populationSliderValues = mutableListOf<Float>()
+    var areaSliderValues = mutableListOf<Float>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,23 +38,52 @@ class SlidersFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding?.buttonSliders?.setOnClickListener {
+            findNavController().previousBackStackEntry?.savedStateHandle?.set(
+                "Population",
+                populationSliderValues
+            )
+            findNavController().previousBackStackEntry?.savedStateHandle?.set(
+                "Area",
+                areaSliderValues
+            )
+            findNavController().popBackStack()
+        }
     }
 
-    fun configSlider(firstIndex: Int, lastIndex: Int) {
+    fun populationSlider(minPopulation: Int, maxPopulation: Int) {
 
-        binding?.rangeSlider?.addOnSliderTouchListener(object : RangeSlider.OnSliderTouchListener {
+        binding?.rangeSliderPopulation?.valueFrom = minPopulation.toFloat()
+        binding?.rangeSliderPopulation?.valueTo = maxPopulation.toFloat()
+        binding?.rangeSliderPopulation?.values =
+            mutableListOf(minPopulation.toFloat(), maxPopulation.toFloat())
+
+        binding?.rangeSliderPopulation?.addOnSliderTouchListener(object :
+            RangeSlider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: RangeSlider) {
-                slider.valueFrom = firstIndex.toFloat()
-                slider.valueTo = lastIndex.toFloat()
             }
-            override fun onStopTrackingTouch(slider: RangeSlider) {
 
+            override fun onStopTrackingTouch(slider: RangeSlider) {
+                populationSliderValues = slider.values
             }
         })
+    }
 
-        binding?.rangeSlider?.addOnChangeListener { rangeSlider, value, fromUser ->
-            //rangeSlider.values = mutableListOf(30f, 1000f)
-        }
+    fun areaSlider(minArea: Double, maxArea: Double) {
+
+        binding?.rangeSliderArea?.valueFrom = minArea.toFloat()
+        binding?.rangeSliderArea?.valueTo = maxArea.toFloat()
+        binding?.rangeSliderArea?.values = mutableListOf(minArea.toFloat(), maxArea.toFloat())
+
+        binding?.rangeSliderArea?.addOnSliderTouchListener(object :
+            RangeSlider.OnSliderTouchListener {
+            override fun onStartTrackingTouch(slider: RangeSlider) {
+            }
+
+            override fun onStopTrackingTouch(slider: RangeSlider) {
+                areaSliderValues = slider.values
+            }
+        })
     }
 
     fun getCountriesList() {
@@ -59,11 +91,17 @@ class SlidersFragment : Fragment() {
             ?.observeOn(AndroidSchedulers.mainThread())
             ?.subscribeOn(Schedulers.io())
             ?.map { it.transformToMutableListDto() }
-            ?.subscribe({response->
-                        response.sortBy { item->
-                            item.population
-                        }
-                configSlider(response[0].population, response[response.size - 1].population)
-            },{})
+            ?.subscribe({ response ->
+                response.sortBy { population ->
+                    population.population
+                }
+                populationSlider(response[0].population, response[response.size - 1].population)
+
+                response.sortBy { area ->
+                    area.area
+                }
+                areaSlider(response[0].area, response[response.size - 1].area)
+
+            }, {})
     }
 }

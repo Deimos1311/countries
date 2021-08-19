@@ -21,4 +21,6 @@
     <dimen name="progress_bar_margin">2dp</dimen>
     <dimen name="progress_bar_corner_radius">8dp</dimen>
     <dimen name="progress_in_frame_margin">100dp</dimen>
+    <dimen name="range_slider_population_marginTop">10dp</dimen>
+    <dimen name="range_slider_area_marginTop">60dp</dimen>
 </resources>

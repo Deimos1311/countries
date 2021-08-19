@@ -17,9 +17,6 @@
         <action
             android:id="@+id/action_start_screen_to_myLocation"
             app:destination="@id/myLocation" />
-        <action
-            android:id="@+id/action_start_screen_to_slidersFragment"
-            app:destination="@id/slidersFragment" />
     </fragment>
     <fragment
         android:id="@+id/list_of_countries"
@@ -31,6 +28,9 @@
         <action
             android:id="@+id/action_list_of_countries_to_mapFragment"
             app:destination="@id/mapFragment" />
+        <action
+            android:id="@+id/action_list_of_countries_to_slidersFragment"
+            app:destination="@id/slidersFragment" />
     </fragment>
     <fragment
         android:id="@+id/country_details_fragment"
