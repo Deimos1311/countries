@@ -1,2 +1,4 @@
 rootProject.name = "Test_App"
-include ':app'
+include ':presentation'
+include ':domain'
+include ':data'
