@@ -1,6 +1,8 @@
 package com.example.test_app.fragments.list_of_countries
 
 import android.content.ContentValues.TAG
+import android.location.Location
+import android.location.LocationManager
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -16,8 +18,6 @@ import com.example.test_app.base.mvvm.BaseViewModel
 import com.example.test_app.base.mvvm.Outcome
 import com.example.test_app.base.mvvm.executeJob
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.BackpressureStrategy
-import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
@@ -38,17 +38,18 @@ class ListOfCountriesViewModel(
 
     var searchSubject: BehaviorSubject<String> = BehaviorSubject.create()
 
-
     var listOfCountriesLiveData = MutableLiveData<Outcome<MutableList<CountryDTO>>>()
     var listOfCountriesAddToDBLiveData = MutableLiveData<Outcome<MutableList<CountryDTO>>>()
     var listOfCountriesGetFromDBLiveData = MutableLiveData<Outcome<MutableList<CountryDTO>>>()
     var listOfLanguagesGetFromDBLiveData = MutableLiveData<Outcome<MutableList<LanguageDTO>>>()
 
-    var listof = MutableLiveData<Outcome<MutableList<CountryDTO>>>()
+    var sortedListLiveData = MutableLiveData<Outcome<MutableList<CountryDTO>>>()
 
     var listOfCountryDB: MutableList<CountryDTO> = mutableListOf()
     var listOfLanguagesDB: MutableList<LanguageDTO> = mutableListOf()
     var crossRefDB: MutableList<CountryLanguageCrossRefDTO> = mutableListOf()
+
+    private lateinit var userLocation: Location
 
     fun getListOfCountries() {
 
@@ -128,7 +129,7 @@ class ListOfCountriesViewModel(
         tempListByName: MutableList<CountryDTO>
     ) {
         searchSubject
-            .doOnNext { query ->
+            .doOnNext { query -> //todo map
                 searchListByName.clear()
 
                 if (query.lowercase().isNotEmpty()) {
@@ -156,57 +157,60 @@ class ListOfCountriesViewModel(
             }
     }
 
-    //todo remake
-    fun searchByPopulation(
-        searchListByPopulation: MutableList<CountryDTO>,
-        populationFromSlider: MutableList<Float>,
-        sortedList: MutableList<CountryDTO>
-    ) {
-        val sear: Flowable<MutableList<CountryDTO>> = Flowable.just(searchListByPopulation)
+    fun attachCurrentLocation(location: Location) {
+        userLocation = location
+    }
 
+    fun searchBySliderFragment(
+        populationStart: Float,
+        populationEnd: Float,
+        areaStart: Float,
+        areaEnd: Float,
+        distance: Float,
+    ) {
         addToDisposable(
             executeJob(
-                sear
-                    .flatMap {
-                        Flowable.fromIterable(it)
-                            .filter { item ->
-                                populationFromSlider[0] < item.population
-                            }
-                            .filter { item ->
-                                populationFromSlider[1] > item.population
-                            }
+                mGetAllCountriesFromAPIUseCase.execute()
+                    .doOnNext { Log.e("hz", "$userLocation") }
+                    .map {
+                        it.filter { itemPopulation ->
+                            itemPopulation
+                                .population
+                                .toFloat() in populationStart..populationEnd
+                        }
+                            .toMutableList()
                     }
-                    .flatMap {
-                        Flowable.just(mutableListOf(it))
-                    }
+                    .map {
+                        it.filter { itemArea ->
+                            itemArea
+                                .area
+                                .toFloat() in areaStart..areaEnd
+                        }
+                            .toMutableList()
 
-                /*.flatMap {
-                    Flowable.fromIterable(it)
-                        .filter { item ->
-                            populationFromSlider[0] < item.population
+                    }
+                    .map {
+                        it.filter { itemLocation ->
+                            calculateDistanceFromUserToCountry(itemLocation) <= distance
                         }
-                        .filter { item ->
-                            populationFromSlider[1] > item.population
-                        }
-                }*/, listof
+                            .toMutableList()
+                    }, sortedListLiveData
             )
         )
-/*                    .observeOn(Schedulers.io())
-                    .flatMap {
-                        Flowable.fromIterable(it)
-                            .filter { item ->
-                                populationFromSlider[0] < item.population
-                            }
-                            .filter { item ->
-                                populationFromSlider[1] > item.population
-                            }
+    }
+
+    private fun calculateDistanceFromUserToCountry(countryDTO: CountryDTO): Float {
+        var result = 0.0F
+        if (countryDTO.location.isNotEmpty()) {
+                var currentCountryLocation =
+                    Location(LocationManager.GPS_PROVIDER).apply {
+                        latitude = countryDTO.location[0]
+                        longitude = countryDTO.location[1]
                     }
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io()), listof))*/
-/*            .subscribe {
-                sortedList.add(it)
-                Log.d(TAG, "subscriber: $it")*/
+                result = userLocation.distanceTo(currentCountryLocation)/ 1000
+        }
+        return result
     }
-    }
+}
 
 

@@ -19,23 +19,22 @@ abstract class BaseAdapter<ItemType> : RecyclerView.Adapter<RecyclerView.ViewHol
         onItemClickListener = clickListener
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     open fun refresh(list: MutableList<ItemType>) {
         dataList.clear()
         dataList.addAll(list)
-        //notifyDataSetChanged()
-        notifyItemRangeChanged(0, dataList.size)
+        notifyDataSetChanged()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     open fun addList(list: MutableList<ItemType>) {
         dataList.addAll(list)
-        //notifyDataSetChanged()
-        notifyItemRangeChanged(0, dataList.size)
+        notifyDataSetChanged()
     }
 
     @SuppressLint("NotifyDataSetChanged")
     open fun clear() {
         dataList.clear()
         notifyDataSetChanged()
-        //notifyItemRangeChanged(0, dataList.size)
     }
 }

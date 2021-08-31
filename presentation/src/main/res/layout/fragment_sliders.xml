@@ -17,11 +17,21 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/range_slider_area_marginTop" />
 
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/edit_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:hint="@string/enter_max_distance_to_countries"
+        android:layout_marginTop="@dimen/edit_text_range_slider_marginTop"
+        android:layout_gravity="center_horizontal"/>
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_sliders"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="@string/search"
-        android:layout_marginTop="100dp"/>
+        android:layout_marginTop="@dimen/button_search_sliders_margin"/>
+
 </FrameLayout>

@@ -26,4 +26,11 @@
     <string name="my_location">My location</string>
     <string name="sliders">Sliders</string>
     <string name="search">Search</string>
+    <string name="permission_denied">Permission denied!</string>
+    <string name="access_to_device_location_denied">Access to device location denied!</string>
+    <string name="bottom_sheet_dialog_message_text">The app requires access to the location of the device. You can revoke access through the settings menu at any time.</string>
+    <string name="settings">Settings</string>
+    <string name="allow_asses_to_device_location">Allow asses to device location?</string>
+    <string name="access">Access</string>
+    <string name="enter_max_distance_to_countries">Enter max distance to Countries...</string>
 </resources>

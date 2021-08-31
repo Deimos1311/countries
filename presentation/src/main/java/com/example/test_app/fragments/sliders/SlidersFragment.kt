@@ -1,29 +1,32 @@
 package com.example.test_app.fragments.sliders
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
+import com.example.test_app.base.mvvm.Outcome
 import com.example.test_app.databinding.FragmentSlidersBinding
-import com.example.data.transformers.transformCountryModelMutableListToDto
 import com.google.android.material.slider.RangeSlider
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.schedulers.Schedulers
+import org.koin.androidx.scope.ScopeFragment
+import org.koin.androidx.viewmodel.ext.android.stateViewModel
 
-class SlidersFragment : Fragment() {
+class SlidersFragment : ScopeFragment() {
 
     var binding: FragmentSlidersBinding? = null
-    var populationSliderValues = mutableListOf<Float>()
-    var areaSliderValues = mutableListOf<Float>()
+    var populationStart: Float = 0.0F
+    var populationEnd: Float = 0.0F
+    var areaStart: Float = 0.0F
+    var areaEnd: Float = 0.0F
+    var distance: Float = 0.0F
+
+    private val viewModel: SlidersViewModel by stateViewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentSlidersBinding.inflate(inflater, container, false)
-        getCountriesList()
 
         return binding?.root
     }
@@ -32,69 +35,97 @@ class SlidersFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding?.buttonSliders?.setOnClickListener {
-            findNavController().previousBackStackEntry?.savedStateHandle?.set(
-                "Population",
-                populationSliderValues
+
+            distance = binding?.editText?.text.toString().toFloat()
+            val slidersValues = mutableListOf(
+                populationStart,
+                populationEnd,
+                areaStart,
+                areaEnd,
+                distance
             )
             findNavController().previousBackStackEntry?.savedStateHandle?.set(
-                "Area",
-                areaSliderValues
+                "Sliders",
+                slidersValues
             )
-            findNavController().popBackStack()
+            findNavController().navigateUp()
         }
+
+        viewModel.getListOfCountriesLivaData.observe(viewLifecycleOwner) {
+            when (it) {
+                is Outcome.Progress -> {
+                }
+                is Outcome.Next -> {
+                    populationSlider(
+                        it.data[0].population, it.data[it.data.size - 1].population
+                    )
+                }
+                is Outcome.Success -> {
+                }
+                is Outcome.Failure -> {
+                }
+            }
+        }
+
+        viewModel.getListOfCountriesSortedByAreaLivaData.observe(viewLifecycleOwner) {
+            when (it) {
+                is Outcome.Progress -> {
+                }
+                is Outcome.Next -> {
+                    areaSlider(it.data[0].area, it.data[it.data.size - 1].area)
+                }
+                is Outcome.Success -> {
+                }
+                is Outcome.Failure -> {
+                }
+            }
+        }
+        viewModel.getCountriesListSortedByPopulation()
+        viewModel.getCountriesListSortedByArea()
     }
 
-    fun populationSlider(minPopulation: Int, maxPopulation: Int) {
+    private fun populationSlider(minPopulation: Int, maxPopulation: Int) {
 
         binding?.rangeSliderPopulation?.valueFrom = minPopulation.toFloat()
         binding?.rangeSliderPopulation?.valueTo = maxPopulation.toFloat()
         binding?.rangeSliderPopulation?.values =
             mutableListOf(minPopulation.toFloat(), maxPopulation.toFloat())
+        populationStart = minPopulation.toFloat()
+        populationEnd = maxPopulation.toFloat()
 
         binding?.rangeSliderPopulation?.addOnSliderTouchListener(object :
             RangeSlider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: RangeSlider) {
+                populationStart = slider.values[0]
+                populationEnd = slider.values[1]
             }
 
             override fun onStopTrackingTouch(slider: RangeSlider) {
-                populationSliderValues = slider.values
+                populationStart = slider.values[0]
+                populationEnd = slider.values[1]
             }
         })
     }
 
-    fun areaSlider(minArea: Double, maxArea: Double) {
+    private fun areaSlider(minArea: Double, maxArea: Double) {
 
         binding?.rangeSliderArea?.valueFrom = minArea.toFloat()
         binding?.rangeSliderArea?.valueTo = maxArea.toFloat()
         binding?.rangeSliderArea?.values = mutableListOf(minArea.toFloat(), maxArea.toFloat())
+        areaStart = minArea.toFloat()
+        areaEnd = maxArea.toFloat()
 
         binding?.rangeSliderArea?.addOnSliderTouchListener(object :
             RangeSlider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: RangeSlider) {
+                areaStart = slider.values[0]
+                areaEnd = slider.values[1]
             }
 
             override fun onStopTrackingTouch(slider: RangeSlider) {
-                areaSliderValues = slider.values
+                areaStart = slider.values[0]
+                areaEnd = slider.values[1]
             }
         })
-    }
-
-    fun getCountriesList() {
-        com.example.data.network.common.Common.retrofitService?.getCountryDate()
-            ?.observeOn(AndroidSchedulers.mainThread())
-            ?.subscribeOn(Schedulers.io())
-            ?.map { it.transformCountryModelMutableListToDto() }
-            ?.subscribe({ response ->
-                response.sortBy { population ->
-                    population.population
-                }
-                populationSlider(response[0].population, response[response.size - 1].population)
-
-                response.sortBy { area ->
-                    area.area
-                }
-                areaSlider(response[0].area, response[response.size - 1].area)
-
-            }, {})
     }
 }
