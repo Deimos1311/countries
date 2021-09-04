@@ -3,38 +3,33 @@ package com.example.test_app.fragments.list_of_countries
 import android.annotation.SuppressLint
 import android.location.Location
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.data.room.entity.CountryEntity
 import com.example.domain.dto.CountryDTO
-import com.example.test_app.COUNTRY_FLAG_BUNDLE_KEY
-import com.example.test_app.COUNTRY_NAME_BUNDLE_KEY
-import com.example.test_app.R
-import com.example.test_app.SLIDERS_KEY
+import com.example.test_app.*
 import com.example.test_app.base.mvvm.Outcome
 import com.example.test_app.databinding.FragmentListOfCountriesBinding
-import com.example.test_app.ext.createDialog
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.scope.ScopeFragment
 import org.koin.androidx.viewmodel.ext.android.stateViewModel
 
-class LIstOfCountriesFragment : ScopeFragment() {
+class ListOfCountriesFragment : ScopeFragment() {
 
     private var fusedLocationProviderClient: FusedLocationProviderClient? = null
-    lateinit var myLocation: Location
+    private var DEFAULT_LOCATION: Location = Location("")
 
     private var binding: FragmentListOfCountriesBinding? = null
-
-    lateinit var snackbar: Snackbar
 
     var isSorted: Boolean = false
 
@@ -48,15 +43,14 @@ class LIstOfCountriesFragment : ScopeFragment() {
 
     private val viewModel: ListOfCountriesViewModel by stateViewModel()
 
-    var test: MutableList<CountryEntity> = mutableListOf()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireContext())
-
+        viewModel.subscribeCountryChannel()
         viewModel.getListOfCountries()
+
     }
 
     override fun onCreateView(
@@ -67,65 +61,8 @@ class LIstOfCountriesFragment : ScopeFragment() {
         binding = FragmentListOfCountriesBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
+
         getMyLocation()
-
-
-        viewModel.listOfCountriesLiveData.observe(viewLifecycleOwner, {
-            when (it) {
-                is Outcome.Progress -> {
-
-                    if (binding?.swipeRefresh?.isRefreshing == false) {
-                        binding?.progressBar?.isVisible = it.loading
-                        binding?.frameWithProgress?.isVisible = it.loading
-                    }
-
-                }
-                is Outcome.Next -> {
-
-
-                    temporalList = it.data
-                    viewModel.instantSearch(searchListByName, temporalList)
-
-                    snackbar = Snackbar.make(
-                        requireView(),
-                        resources.getString(R.string.done_message),
-                        Snackbar.LENGTH_SHORT
-                    )
-                    snackbar.show()
-
-                    listOfCountriesAdapter.refresh(it.data)
-                    Log.e("hz", "message data")
-
-                    binding?.swipeRefresh?.isRefreshing = false
-
-                }
-                is Outcome.Success -> {
-                    viewModel.addListOfCountriesToDB()
-                }
-                is Outcome.Failure -> {
-
-                    viewModel.getListOfCountriesFromDB()
-
-                    it.exception.printStackTrace()
-
-                    snackbar = Snackbar.make(
-                        requireView(),
-                        resources.getText(R.string.connect_error_message),
-                        Snackbar.LENGTH_LONG
-                    )
-                    snackbar.show()
-                    snackbar.setAction(R.string.bad_snack_info) {
-                        Toast.makeText(
-                            context,
-                            getString(R.string.bad_snack_inside),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    binding?.swipeRefresh?.isRefreshing = false
-                }
-            }
-        })
 
         //getSortStatus()
         return binding?.root
@@ -138,87 +75,75 @@ class LIstOfCountriesFragment : ScopeFragment() {
         listOfCountriesAdapter = ListOfCountriesAdapter()
         binding?.recyclerView?.adapter = listOfCountriesAdapter
 
-        viewModel.sortedListLiveData.observe(viewLifecycleOwner, {
+        viewModel.dataStatesLivaData.observe(viewLifecycleOwner, {
             when (it) {
                 is Outcome.Progress -> {
-
-                    if (binding?.swipeRefresh?.isRefreshing == false) {
-                        binding?.progressBar?.isVisible = it.loading
-                        binding?.frameWithProgress?.isVisible = it.loading
-                    }
-
+                    if (it.loading) showProgress() else hideProgress()
                 }
                 is Outcome.Next -> {
-
-                    Toast.makeText(requireContext(), "Eeeend its gone", Toast.LENGTH_SHORT).show()
-
-                    Log.e("hz", "${it.data}")
-                    listOfCountriesAdapter.refresh(it.data)
-
                     binding?.swipeRefresh?.isRefreshing = false
-
                 }
                 is Outcome.Success -> {
+                    showSnackbarShort(R.string.done_message)
                 }
                 is Outcome.Failure -> {
-                    Log.e("hz", "message")
-                    viewModel.getListOfCountriesFromDB()
-
-                    it.exception.printStackTrace()
-
-                    snackbar = Snackbar.make(
-                        requireView(),
-                        resources.getText(R.string.connect_error_message),
-                        Snackbar.LENGTH_LONG
+                    showSnackbarShortWithActionToast(
+                        R.string.connect_error_message,
+                        R.string.bad_snack_inside,
+                        R.string.bad_snack_info
                     )
-                    snackbar.show()
-                    snackbar.setAction(R.string.bad_snack_info) {
-                        Toast.makeText(
-                            context,
-                            getString(R.string.bad_snack_inside),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
                     binding?.swipeRefresh?.isRefreshing = false
                 }
             }
         })
 
-        findNavController().currentBackStackEntry?.savedStateHandle
+        viewModel.dataLiveData.observe(viewLifecycleOwner, {
+            when (it) {
+                is Outcome.Progress -> {
+                }
+                is Outcome.Next -> {
+                    /*temporalList = it.data
+                    viewModel.instantSearch(searchListByName, temporalList)*/
+
+                    Log.e("qewqe", "${it.data}")
+                    listOfCountriesAdapter.refresh(it.data)
+                }
+                is Outcome.Success -> {
+                }
+                is Outcome.Failure -> {
+                }
+            }
+        })
+
+        viewModel.sortedListLiveData.observe(viewLifecycleOwner, {
+            when(it){
+                is Outcome.Progress -> {
+                    if (it.loading) showProgress() else hideProgress()
+                }
+                is Outcome.Next -> {}
+                is Outcome.Success -> {
+                    listOfCountriesAdapter.refresh(it.data)
+                    showSnackbarShort(R.string.sorted)
+                }
+                is Outcome.Failure -> {}
+            }
+        })
+
+        setFragmentResultListener("key") {_, bundle ->
+            var result = bundle.getParcelableArrayList<Parcelable>("pair") as MutableList<Float>
+            viewModel.searchBySliderFragment(result[0], result[1], result[2], result[3], result[4])
+        }
+
+
+        /*findNavController().currentBackStackEntry?.savedStateHandle
             ?.getLiveData<MutableList<Float>>(SLIDERS_KEY)
             ?.observe(viewLifecycleOwner) {
                 viewModel.searchBySliderFragment(it[0], it[1], it[2], it[3], it[4])
-            }
+                //viewModel.getListOfCountries()
+                //showProgress()
+            }*/
 
-        viewModel.listOfCountriesAddToDBLiveData.observe(viewLifecycleOwner, {
-            when (it) {
-                is Outcome.Progress -> {
-                }
-                is Outcome.Next -> {
-                }
-                is Outcome.Success -> {
-                }
-                is Outcome.Failure -> {
-                }
-            }
-        })
-
-        viewModel.listOfCountriesGetFromDBLiveData.observe(viewLifecycleOwner, {
-            when (it) {
-                is Outcome.Progress -> {
-                }
-                is Outcome.Next -> {
-                    listOfCountriesAdapter.refresh(it.data)
-                }
-                is Outcome.Success -> {
-                }
-                is Outcome.Failure -> {
-                }
-            }
-        })
-
-        listOfCountriesAdapter.setItemClick { item ->
+        /*listOfCountriesAdapter.setItemClick { item ->
             val bundle = Bundle()
             bundle.putString(COUNTRY_NAME_BUNDLE_KEY, item.countryName)
             bundle.putString(COUNTRY_FLAG_BUNDLE_KEY, item.flag)
@@ -226,11 +151,15 @@ class LIstOfCountriesFragment : ScopeFragment() {
                 R.id.action_firstFragment_to_countryDetailsFragment,
                 bundle
             )
-        }
+        }*/
 
-        binding?.swipeRefresh?.setOnRefreshListener {
+
+
+        /*binding?.swipeRefresh?.setOnRefreshListener {
             viewModel.getListOfCountries()
-        }
+            hideProgress()
+        }*/
+
     }
 
     private fun initRecyclerView(view: View) {
@@ -239,18 +168,32 @@ class LIstOfCountriesFragment : ScopeFragment() {
         binding?.recyclerView?.setHasFixedSize(true)
         binding?.recyclerView?.layoutManager = linearLayoutManager
 
-        val decoration = DividerItemDecoration(context, VERTICAL)
-        binding?.recyclerView?.addItemDecoration(decoration)
+        /*val decoration = DividerItemDecoration(context, VERTICAL)
+        binding?.recyclerView?.addItemDecoration(decoration)*/
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.toolbar, menu)
 
-        val searchView = menu.findItem(R.id.search).actionView as SearchView
+        val searchButton = menu.findItem(R.id.search).actionView as SearchView
 
-        searchView.queryHint = getString(R.string.search_by_country_name)
+        searchButton.queryHint = getString(R.string.search_by_country_name)
 
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        searchButton.setOnSearchClickListener {
+            menu.findItem(R.id.map_toolbar).isVisible = false
+            menu.findItem(R.id.sort).isVisible = false
+            menu.findItem(R.id.sliders_search).isVisible = false
+        }
+
+        searchButton.setOnCloseListener {
+            menu.findItem(R.id.map_toolbar).isVisible = true
+            menu.findItem(R.id.sort).isVisible = true
+            menu.findItem(R.id.sliders_search).isVisible = true
+            return@setOnCloseListener false
+        }
+
+
+        searchButton.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 viewModel.searchSubject.onNext(query)
                 return false
@@ -324,12 +267,12 @@ class LIstOfCountriesFragment : ScopeFragment() {
     override fun onStop() {
         super.onStop()
     }
-
-    override fun onDestroyView() {
+//todo transfer to dialogue and customize it
+    /*override fun onDestroyView() {
         if (createDialog(requireActivity()).isShowing) createDialog(requireActivity()).dismiss()
         super.onDestroyView()
         binding = null
-    }
+    }*/
 
     override fun onDestroy() {
         super.onDestroy()
@@ -337,8 +280,44 @@ class LIstOfCountriesFragment : ScopeFragment() {
 
     @SuppressLint("MissingPermission")
     private fun getMyLocation() {
+        DEFAULT_LOCATION.latitude = DEFAULT_LATITUDE
+        DEFAULT_LOCATION.longitude = DEFAULT_LONGITUDE
+
         fusedLocationProviderClient?.lastLocation?.addOnSuccessListener { location ->
-            viewModel.attachCurrentLocation(location)
+            if (location != null) {
+                viewModel.attachCurrentLocation(location)
+            } else {
+                viewModel.attachCurrentLocation(DEFAULT_LOCATION)
+            }
         }
     }
+
+    private fun showProgress() {
+        //binding?.swipeRefresh?.isRefreshing = false
+        binding?.progressBar?.isVisible = true
+        binding?.frameWithProgress?.isVisible = true
+    }
+
+    private fun hideProgress() {
+        //binding?.swipeRefresh?.isRefreshing = true
+        binding?.progressBar?.isVisible = false
+        binding?.frameWithProgress?.isVisible = false
+    }
+
+    private fun showToastShort(textId: Int) {
+        Toast.makeText(requireContext(), textId, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showSnackbarShort(snackId: Int) {
+        Snackbar.make(requireView(), snackId, Snackbar.LENGTH_SHORT).show()
+    }
+
+    private fun showSnackbarShortWithActionToast(snackId: Int, toastId: Int, actionId: Int) {
+        Snackbar.make(requireView(), snackId, Snackbar.LENGTH_SHORT)
+            .setAction(actionId) {
+                showToastShort(toastId)
+            }.show()
+
+    }
 }
+

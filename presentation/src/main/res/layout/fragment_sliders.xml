@@ -5,26 +5,53 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/population_text"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/sliders_text_height"
+        android:layout_marginStart="@dimen/base_layout_margin"
+        android:layout_marginTop="@dimen/base_layout_margin"
+        android:layout_marginEnd="@dimen/base_layout_margin"
+        android:textStyle="italic"
+        android:textColor="@color/text_color"
+        tools:text="Population"/>
+
     <com.google.android.material.slider.RangeSlider
         android:id="@+id/range_slider_population"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/range_slider_population_marginTop" />
+        android:layout_marginStart="@dimen/base_layout_margin"
+        android:layout_marginTop="@dimen/range_slider_population_marginTop"
+        android:layout_marginEnd="@dimen/base_layout_margin" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/area_text"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/sliders_text_height"
+        android:layout_marginStart="@dimen/base_layout_margin"
+        android:layout_marginTop="121dp"
+        android:layout_marginEnd="@dimen/base_layout_margin"
+        android:textStyle="italic"
+        android:textColor="@color/text_color"
+        tools:text="Area"/>
 
     <com.google.android.material.slider.RangeSlider
         android:id="@+id/range_slider_area"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/range_slider_area_marginTop" />
+        android:layout_marginStart="@dimen/base_layout_margin"
+        android:layout_marginTop="@dimen/range_slider_area_marginTop"
+        android:layout_marginEnd="@dimen/base_layout_margin" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/edit_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="number"
+        android:textColor="@color/text_color"
         android:hint="@string/enter_max_distance_to_countries"
         android:layout_marginTop="@dimen/edit_text_range_slider_marginTop"
-        android:layout_gravity="center_horizontal"/>
+        android:layout_gravity="center_horizontal" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_sliders"
@@ -32,6 +59,35 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="@string/search"
-        android:layout_marginTop="@dimen/button_search_sliders_margin"/>
+        android:textColor="@color/text_color"
+        android:layout_marginTop="@dimen/button_search_sliders_margin" />
 
+    <FrameLayout
+        android:id="@+id/frame_with_progress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/progress_background"
+        android:clickable="true"
+        android:elevation="@dimen/elevation_on_top_of_the_button"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="invisible">
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="@dimen/progress_bar_width"
+            android:layout_height="@dimen/progress_bar_height"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/progress_in_frame_margin"
+            android:indeterminate="true"
+            android:indeterminateBehavior="repeat"
+            android:indeterminateDrawable="@drawable/progress_bar_style"
+            android:indeterminateDuration="1000"
+            android:visibility="gone"
+            tools:visibility="visible" />
+    </FrameLayout>
 </FrameLayout>

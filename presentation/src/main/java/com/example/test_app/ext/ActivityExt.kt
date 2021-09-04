@@ -4,11 +4,13 @@ import android.app.Activity
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import com.example.test_app.DIALOG_WIDTH_DELTA_7
 import com.example.test_app.R
@@ -21,6 +23,7 @@ fun Activity.initBaseOneButtonContent(
     title: String?,
     description: String?
 ): Pair<Dialog, View> {
+
     val dialog = createDialog(this)
     dialog.setCanceledOnTouchOutside(false)
     val contentView = LayoutInflater.from(this)
@@ -38,6 +41,7 @@ fun Activity.initBaseOneButtonContent(
         tvDescription.text = it
         tvDescription.visibility = View.VISIBLE
     }
+
     return Pair(dialog, contentView)
 }
 
@@ -45,8 +49,7 @@ private fun setContentView(dialog: Dialog, contentView: View) {
     dialog.setContentView(contentView)
     val window = dialog.window
     window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    val resources = dialog.context
-        .resources
+    val resources = dialog.context.resources
 
     val params = contentView.layoutParams as FrameLayout.LayoutParams
     params.width = ((resources.displayMetrics.widthPixels * DIALOG_WIDTH_DELTA_7).toInt())

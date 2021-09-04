@@ -43,7 +43,8 @@ class ListOfCountriesAdapter : BaseAdapter<CountryDTO>() {
                 holder.cityName.text = item.cityName
             }
 
-            item.flag
+            //todo refactor glide cache images
+            /*item.flag
             GlideToVectorYou
                 .init()
                 .with(holder.itemView.context)
@@ -51,7 +52,7 @@ class ListOfCountriesAdapter : BaseAdapter<CountryDTO>() {
                     R.drawable.ic_launcher_foreground,
                     R.drawable.twotone_error_black_18
                 )
-                .load(Uri.parse(item.flag), holder.flag)
+                .load(Uri.parse(item.flag), holder.flag)*/
 
             holder.itemView.setOnClickListener {
                 onItemClickListener?.invoke(item)

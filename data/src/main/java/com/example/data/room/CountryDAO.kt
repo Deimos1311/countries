@@ -4,6 +4,7 @@ import androidx.room.*
 import com.example.data.room.entity.CountryEntity
 import com.example.data.room.entity.CountryLanguageCrossRefEntity
 import com.example.data.room.entity.LanguageEntity
+import com.example.domain.dto.CountryDTO
 import io.reactivex.rxjava3.core.Flowable
 
 @Dao

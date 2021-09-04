@@ -5,10 +5,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.domain.dto.LanguageDTO
 import com.example.test_app.R
 import com.example.test_app.base.adapter.BaseAdapter
 
-class CountryDetailsFragmentAdapter: BaseAdapter<com.example.data.model.LanguageModel>() {
+class CountryDetailsFragmentAdapter: BaseAdapter<LanguageDTO>() {
 
     class CountryDetailsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvLanguages: AppCompatTextView = itemView.findViewById(R.id.language)

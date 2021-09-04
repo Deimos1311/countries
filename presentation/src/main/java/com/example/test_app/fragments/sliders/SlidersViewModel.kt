@@ -3,6 +3,7 @@ package com.example.test_app.fragments.sliders
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.example.domain.dto.CountryDTO
+import com.example.domain.repository.CacheRepository
 import com.example.domain.usecase.impl.network.GetAllCountriesFromAPIUseCase
 import com.example.test_app.base.mvvm.BaseViewModel
 import com.example.test_app.base.mvvm.Outcome
@@ -10,7 +11,7 @@ import com.example.test_app.base.mvvm.executeJob
 
 class SlidersViewModel(
     savedStateHandle: SavedStateHandle,
-    private val mGetAllCountriesFromAPIUseCase: GetAllCountriesFromAPIUseCase
+    private val mGetAllCountriesFromAPIUseCase: GetAllCountriesFromAPIUseCase,
 ) : BaseViewModel(savedStateHandle) {
 
     var getListOfCountriesLivaData = MutableLiveData<Outcome<MutableList<CountryDTO>>>()

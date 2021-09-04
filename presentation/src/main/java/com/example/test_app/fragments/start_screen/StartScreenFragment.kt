@@ -27,7 +27,6 @@ class StartScreenFragment : BaseMvpFragment<StartScreenView>(), StartScreenView 
 
     private var binding: FragmentStartScreenBinding? = null
 
-
     private val permissions =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             when {
@@ -97,14 +96,8 @@ class StartScreenFragment : BaseMvpFragment<StartScreenView>(), StartScreenView 
             .show(parentFragmentManager, BottomSheetDialogDontAskFragment.TAG)
     }
 
-
-
-    private fun showToastShort(textId: Int) {
-        Toast.makeText(requireContext(), textId, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun showSnackbarShort(textId: Int) {
-        Snackbar.make(requireView(), textId, Snackbar.LENGTH_SHORT).show()
+    private fun showSnackbarShort(snackId: Int) {
+        Snackbar.make(requireView(), snackId, Snackbar.LENGTH_SHORT).show()
     }
 
     //todo read about this

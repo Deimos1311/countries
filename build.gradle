@@ -6,7 +6,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        final build_gradle_version = '7.0.1'
+        final build_gradle_version = '7.0.2'
  
         //Navigation
         def nav_version = "2.3.5"

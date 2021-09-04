@@ -9,14 +9,18 @@ import androidx.lifecycle.SavedStateHandle
 import com.example.domain.dto.CountryDTO
 import com.example.domain.dto.CountryLanguageCrossRefDTO
 import com.example.domain.dto.LanguageDTO
+import com.example.domain.interactor.CountryInteractor
 import com.example.domain.usecase.impl.database.*
 import com.example.domain.usecase.impl.network.GetAllCountriesFromAPIUseCase
 import com.example.domain.usecase.impl.network.GetCountryListByNameFromAPIUseCase
 import com.example.test_app.DEBOUNCE_TIME
 import com.example.test_app.MIN_SEARCH_STRING_LENGTH
+import com.example.test_app.ONE_KILOMETER
 import com.example.test_app.base.mvvm.BaseViewModel
 import com.example.test_app.base.mvvm.Outcome
 import com.example.test_app.base.mvvm.executeJob
+import com.example.test_app.base.mvvm.executeJobWithoutProgress
+import com.example.test_app.utils.SingleLiveEvent
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -32,13 +36,14 @@ class ListOfCountriesViewModel(
     private val mAddAllCountriesToDBUseCase: AddAllCountriesToDBUseCase,
     private val mAddLanguageToDBUseCase: AddLanguageToDBUseCase,
     private val mAddCountryLanguageCrossRefToDBUseCase: AddCountryLanguageCrossRefToDBUseCase,
+    private val mCountryInteractor: CountryInteractor
     /*filter: FilterRepository*/
 ) :
     BaseViewModel(savedStateHandle) {
 
     var searchSubject: BehaviorSubject<String> = BehaviorSubject.create()
 
-    var listOfCountriesLiveData = MutableLiveData<Outcome<MutableList<CountryDTO>>>()
+    var dataLiveData = SingleLiveEvent<Outcome<MutableList<CountryDTO>>>()
     var listOfCountriesAddToDBLiveData = MutableLiveData<Outcome<MutableList<CountryDTO>>>()
     var listOfCountriesGetFromDBLiveData = MutableLiveData<Outcome<MutableList<CountryDTO>>>()
     var listOfLanguagesGetFromDBLiveData = MutableLiveData<Outcome<MutableList<LanguageDTO>>>()
@@ -49,19 +54,28 @@ class ListOfCountriesViewModel(
     var listOfLanguagesDB: MutableList<LanguageDTO> = mutableListOf()
     var crossRefDB: MutableList<CountryLanguageCrossRefDTO> = mutableListOf()
 
+    var dataStatesLivaData = MutableLiveData<Outcome<MutableList<CountryDTO>>>()
+
     private lateinit var userLocation: Location
 
     fun getListOfCountries() {
-
         addToDisposable(
             executeJob(
-                mGetAllCountriesFromAPIUseCase.execute(),
-                listOfCountriesLiveData
+                mCountryInteractor.requestAllCountries().map { mutableListOf() },
+                dataStatesLivaData
             )
         )
     }
 
-    fun addListOfCountriesToDB() {
+    fun subscribeCountryChannel() {
+        addToDisposable(
+            executeJobWithoutProgress(
+                mCountryInteractor.getCountryChannel(), dataLiveData
+            )
+        )
+    }
+
+    /*fun addListOfCountriesToDB() {
 
         addToDisposable(
             executeJob(
@@ -104,25 +118,25 @@ class ListOfCountriesViewModel(
                 listOfCountriesAddToDBLiveData
             )
         )
-    }
+    }*/
 
-    fun getListOfCountriesFromDB() {
+    /*fun getListOfCountriesFromDB() {
         addToDisposable(
             executeJob(
                 mGetAllCountriesFromDBUseCase.execute(),
                 listOfCountriesGetFromDBLiveData
             )
         )
-    }
+    }*/
 
-    fun getListOfLanguagesFromDB() {
+    /*fun getListOfLanguagesFromDB() {
         addToDisposable(
             executeJob(
                 mGetLanguageFromDBUseCase.execute(),
                 listOfLanguagesGetFromDBLiveData
             )
         )
-    }
+    }*/
 
     fun instantSearch(
         searchListByName: MutableList<CountryDTO>,
@@ -171,7 +185,6 @@ class ListOfCountriesViewModel(
         addToDisposable(
             executeJob(
                 mGetAllCountriesFromAPIUseCase.execute()
-                    .doOnNext { Log.e("hz", "$userLocation") }
                     .map {
                         it.filter { itemPopulation ->
                             itemPopulation
@@ -191,7 +204,7 @@ class ListOfCountriesViewModel(
                     }
                     .map {
                         it.filter { itemLocation ->
-                            calculateDistanceFromUserToCountry(itemLocation) <= distance
+                            calculateDistanceFromUserToCountry(itemLocation) <= distance * ONE_KILOMETER
                         }
                             .toMutableList()
                     }, sortedListLiveData
@@ -207,7 +220,7 @@ class ListOfCountriesViewModel(
                         latitude = countryDTO.location[0]
                         longitude = countryDTO.location[1]
                     }
-                result = userLocation.distanceTo(currentCountryLocation)/ 1000
+                result = userLocation.distanceTo(currentCountryLocation)
         }
         return result
     }

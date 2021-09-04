@@ -106,9 +106,8 @@ class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDet
 
     override fun showCountryInfo(country: CountryDTO, location: LatLng) {
         countryDetailsFragmentAdapter = CountryDetailsFragmentAdapter()
-        //todo
-        //countryDetailsFragmentAdapter.addList(country.languages)
         binding?.recyclerView?.adapter = countryDetailsFragmentAdapter
+        countryDetailsFragmentAdapter.addList(country.languages)
 
         binding?.swipeRefresh?.isRefreshing = false
 

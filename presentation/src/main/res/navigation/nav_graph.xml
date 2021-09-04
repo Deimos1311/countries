@@ -7,7 +7,8 @@
     <fragment
         android:id="@+id/start_screen"
         android:name="com.example.test_app.fragments.start_screen.StartScreenFragment"
-        android:label="fragment_start_screen">
+        android:label="fragment_start_screen"
+        tools:layout="@layout/fragment_start_screen">
         <action
             android:id="@+id/action_start_screen_to_first_fragment"
             app:destination="@id/list_of_countries" />
@@ -20,8 +21,9 @@
     </fragment>
     <fragment
         android:id="@+id/list_of_countries"
-        android:name="com.example.test_app.fragments.list_of_countries.LIstOfCountriesFragment"
-        android:label="fragment_list_of_countries">
+        android:name="com.example.test_app.fragments.list_of_countries.ListOfCountriesFragment"
+        android:label="fragment_list_of_countries"
+        tools:layout="@layout/fragment_list_of_countries">
         <action
             android:id="@+id/action_firstFragment_to_countryDetailsFragment"
             app:destination="@id/country_details_fragment" />
@@ -35,7 +37,8 @@
     <fragment
         android:id="@+id/country_details_fragment"
         android:name="com.example.test_app.fragments.country_details.CountryDetailsFragment"
-        android:label="fragment_country_details" >
+        android:label="fragment_country_details"
+        tools:layout="@layout/fragment_country_details">
         <action
             android:id="@+id/action_country_details_fragment_to_mapFragment"
             app:destination="@id/mapFragment" />
@@ -43,14 +46,22 @@
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.example.test_app.fragments.map.MapFragment"
-        android:label="MapFragment" />
+        android:label="MapFragment"
+        tools:layout="@layout/fragment_map"
+        />
     <fragment
         android:id="@+id/myLocation"
         android:name="com.example.test_app.fragments.my_location_map.MyLocationFragment"
-        android:label="fragment_my_location" />
+        android:label="fragment_my_location"
+        tools:layout="@layout/fragment_my_location"/>
     <fragment
         android:id="@+id/slidersFragment"
         android:name="com.example.test_app.fragments.sliders.SlidersFragment"
-        android:label="fragment_sliders" />
+        android:label="fragment_sliders"
+        tools:layout="@layout/fragment_sliders">
+        <action
+            android:id="@+id/action_slidersFragment_to_list_of_countries"
+            app:destination="@id/list_of_countries" />
+    </fragment>
 
 </navigation>

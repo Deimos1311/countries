@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Test_App</string>
+    <string name="app_name">EK</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="button">Button</string>
     <string name="done_message">Done</string>
@@ -32,5 +32,8 @@
     <string name="settings">Settings</string>
     <string name="allow_asses_to_device_location">Allow asses to device location?</string>
     <string name="access">Access</string>
-    <string name="enter_max_distance_to_countries">Enter max distance to Countries...</string>
+    <string name="enter_max_distance_to_countries">Enter max distance to Countries…</string>
+    <string name="slider_text_population">\tSorting by Population \n\t\tFrom: %1$d \t\tTo: %2$d</string>
+    <string name="slider_text_area">\tSorting by Area \n\t\tFrom: %1$d \t\tTo: %2$d</string>
+    <string name="sorted">Sorted!</string>
 </resources>

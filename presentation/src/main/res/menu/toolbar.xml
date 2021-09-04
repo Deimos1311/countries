@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-<!--todo normalize toolbar display ( slides to the right when opening a menu )-->
+
     <item
         android:id="@+id/map_toolbar"
         android:icon="@drawable/outline_map_24"
@@ -10,23 +10,24 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/sliders_search"
-        android:icon="@drawable/ic_round_sort_24"
-        android:menuCategory="container"
-        android:title="@string/sliders"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/sort"
         android:icon="@drawable/twotone_radio_button_unchecked_white_24"
         android:title="@string/sort"
         android:menuCategory="container"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/sliders_search"
+        android:icon="@drawable/ic_round_sort_24"
+        android:menuCategory="container"
+        android:title="@string/sliders"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/search"
         android:icon="@drawable/places_ic_search"
         android:title="@string/searching"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
 </menu>

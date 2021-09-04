@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:background="@drawable/dialog_background_with_rounded_corners"
     android:paddingTop="@dimen/default_margin_guideline"
-    android:paddingBottom="@dimen/default_margin_guideline">
+    android:paddingBottom="@dimen/default_margin_guideline"
+    android:elevation="@dimen/elevation_on_top_of_the_button">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_start_dialog_with_one_button"

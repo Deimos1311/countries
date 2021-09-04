@@ -12,13 +12,13 @@
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-<!--            android:fillViewport="true"-->
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-<!--                android:descendantFocusability="blocksDescendants"-->
+                android:layout_height="match_parent"
+                android:descendantFocusability="blocksDescendants">
 
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/guideline_start"

@@ -27,23 +27,5 @@ class CountryDetailsPresenter : BaseMvpPresenter<CountryDetailsView>() {
 
                 })
         )
-
-/*        Flowable
-            .just(
-                Country(
-                    "",
-                    "",
-                    0,
-                    mutableListOf(),
-                    "",
-                    0.0,
-                    mutableListOf()
-                )
-            )
-            .subscribe({
-                getView()?.showCountryInfo()
-            }, {
-
-            })*/
     }
 }

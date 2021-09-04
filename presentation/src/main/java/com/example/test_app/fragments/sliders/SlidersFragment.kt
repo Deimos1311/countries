@@ -4,7 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
+import com.example.test_app.R
 import com.example.test_app.base.mvvm.Outcome
 import com.example.test_app.databinding.FragmentSlidersBinding
 import com.google.android.material.slider.RangeSlider
@@ -21,6 +27,25 @@ class SlidersFragment : ScopeFragment() {
     var distance: Float = 0.0F
 
     private val viewModel: SlidersViewModel by stateViewModel()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    findNavController().navigate(R.id.action_slidersFragment_to_list_of_countries)
+                    Toast.makeText(requireContext(), "TEST", Toast.LENGTH_SHORT).show()
+                }
+
+            })
+
+        //val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+        //}
+
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,23 +69,30 @@ class SlidersFragment : ScopeFragment() {
                 areaEnd,
                 distance
             )
-            findNavController().previousBackStackEntry?.savedStateHandle?.set(
+            setFragmentResult(
+                "key",
+                bundleOf("pair" to slidersValues)
+            )
+
+            /*findNavController().previousBackStackEntry?.savedStateHandle?.set(
                 "Sliders",
                 slidersValues
-            )
-            findNavController().navigateUp()
+            )*/
+            findNavController().popBackStack()
         }
 
         viewModel.getListOfCountriesLivaData.observe(viewLifecycleOwner) {
             when (it) {
                 is Outcome.Progress -> {
+                    if (it.loading) showProgress() else hideProgress()
                 }
                 is Outcome.Next -> {
+
+                }
+                is Outcome.Success -> {
                     populationSlider(
                         it.data[0].population, it.data[it.data.size - 1].population
                     )
-                }
-                is Outcome.Success -> {
                 }
                 is Outcome.Failure -> {
                 }
@@ -70,11 +102,13 @@ class SlidersFragment : ScopeFragment() {
         viewModel.getListOfCountriesSortedByAreaLivaData.observe(viewLifecycleOwner) {
             when (it) {
                 is Outcome.Progress -> {
+                    if (it.loading) showProgress() else hideProgress()
                 }
                 is Outcome.Next -> {
-                    areaSlider(it.data[0].area, it.data[it.data.size - 1].area)
+
                 }
                 is Outcome.Success -> {
+                    areaSlider(it.data[0].area, it.data[it.data.size - 1].area)
                 }
                 is Outcome.Failure -> {
                 }
@@ -92,6 +126,10 @@ class SlidersFragment : ScopeFragment() {
             mutableListOf(minPopulation.toFloat(), maxPopulation.toFloat())
         populationStart = minPopulation.toFloat()
         populationEnd = maxPopulation.toFloat()
+
+        binding?.populationText?.text = getString(
+            R.string.slider_text_population, populationStart.toInt(), populationEnd.toInt()
+        )
 
         binding?.rangeSliderPopulation?.addOnSliderTouchListener(object :
             RangeSlider.OnSliderTouchListener {
@@ -115,6 +153,10 @@ class SlidersFragment : ScopeFragment() {
         areaStart = minArea.toFloat()
         areaEnd = maxArea.toFloat()
 
+        binding?.areaText?.text = getString(
+            R.string.slider_text_area, areaStart.toInt(), areaEnd.toInt()
+        )
+
         binding?.rangeSliderArea?.addOnSliderTouchListener(object :
             RangeSlider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: RangeSlider) {
@@ -127,5 +169,15 @@ class SlidersFragment : ScopeFragment() {
                 areaEnd = slider.values[1]
             }
         })
+    }
+
+    private fun showProgress() {
+        binding?.progressBar?.isVisible = true
+        binding?.frameWithProgress?.isVisible = true
+    }
+
+    private fun hideProgress() {
+        binding?.progressBar?.isVisible = false
+        binding?.frameWithProgress?.isVisible = false
     }
 }

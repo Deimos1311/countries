@@ -1,13 +1,9 @@
 package com.example.test_app.base.mvvm
 
 import androidx.lifecycle.MutableLiveData
-import com.google.android.material.appbar.AppBarLayout
-import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.subjects.BehaviorSubject
 
 /**
  * Executes a job [Flowable] in IO thread and manages state of executing.
@@ -55,7 +51,6 @@ fun <T> executeJob(job: Single<T>, outcome: MutableLiveData<Outcome<T>>): Dispos
 /**
  * Executes a job [Single] in IO thread and manages state of executing.
  */
-//todo maybe change Any to something else
 /*fun executeJob(job: Completable, outcome: MutableLiveData<Outcome<Any>>): Disposable {
     outcome.loading(true)
     return job.executeOnIoThread()
@@ -69,12 +64,12 @@ fun <T> executeJob(job: Single<T>, outcome: MutableLiveData<Outcome<T>>): Dispos
 fun <T> executeJobWithoutProgress(job: Flowable<T>, outcome: MutableLiveData<Outcome<T>>): Disposable {
     return job.executeOnIoThread()
         .subscribe({
-            outcome.next(it)
+            outcome.nextWithoutProgress(it)
         }, {
-            outcome.failed(it)
+            outcome.failedWithoutProgress(it)
         }, {
             if (outcome.value is Outcome.Next) {
-                outcome.success((outcome.value as Outcome.Next).data)
+                outcome.successWithoutProgress((outcome.value as Outcome.Next).data)
             }
         })
 }
@@ -97,6 +92,15 @@ fun <T> MutableLiveData<Outcome<T>>.success(t: T) {
 }
 
 /**
+ * Extension function to push  a success event with data to the observing outcome without progress
+ * */
+fun <T> MutableLiveData<Outcome<T>>.successWithoutProgress(t: T) {
+    with(this) {
+        value = Outcome.success(t)
+    }
+}
+
+/**
  * Extension function to push  a next event with data to the observing outcome
  * */
 fun <T> MutableLiveData<Outcome<T>>.next(t: T) {
@@ -107,11 +111,29 @@ fun <T> MutableLiveData<Outcome<T>>.next(t: T) {
 }
 
 /**
+ * Extension function to push  a next event with data to the observing outcome without progress
+ * */
+fun <T> MutableLiveData<Outcome<T>>.nextWithoutProgress(t: T) {
+    with(this) {
+        value = Outcome.next(t)
+    }
+}
+
+/**
  * Extension function to push a failed event with an exception to the observing outcome
  * */
 fun <T> MutableLiveData<Outcome<T>>.failed(e: Throwable) {
     with(this) {
         loading(false)
+        value = Outcome.failure(e)
+    }
+}
+
+/**
+ * Extension function to push a failed event with an exception to the observing outcome without progress
+ * */
+fun <T> MutableLiveData<Outcome<T>>.failedWithoutProgress(e: Throwable) {
+    with(this) {
         value = Outcome.failure(e)
     }
 }
