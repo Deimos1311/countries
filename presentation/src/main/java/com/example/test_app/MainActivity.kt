@@ -26,14 +26,12 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    override fun onBackPressed() {
-       /* if (navController.popBackStack(R.id.mapFragment, true)) {
-            navController.navigate(R.id.list_of_countries)
-        } else*/ if (!navController.popBackStack()) {
+    /*override fun onBackPressed() {
+        if (!navController.popBackStack()) {
             super.onBackPressed()
             super.onPause()
             super.onStop()
             super.onDestroy()
         }
-    }
+    }*/
 }

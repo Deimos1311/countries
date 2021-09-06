@@ -21,8 +21,9 @@
     <dimen name="progress_bar_margin">2dp</dimen>
     <dimen name="progress_bar_corner_radius">8dp</dimen>
     <dimen name="progress_in_frame_margin">100dp</dimen>
-    <dimen name="range_slider_population_marginTop">66dp</dimen>
+    <dimen name="range_slider_population_marginTop">86dp</dimen>
     <dimen name="range_slider_area_marginTop">159dp</dimen>
+
     <!--BottomSheetDialogFragments-->
     <dimen name="image_width">200dp</dimen>
     <dimen name="image_height">200dp</dimen>
@@ -37,5 +38,15 @@
     <dimen name="elevation_on_top_of_the_button">3dp</dimen>
     <dimen name="base_layout_margin">8dp</dimen>
     <dimen name="sliders_text_height">50dp</dimen>
+    <dimen name="text_size_sliders">20sp</dimen>
+    <dimen name="edit_text_padding_sliders">16sp</dimen>
+    <dimen name="dp_45">45dp</dimen>
+    <dimen name="dp_530">530dp</dimen>
+    <dimen name="dp_420">420dp</dimen>
+    <dimen name="dp_78">78dp</dimen>
+    <dimen name="dp_240">240dp</dimen>
+    <dimen name="dp_129">129dp</dimen>
+    <dimen name="dp_85">85dp</dimen>
+    <dimen name="dp_24">24dp</dimen>
 
 </resources>

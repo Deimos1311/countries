@@ -6,61 +6,115 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/population_text"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/sliders_text_height"
-        android:layout_marginStart="@dimen/base_layout_margin"
-        android:layout_marginTop="@dimen/base_layout_margin"
-        android:layout_marginEnd="@dimen/base_layout_margin"
-        android:textStyle="italic"
-        android:textColor="@color/text_color"
-        tools:text="Population"/>
-
-    <com.google.android.material.slider.RangeSlider
-        android:id="@+id/range_slider_population"
+        android:id="@+id/title_sliders"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_layout_margin"
-        android:layout_marginTop="@dimen/range_slider_population_marginTop"
-        android:layout_marginEnd="@dimen/base_layout_margin" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/area_text"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/sliders_text_height"
-        android:layout_marginStart="@dimen/base_layout_margin"
-        android:layout_marginTop="121dp"
+        android:layout_marginTop="@dimen/dp_24"
         android:layout_marginEnd="@dimen/base_layout_margin"
-        android:textStyle="italic"
+        android:gravity="center"
         android:textColor="@color/text_color"
-        tools:text="Area"/>
+        android:textSize="@dimen/text_size_sliders"
+        android:text="@string/sort_screen"
+        android:textStyle="italic"
+        tools:text="Sort screen" />
 
-    <com.google.android.material.slider.RangeSlider
-        android:id="@+id/range_slider_area"
-        android:layout_width="match_parent"
+    <FrameLayout
+        android:id="@+id/population_decorate_frame"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_layout_margin"
-        android:layout_marginTop="@dimen/range_slider_area_marginTop"
-        android:layout_marginEnd="@dimen/base_layout_margin" />
+        android:layout_marginTop="@dimen/dp_85"
+        android:layout_marginEnd="@dimen/base_layout_margin"
+        android:background="@drawable/slider_population">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/population_text"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/sliders_text_height"
+            android:layout_marginStart="@dimen/base_layout_margin"
+            android:layout_marginTop="@dimen/base_layout_margin"
+            android:layout_marginEnd="@dimen/base_layout_margin"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/message_text_size"
+            android:textStyle="italic"
+            tools:text="Population" />
+
+        <com.google.android.material.slider.RangeSlider
+            android:id="@+id/range_slider_population"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/base_layout_margin"
+            android:layout_marginTop="@dimen/range_slider_population_marginTop"
+            android:layout_marginEnd="@dimen/base_layout_margin"
+            app:haloColor="@color/main_theme_color_inactive"
+            app:thumbColor="@color/main_theme_color"
+            app:trackColorActive="@color/main_theme_color"
+            app:trackColorInactive="@color/main_theme_color_inactive" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/area_decorate_frame"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_129"
+        android:layout_marginStart="@dimen/base_layout_margin"
+        android:layout_marginTop="@dimen/dp_240"
+        android:layout_marginEnd="@dimen/base_layout_margin"
+        android:background="@drawable/slider_area">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/area_text"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/sliders_text_height"
+            android:layout_marginStart="@dimen/base_layout_margin"
+            android:layout_marginEnd="@dimen/base_layout_margin"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/message_text_size"
+            android:textStyle="italic"
+            tools:text="Area" />
+
+        <com.google.android.material.slider.RangeSlider
+            android:id="@+id/range_slider_area"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/base_layout_margin"
+            android:layout_marginTop="@dimen/dp_78"
+            android:layout_marginEnd="@dimen/base_layout_margin"
+            app:haloColor="@color/main_theme_color_inactive"
+            app:thumbColor="@color/main_theme_color"
+            app:trackColorActive="@color/main_theme_color"
+            app:trackColorInactive="@color/main_theme_color_inactive" />
+    </FrameLayout>
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/edit_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_420"
+        android:background="@drawable/edit_text_sliders"
+        android:hint="@string/enter_max_distance_to_countries"
         android:inputType="number"
         android:textColor="@color/text_color"
-        android:hint="@string/enter_max_distance_to_countries"
-        android:layout_marginTop="@dimen/edit_text_range_slider_marginTop"
-        android:layout_gravity="center_horizontal" />
+        android:padding="@dimen/edit_text_padding_sliders" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button_sliders"
-        android:layout_width="wrap_content"
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="@string/search"
-        android:textColor="@color/text_color"
-        android:layout_marginTop="@dimen/button_search_sliders_margin" />
+        android:layout_marginStart="@dimen/base_layout_margin"
+        android:layout_marginTop="@dimen/dp_530"
+        android:layout_marginEnd="@dimen/base_layout_margin"
+        app:cardCornerRadius="@dimen/dp_45">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/button_sliders"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/start_button_background"
+            android:text="@string/search"
+            android:textColor="@color/text_color" />
+    </androidx.cardview.widget.CardView>
 
     <FrameLayout
         android:id="@+id/frame_with_progress"

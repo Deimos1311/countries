@@ -1,16 +1,21 @@
 package com.example.test_app.fragments.sliders
 
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
+import com.example.test_app.EQUATOR_LENGTH_FLOAT
+import com.example.test_app.FILTER_KEY
 import com.example.test_app.R
+import com.example.test_app.SLIDERS_KEY
 import com.example.test_app.base.mvvm.Outcome
 import com.example.test_app.databinding.FragmentSlidersBinding
 import com.google.android.material.slider.RangeSlider
@@ -18,7 +23,7 @@ import org.koin.androidx.scope.ScopeFragment
 import org.koin.androidx.viewmodel.ext.android.stateViewModel
 
 class SlidersFragment : ScopeFragment() {
-
+//todo combine all into one filter or sync loadings of it
     var binding: FragmentSlidersBinding? = null
     var populationStart: Float = 0.0F
     var populationEnd: Float = 0.0F
@@ -36,15 +41,8 @@ class SlidersFragment : ScopeFragment() {
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     findNavController().navigate(R.id.action_slidersFragment_to_list_of_countries)
-                    Toast.makeText(requireContext(), "TEST", Toast.LENGTH_SHORT).show()
                 }
-
             })
-
-        //val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
-        //}
-
-
     }
 
     override fun onCreateView(
@@ -61,7 +59,12 @@ class SlidersFragment : ScopeFragment() {
 
         binding?.buttonSliders?.setOnClickListener {
 
-            distance = binding?.editText?.text.toString().toFloat()
+           distance = if (binding?.editText?.text.isNullOrEmpty()) {
+               EQUATOR_LENGTH_FLOAT
+           } else {
+               binding?.editText?.text.toString().toFloat()
+           }
+
             val slidersValues = mutableListOf(
                 populationStart,
                 populationEnd,
@@ -70,14 +73,9 @@ class SlidersFragment : ScopeFragment() {
                 distance
             )
             setFragmentResult(
-                "key",
-                bundleOf("pair" to slidersValues)
+                SLIDERS_KEY,
+                bundleOf(FILTER_KEY to slidersValues)
             )
-
-            /*findNavController().previousBackStackEntry?.savedStateHandle?.set(
-                "Sliders",
-                slidersValues
-            )*/
             findNavController().popBackStack()
         }
 

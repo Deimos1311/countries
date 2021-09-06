@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.test_app.*
@@ -18,6 +19,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import org.koin.androidx.scope.currentScope
 
 class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDetailsView {
 
@@ -30,6 +32,18 @@ class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDet
     lateinit var countryDetailsFragmentAdapter: CountryDetailsFragmentAdapter
 
     lateinit var linearLayoutManager: LinearLayoutManager
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    findNavController().navigateUp()
+                }
+            })
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -90,6 +104,7 @@ class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDet
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
+        getPresenter().detachView()
 
     }
 

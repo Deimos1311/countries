@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.domain.dto.CountryDTO
 import com.example.test_app.R
 import com.example.test_app.Sort
 import com.example.test_app.base.adapter.BaseAdapter
-import com.example.domain.dto.CountryDTO
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 
 class ListOfCountriesAdapter : BaseAdapter<CountryDTO>() {
@@ -44,7 +44,7 @@ class ListOfCountriesAdapter : BaseAdapter<CountryDTO>() {
             }
 
             //todo refactor glide cache images
-            /*item.flag
+            item.flag
             GlideToVectorYou
                 .init()
                 .with(holder.itemView.context)
@@ -52,7 +52,7 @@ class ListOfCountriesAdapter : BaseAdapter<CountryDTO>() {
                     R.drawable.ic_launcher_foreground,
                     R.drawable.twotone_error_black_18
                 )
-                .load(Uri.parse(item.flag), holder.flag)*/
+                .load(Uri.parse(item.flag), holder.flag)
 
             holder.itemView.setOnClickListener {
                 onItemClickListener?.invoke(item)

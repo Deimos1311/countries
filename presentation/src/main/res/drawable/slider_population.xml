@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid
+        android:color="@color/decorate_color"/>
+    <corners
+        android:topLeftRadius="25dp"
+        android:topRightRadius="25dp"/>
+    <gradient
+        android:startColor="@color/decorate_color"
+        android:endColor="@color/recycler_color"
+        android:angle="@integer/config_navAnimTime"/>
+</shape>

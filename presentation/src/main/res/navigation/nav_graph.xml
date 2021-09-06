@@ -33,6 +33,9 @@
         <action
             android:id="@+id/action_list_of_countries_to_slidersFragment"
             app:destination="@id/slidersFragment" />
+        <action
+            android:id="@+id/action_list_of_countries_to_start_screen"
+            app:destination="@id/start_screen" />
     </fragment>
     <fragment
         android:id="@+id/country_details_fragment"

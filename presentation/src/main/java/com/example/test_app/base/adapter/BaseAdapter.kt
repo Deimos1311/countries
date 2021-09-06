@@ -37,4 +37,7 @@ abstract class BaseAdapter<ItemType> : RecyclerView.Adapter<RecyclerView.ViewHol
         dataList.clear()
         notifyDataSetChanged()
     }
+
+    open fun size(): Int = dataList.size
+
 }

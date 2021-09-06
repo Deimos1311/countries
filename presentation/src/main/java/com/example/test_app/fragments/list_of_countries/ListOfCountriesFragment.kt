@@ -7,6 +7,7 @@ import android.os.Parcelable
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
@@ -23,7 +24,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.scope.ScopeFragment
 import org.koin.androidx.viewmodel.ext.android.stateViewModel
-
+//todo maybe best practice to do all through one filter
 class ListOfCountriesFragment : ScopeFragment() {
 
     private var fusedLocationProviderClient: FusedLocationProviderClient? = null
@@ -51,6 +52,17 @@ class ListOfCountriesFragment : ScopeFragment() {
         viewModel.subscribeCountryChannel()
         viewModel.getListOfCountries()
 
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (listOfCountriesAdapter.size() < 249) {
+                        viewModel.getListOfCountries()
+                    } else {
+                        findNavController().navigate(R.id.action_list_of_countries_to_start_screen)
+                    }
+                }
+            })
     }
 
     override fun onCreateView(
@@ -60,7 +72,6 @@ class ListOfCountriesFragment : ScopeFragment() {
     ): View? {
         binding = FragmentListOfCountriesBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
-
 
         getMyLocation()
 
@@ -96,54 +107,32 @@ class ListOfCountriesFragment : ScopeFragment() {
                 }
             }
         })
-
+// todo(maybe) when it sorting list comes 2 times
         viewModel.dataLiveData.observe(viewLifecycleOwner, {
             when (it) {
                 is Outcome.Progress -> {
+                    if (it.loading) showProgress() else hideProgress()
                 }
                 is Outcome.Next -> {
-                    /*temporalList = it.data
-                    viewModel.instantSearch(searchListByName, temporalList)*/
 
-                    Log.e("qewqe", "${it.data}")
                     listOfCountriesAdapter.refresh(it.data)
+                    hideProgress()
                 }
                 is Outcome.Success -> {
+                    listOfCountriesAdapter.refresh(it.data)
+                    hideProgress()
                 }
                 is Outcome.Failure -> {
                 }
             }
         })
 
-        viewModel.sortedListLiveData.observe(viewLifecycleOwner, {
-            when(it){
-                is Outcome.Progress -> {
-                    if (it.loading) showProgress() else hideProgress()
-                }
-                is Outcome.Next -> {}
-                is Outcome.Success -> {
-                    listOfCountriesAdapter.refresh(it.data)
-                    showSnackbarShort(R.string.sorted)
-                }
-                is Outcome.Failure -> {}
-            }
-        })
-
-        setFragmentResultListener("key") {_, bundle ->
-            var result = bundle.getParcelableArrayList<Parcelable>("pair") as MutableList<Float>
+        setFragmentResultListener(SLIDERS_KEY) {_, bundle ->
+            val result = bundle.getParcelableArrayList<Parcelable>(FILTER_KEY) as MutableList<Float>
             viewModel.searchBySliderFragment(result[0], result[1], result[2], result[3], result[4])
         }
 
-
-        /*findNavController().currentBackStackEntry?.savedStateHandle
-            ?.getLiveData<MutableList<Float>>(SLIDERS_KEY)
-            ?.observe(viewLifecycleOwner) {
-                viewModel.searchBySliderFragment(it[0], it[1], it[2], it[3], it[4])
-                //viewModel.getListOfCountries()
-                //showProgress()
-            }*/
-
-        /*listOfCountriesAdapter.setItemClick { item ->
+        listOfCountriesAdapter.setItemClick { item ->
             val bundle = Bundle()
             bundle.putString(COUNTRY_NAME_BUNDLE_KEY, item.countryName)
             bundle.putString(COUNTRY_FLAG_BUNDLE_KEY, item.flag)
@@ -151,15 +140,11 @@ class ListOfCountriesFragment : ScopeFragment() {
                 R.id.action_firstFragment_to_countryDetailsFragment,
                 bundle
             )
-        }*/
+        }
 
-
-
-        /*binding?.swipeRefresh?.setOnRefreshListener {
+        binding?.swipeRefresh?.setOnRefreshListener {
             viewModel.getListOfCountries()
-            hideProgress()
-        }*/
-
+        }
     }
 
     private fun initRecyclerView(view: View) {
@@ -168,12 +153,13 @@ class ListOfCountriesFragment : ScopeFragment() {
         binding?.recyclerView?.setHasFixedSize(true)
         binding?.recyclerView?.layoutManager = linearLayoutManager
 
-        /*val decoration = DividerItemDecoration(context, VERTICAL)
-        binding?.recyclerView?.addItemDecoration(decoration)*/
+        val decoration = DividerItemDecoration(context, VERTICAL)
+        binding?.recyclerView?.addItemDecoration(decoration)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.toolbar, menu)
+        viewModel.instantSearch(searchListByName)
 
         val searchButton = menu.findItem(R.id.search).actionView as SearchView
 
@@ -201,8 +187,7 @@ class ListOfCountriesFragment : ScopeFragment() {
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 viewModel.searchSubject.onNext(newText)
-                listOfCountriesAdapter.clear()
-                listOfCountriesAdapter.addList(searchListByName)
+                listOfCountriesAdapter.refresh(searchListByName)
                 return true
             }
         })

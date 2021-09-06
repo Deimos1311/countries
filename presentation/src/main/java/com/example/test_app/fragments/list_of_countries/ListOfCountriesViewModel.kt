@@ -1,9 +1,7 @@
 package com.example.test_app.fragments.list_of_countries
 
-import android.content.ContentValues.TAG
 import android.location.Location
 import android.location.LocationManager
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.example.domain.dto.CountryDTO
@@ -20,7 +18,6 @@ import com.example.test_app.base.mvvm.BaseViewModel
 import com.example.test_app.base.mvvm.Outcome
 import com.example.test_app.base.mvvm.executeJob
 import com.example.test_app.base.mvvm.executeJobWithoutProgress
-import com.example.test_app.utils.SingleLiveEvent
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -43,7 +40,7 @@ class ListOfCountriesViewModel(
 
     var searchSubject: BehaviorSubject<String> = BehaviorSubject.create()
 
-    var dataLiveData = SingleLiveEvent<Outcome<MutableList<CountryDTO>>>()
+    var dataLiveData = MutableLiveData<Outcome<MutableList<CountryDTO>>>()
     var listOfCountriesAddToDBLiveData = MutableLiveData<Outcome<MutableList<CountryDTO>>>()
     var listOfCountriesGetFromDBLiveData = MutableLiveData<Outcome<MutableList<CountryDTO>>>()
     var listOfLanguagesGetFromDBLiveData = MutableLiveData<Outcome<MutableList<LanguageDTO>>>()
@@ -58,6 +55,8 @@ class ListOfCountriesViewModel(
 
     private lateinit var userLocation: Location
 
+    var tempListByName: MutableList<CountryDTO> = mutableListOf()
+
     fun getListOfCountries() {
         addToDisposable(
             executeJob(
@@ -70,55 +69,13 @@ class ListOfCountriesViewModel(
     fun subscribeCountryChannel() {
         addToDisposable(
             executeJobWithoutProgress(
-                mCountryInteractor.getCountryChannel(), dataLiveData
+                mCountryInteractor.getCountryChannel()
+                    .doOnNext {
+                        tempListByName.addAll(it)
+                    }, dataLiveData
             )
         )
     }
-
-    /*fun addListOfCountriesToDB() {
-
-        addToDisposable(
-            executeJob(
-                mGetAllCountriesFromAPIUseCase.execute()
-                    .doOnNext { data ->
-                        data.forEach {
-                            listOfCountryDB.add(
-                                CountryDTO(
-                                    it.countryName,
-                                    it.cityName,
-                                    it.population,
-                                    mutableListOf()
-                                )
-                            )
-                            it.languages.forEach { language ->
-                                listOfLanguagesDB.add(
-                                    LanguageDTO(
-                                        language.name,
-                                        language.nativeName,
-                                        language.iso639_1,
-                                        language.iso639_2
-                                    )
-                                )
-                            }
-                        }
-                        data.forEach {
-                            crossRefDB.add(
-                                CountryLanguageCrossRefDTO(
-                                    it.countryName,
-                                    it.languages.joinToString { item ->
-                                        item.name
-                                    }
-                                )
-                            )
-                        }
-                        mAddAllCountriesToDBUseCase.setParams(listOfCountryDB).execute()
-                        mAddLanguageToDBUseCase.setParams(listOfLanguagesDB).execute()
-                        mAddCountryLanguageCrossRefToDBUseCase.setParams(crossRefDB).execute()
-                    },
-                listOfCountriesAddToDBLiveData
-            )
-        )
-    }*/
 
     /*fun getListOfCountriesFromDB() {
         addToDisposable(
@@ -139,8 +96,7 @@ class ListOfCountriesViewModel(
     }*/
 
     fun instantSearch(
-        searchListByName: MutableList<CountryDTO>,
-        tempListByName: MutableList<CountryDTO>
+        searchListByName: MutableList<CountryDTO>
     ) {
         searchSubject
             .doOnNext { query -> //todo map
@@ -166,9 +122,7 @@ class ListOfCountriesViewModel(
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { text ->
-                Log.d(TAG, "subscriber: $text")
-            }
+            .subscribe {}
     }
 
     fun attachCurrentLocation(location: Location) {
@@ -207,7 +161,7 @@ class ListOfCountriesViewModel(
                             calculateDistanceFromUserToCountry(itemLocation) <= distance * ONE_KILOMETER
                         }
                             .toMutableList()
-                    }, sortedListLiveData
+                    }, dataLiveData
             )
         )
     }
@@ -215,12 +169,12 @@ class ListOfCountriesViewModel(
     private fun calculateDistanceFromUserToCountry(countryDTO: CountryDTO): Float {
         var result = 0.0F
         if (countryDTO.location.isNotEmpty()) {
-                var currentCountryLocation =
-                    Location(LocationManager.GPS_PROVIDER).apply {
-                        latitude = countryDTO.location[0]
-                        longitude = countryDTO.location[1]
-                    }
-                result = userLocation.distanceTo(currentCountryLocation)
+            var currentCountryLocation =
+                Location(LocationManager.GPS_PROVIDER).apply {
+                    latitude = countryDTO.location[0]
+                    longitude = countryDTO.location[1]
+                }
+            result = userLocation.distanceTo(currentCountryLocation)
         }
         return result
     }

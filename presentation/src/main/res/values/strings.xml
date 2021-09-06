@@ -19,9 +19,9 @@
     <string name="app_label">test_app</string>
     <string name="searching">Searching</string>
     <string name="somth_wrong">Something wrong</string>
-    <string name="start">Start!</string>
+    <string name="start">Open the list of countries</string>
     <string name="search_by_country_name">Search by country name</string>
-    <string name="map">map</string>
+    <string name="map">Open map</string>
     <string name="map_toolbar">Map</string>
     <string name="my_location">My location</string>
     <string name="sliders">Sliders</string>
@@ -33,7 +33,8 @@
     <string name="allow_asses_to_device_location">Allow asses to device location?</string>
     <string name="access">Access</string>
     <string name="enter_max_distance_to_countries">Enter max distance to Countries…</string>
-    <string name="slider_text_population">\tSorting by Population \n\t\tFrom: %1$d \t\tTo: %2$d</string>
-    <string name="slider_text_area">\tSorting by Area \n\t\tFrom: %1$d \t\tTo: %2$d</string>
+    <string name="slider_text_population">\By Population \n\t\t\t\tFrom: %1$d \t\tTo: %2$d</string>
+    <string name="slider_text_area">\By Area \n\t\t\t\tFrom: %1$d \t\tTo: %2$d</string>
     <string name="sorted">Sorted!</string>
+    <string name="sort_screen">Sort screen</string>
 </resources>

@@ -10,7 +10,9 @@
     <color name="white">#FFFFFFFF</color>
     <color name="progress_background">#323232</color>
     <color name="main_theme_color">#756867</color>
+    <color name="main_theme_color_inactive">#40756867</color>
     <color name="recycler_color">#D5D6D2</color>
     <color name="text_color">#353C3F</color>
     <color name="decorate_color">#FF954E</color>
+    <color name="alcro_grafit">#494d4e</color>
 </resources>
