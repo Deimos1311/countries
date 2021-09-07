@@ -2,6 +2,7 @@ package com.example.test_app
 
 import android.app.Application
 import com.example.test_app.di.appModule
+import com.example.test_app.di.listOfCapitalsModule
 import com.example.test_app.di.listOfCountriesModule
 import com.example.test_app.di.slidersModule
 import org.koin.android.ext.koin.androidContext
@@ -21,7 +22,8 @@ class CountryApp : Application() {
             modules(
                 appModule,
                 listOfCountriesModule,
-                slidersModule
+                slidersModule,
+                listOfCapitalsModule
             )
         }
     }

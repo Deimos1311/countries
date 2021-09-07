@@ -18,6 +18,9 @@
         <action
             android:id="@+id/action_start_screen_to_myLocation"
             app:destination="@id/myLocation" />
+        <action
+            android:id="@+id/action_start_screen_to_listOfCapitalsFragment"
+            app:destination="@id/listOfCapitalsFragment" />
     </fragment>
     <fragment
         android:id="@+id/list_of_countries"
@@ -66,5 +69,9 @@
             android:id="@+id/action_slidersFragment_to_list_of_countries"
             app:destination="@id/list_of_countries" />
     </fragment>
+    <fragment
+        android:id="@+id/listOfCapitalsFragment"
+        android:name="com.example.test_app.fragments.list_of_capitals.ListOfCapitalsFragment"
+        android:label="ListOfCapitalsFragment" />
 
 </navigation>

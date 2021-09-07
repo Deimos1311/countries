@@ -4,6 +4,9 @@ import android.location.Location
 import android.location.LocationManager
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
+import com.example.data.network.common.Common
+import com.example.data.transformers.transformCountryModelMutableListToDto
 import com.example.domain.dto.CountryDTO
 import com.example.domain.dto.CountryLanguageCrossRefDTO
 import com.example.domain.dto.LanguageDTO
@@ -22,6 +25,9 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 class ListOfCountriesViewModel(
@@ -99,7 +105,7 @@ class ListOfCountriesViewModel(
         searchListByName: MutableList<CountryDTO>
     ) {
         searchSubject
-            .doOnNext { query -> //todo map
+            .doOnNext { query ->
                 searchListByName.clear()
 
                 if (query.lowercase().isNotEmpty()) {
@@ -179,5 +185,6 @@ class ListOfCountriesViewModel(
         return result
     }
 }
+
 
 

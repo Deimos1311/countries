@@ -15,6 +15,12 @@ dependencies {
     //RxJava
     def rxjava_version = "3.0.13"
 
+    //Coroutines
+    def coroutines_core_version = "1.4.3"
+
+    //Coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_core_version"
+
     //RxJava
     api "io.reactivex.rxjava3:rxjava:$rxjava_version"
 
