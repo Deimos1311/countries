@@ -5,7 +5,6 @@ object NetConstants {
     private const val PATH_URL = "/{$PATH_VARIABLE}"
 
     const val SERVER_API_BASE_URL = "https://restcountries.eu/rest/v2/"
-    const val SERVER_API_CAPITALS_URL = "https://restcountries.eu/rest/v2/"
 
     const val GET_COUNTRY_DATE = "all"
     const val GET_CAPITAL = "all?fields=capital"

@@ -1,5 +1,6 @@
 package com.example.test_app.fragments.list_of_capitals
-
+//todo design recyclerview
+//todo do some new recyclerview to consolidate knowledge
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View

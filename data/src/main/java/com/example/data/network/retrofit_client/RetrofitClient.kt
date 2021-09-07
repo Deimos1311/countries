@@ -16,31 +16,12 @@ object RetrofitClient {
 
     fun getRetrofitClient(baseURL: String): Retrofit? {
         addInterceptor()
-        if (retrofit == null) {
-            retrofit = Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
-                .baseUrl(baseURL)
-                .client(client.build())
-                .build()
-        }
-        return retrofit
-        //return getClient(RxJava3CallAdapterFactory.create(), baseURL)
+        return getClient(RxJava3CallAdapterFactory.create(), baseURL)
     }
 
     fun getCoroutineRetrofitClient(baseURL: String): Retrofit? {
         addInterceptor()
-
-        if (retrofit == null) {
-            retrofit = Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(CoroutineCallAdapterFactory.invoke())
-                .baseUrl(baseURL)
-                .client(client.build())
-                .build()
-        }
-        return retrofit
-        //return getClient(CoroutineCallAdapterFactory.invoke(), baseURL)
+        return getClient(CoroutineCallAdapterFactory.invoke(), baseURL)
     }
 
     private fun addInterceptor() {
