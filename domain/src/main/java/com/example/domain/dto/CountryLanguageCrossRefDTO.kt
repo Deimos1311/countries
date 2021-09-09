@@ -1,6 +1,6 @@
 package com.example.domain.dto
 
-import com.example.test_app.STRING_NULL_VALUE
+import com.example.domain.STRING_NULL_VALUE
 
 class CountryLanguageCrossRefDTO(
 

@@ -2,8 +2,8 @@ package com.example.data.transformers
 
 import com.example.data.room.entity.CountryEntity
 import com.example.domain.dto.CountryDTO
-import com.example.test_app.NULL_INT_VALUE
-import com.example.test_app.STRING_NULL_VALUE
+import com.example.domain.NULL_INT_VALUE
+import com.example.domain.STRING_NULL_VALUE
 
 fun CountryEntity.transformCountryEntityToDto(): CountryDTO {
     val countryDTO = CountryDTO()

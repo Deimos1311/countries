@@ -1,8 +1,8 @@
 package com.example.data.interactor
 
 import android.util.Log
-import com.example.data.DEFAULT_VALUE_LONG
-import com.example.data.HALF_MINUTE_MILLIS
+import com.example.domain.DEFAULT_VALUE_LONG
+import com.example.domain.HALF_MINUTE_MILLIS
 import com.example.domain.dto.CountryDTO
 import com.example.domain.interactor.BaseInteractor
 import com.example.domain.interactor.CountryInteractor

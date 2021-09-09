@@ -9,17 +9,17 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.domain.*
+import com.example.domain.dto.CountryDTO
 import com.example.test_app.*
 import com.example.test_app.base.mvp.BaseMvpFragment
 import com.example.test_app.databinding.FragmentCountryDetailsBinding
-import com.example.domain.dto.CountryDTO
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import org.koin.androidx.scope.currentScope
 
 class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDetailsView {
 
@@ -27,7 +27,7 @@ class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDet
 
     private lateinit var countryName: String
     private lateinit var flag: String
-    private lateinit var googleMap: GoogleMap
+    private var googleMap: GoogleMap? = null
 
     lateinit var countryDetailsFragmentAdapter: CountryDetailsFragmentAdapter
 
@@ -63,6 +63,9 @@ class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDet
         getPresenter().attachView(this)
         initRecyclerView(view)
 
+        countryDetailsFragmentAdapter = CountryDetailsFragmentAdapter()
+        binding?.recyclerView?.adapter = countryDetailsFragmentAdapter
+
         binding?.countryName?.text = countryName
 
         GlideToVectorYou
@@ -79,7 +82,6 @@ class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDet
         })
 
         binding?.swipeRefresh?.setOnRefreshListener {
-            countryDetailsFragmentAdapter.clear()
             getPresenter().getCountryByName(countryName, true)
         }
         getPresenter().getCountryByName(countryName, false)
@@ -104,8 +106,8 @@ class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDet
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
+        googleMap = null
         getPresenter().detachView()
-
     }
 
     override fun onDestroy() {
@@ -120,19 +122,17 @@ class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDet
     override fun getPresenter(): CountryDetailsPresenter = mPresenter as CountryDetailsPresenter
 
     override fun showCountryInfo(country: CountryDTO, location: LatLng) {
-        countryDetailsFragmentAdapter = CountryDetailsFragmentAdapter()
-        binding?.recyclerView?.adapter = countryDetailsFragmentAdapter
-        countryDetailsFragmentAdapter.addList(country.languages)
+        countryDetailsFragmentAdapter.refresh(country.languages)
 
         binding?.swipeRefresh?.isRefreshing = false
 
-        googleMap.addMarker(
+        googleMap?.addMarker(
             MarkerOptions().position(
                 location
             )
         )
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, CAMERA_ZOOM))
-        googleMap.setOnMapClickListener {
+        googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(location, CAMERA_ZOOM))
+        googleMap?.setOnMapClickListener {
             val bundle = Bundle()
             bundle.putDouble(LATITUDE, location.latitude)
             bundle.putDouble(LONGITUDE, location.longitude)
@@ -141,17 +141,18 @@ class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDet
                 bundle
             )
         }
-
         binding?.frameWithProgress?.visibility = View.GONE
     }
 
     override fun internetError() {
-        Toast.makeText(context, getString(R.string.somth_wrong), Toast.LENGTH_SHORT).show()
+        showToastShort(R.string.somth_wrong)
         binding?.swipeRefresh?.isRefreshing = false
         binding?.frameWithProgress?.visibility = View.GONE
     }
 
     override fun showError(error: String) {
+        showToastShort(R.string.error)
+        print(error)
     }
 
     override fun showProgress() {
@@ -160,5 +161,9 @@ class CountryDetailsFragment : BaseMvpFragment<CountryDetailsView>(), CountryDet
 
     override fun hideProgress() {
         binding?.progressBar?.visibility = View.GONE
+    }
+
+    private fun showToastShort(textId: Int) {
+        Toast.makeText(requireContext(), textId, Toast.LENGTH_SHORT).show()
     }
 }

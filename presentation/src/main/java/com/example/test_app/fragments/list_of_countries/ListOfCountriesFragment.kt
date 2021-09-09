@@ -4,8 +4,9 @@ import android.annotation.SuppressLint
 import android.location.Location
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.Log
 import android.view.*
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
@@ -15,10 +16,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.domain.*
 import com.example.domain.dto.CountryDTO
 import com.example.test_app.*
 import com.example.test_app.base.mvvm.Outcome
 import com.example.test_app.databinding.FragmentListOfCountriesBinding
+import com.example.test_app.fragments.CustomView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
@@ -49,14 +52,14 @@ class ListOfCountriesFragment : ScopeFragment() {
 
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireContext())
-        viewModel.subscribeCountryChannel()
         viewModel.getListOfCountries()
+        viewModel.subscribeCountryChannel()
 
         requireActivity().onBackPressedDispatcher.addCallback(
             this,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    if (listOfCountriesAdapter.size() < 249) {
+                    if (listOfCountriesAdapter.size() < COUNT_OF_COUNTRIES) {
                         viewModel.getListOfCountries()
                     } else {
                         findNavController().navigate(R.id.action_list_of_countries_to_start_screen)
@@ -201,7 +204,7 @@ class ListOfCountriesFragment : ScopeFragment() {
                 } else {
                     item.setIcon(R.drawable.baseline_expand_less_24)
                 }
-                //listOfCountriesAdapter.isSorted(isSorted)
+                listOfCountriesAdapter.isSorted(isSorted)
                 //saveSortStatus()
                 isSorted = !isSorted
 

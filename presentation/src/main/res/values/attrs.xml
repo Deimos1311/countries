@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomView">
+        <attr format="integer" name="textSort"/>
+        <attr format="integer" name="textComments"/>
+        <attr format="integer" name="textDistance"/>
+    </declare-styleable>
+</resources>

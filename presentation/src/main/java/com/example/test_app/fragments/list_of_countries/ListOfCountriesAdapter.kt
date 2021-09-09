@@ -1,12 +1,16 @@
 package com.example.test_app.fragments.list_of_countries
 
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.domain.NULL_INT_VALUE
 import com.example.domain.dto.CountryDTO
 import com.example.test_app.R
 import com.example.test_app.Sort
@@ -14,12 +18,17 @@ import com.example.test_app.base.adapter.BaseAdapter
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 
 class ListOfCountriesAdapter : BaseAdapter<CountryDTO>() {
+    var start = 0
 
     class CountryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val countryName: TextView = itemView.findViewById(R.id.countryName)
-        val cityName: TextView = itemView.findViewById(R.id.cityName)
-        val population: TextView = itemView.findViewById(R.id.population)
-        val flag: ImageView = itemView.findViewById(R.id.flag)
+        val countryName: AppCompatTextView = itemView.findViewById(R.id.countryName)
+        val cityName: AppCompatTextView = itemView.findViewById(R.id.cityName)
+        val population: AppCompatTextView = itemView.findViewById(R.id.population)
+        val flag: AppCompatImageView = itemView.findViewById(R.id.flag)
+        val distance: AppCompatTextView = itemView.findViewById(R.id.text_distance)
+        var imageUp: ImageView = itemView.findViewById(R.id.image_up)
+        var imageDown: ImageView = itemView.findViewById(R.id.image_down)
+        var tvSortText: TextView = itemView.findViewById(R.id.text_sort)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CountryViewHolder {
@@ -43,7 +52,6 @@ class ListOfCountriesAdapter : BaseAdapter<CountryDTO>() {
                 holder.cityName.text = item.cityName
             }
 
-            //todo refactor glide cache images
             item.flag
             GlideToVectorYou
                 .init()
@@ -53,9 +61,27 @@ class ListOfCountriesAdapter : BaseAdapter<CountryDTO>() {
                     R.drawable.twotone_error_black_18
                 )
                 .load(Uri.parse(item.flag), holder.flag)
+            holder.distance.text = holder.itemView.context.getString(R.string.distance, item.distance.toString())
+            holder.tvSortText.text = dataList[position].text.toString()
 
             holder.itemView.setOnClickListener {
                 onItemClickListener?.invoke(item)
+            }
+
+            holder.imageUp.setOnClickListener {
+                holder.tvSortText.text = dataList[position].text++.toString()
+                dataList.sortByDescending {
+                    it.text
+                }
+                notifyDataSetChanged()
+            }
+
+            holder.imageDown.setOnClickListener {
+                holder.tvSortText.text = dataList[position].text--.toString()
+                dataList.sortByDescending {
+                    it.text
+                }
+                notifyDataSetChanged()
             }
         }
     }

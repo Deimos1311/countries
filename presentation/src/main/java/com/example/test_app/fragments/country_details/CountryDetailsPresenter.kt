@@ -26,10 +26,7 @@ class CountryDetailsPresenter : BaseMvpPresenter<CountryDetailsView>() {
                 }, { throwable ->
                     throwable.printStackTrace()
                     getView()?.internetError()
-
                 })
         )
     }
-
-
 }

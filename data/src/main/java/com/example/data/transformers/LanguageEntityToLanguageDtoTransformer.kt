@@ -2,7 +2,7 @@ package com.example.data.transformers
 
 import com.example.data.room.entity.LanguageEntity
 import com.example.domain.dto.LanguageDTO
-import com.example.test_app.STRING_NULL_VALUE
+import com.example.domain.STRING_NULL_VALUE
 
 fun LanguageEntity.transformLanguageEntityToDto(): LanguageDTO {
     val languageDTO = LanguageDTO()

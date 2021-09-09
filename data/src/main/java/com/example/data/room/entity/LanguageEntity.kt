@@ -3,7 +3,7 @@ package com.example.data.room.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.test_app.STRING_NULL_VALUE
+import com.example.domain.STRING_NULL_VALUE
 
 @Entity(tableName = "languages_table")
 data class LanguageEntity(

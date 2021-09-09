@@ -1,8 +1,8 @@
 package com.example.domain.dto
 
-import com.example.test_app.NULL_DOUBLE_VALUE
-import com.example.test_app.NULL_INT_VALUE
-import com.example.test_app.STRING_NULL_VALUE
+import com.example.domain.NULL_DOUBLE_VALUE
+import com.example.domain.NULL_INT_VALUE
+import com.example.domain.STRING_NULL_VALUE
 
 data class CountryDTO(
 
@@ -12,6 +12,7 @@ data class CountryDTO(
     var languages: MutableList<LanguageDTO> = mutableListOf(),
     var flag: String = STRING_NULL_VALUE,
     var area: Double = NULL_DOUBLE_VALUE,
-    var location: MutableList<Double> = mutableListOf()
-
+    var location: MutableList<Double> = mutableListOf(),
+    var distance: Int = NULL_INT_VALUE,
+    var text: Int = NULL_INT_VALUE
 )

@@ -7,5 +7,4 @@
         android:startColor="@color/main_theme_color"
         android:centerColor="@color/decorate_color"
         android:endColor="@color/main_theme_color"/>
-
 </shape>

@@ -1,6 +1,6 @@
 package com.example.data.transformers
 
-import com.example.test_app.STRING_NULL_VALUE
+import com.example.domain.STRING_NULL_VALUE
 import com.example.domain.dto.LanguageDTO
 
 fun com.example.data.model.LanguageModel.transformLanguageModelToDto(): LanguageDTO {

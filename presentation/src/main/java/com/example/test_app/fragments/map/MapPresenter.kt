@@ -1,20 +1,19 @@
 package com.example.test_app.fragments.map
 
+import com.example.data.network.common.Common
+import com.example.data.transformers.transformCountryModelMutableListToDto
 import com.example.test_app.R
 import com.example.test_app.base.mvp.BaseMvpPresenter
-import com.example.data.transformers.transformCountryModelMutableListToDto
 import com.google.android.gms.maps.model.LatLng
 
 class MapPresenter : BaseMvpPresenter<MapView>() {
 
-    fun getMap() {
+    fun getMap(isRefresh: Boolean) {
 
         addDisposable(
             inBackground(
-                com.example.data.network.common.Common.retrofitService?.getCountryDate()
-               /* ?.onErrorResumeNext {
-                    Flowable.just(mutableListOf())
-                }*/)
+                handleProgress(Common.retrofitService?.getCountryDate(), isRefresh)
+            )
                 ?.map { it.transformCountryModelMutableListToDto() }
                 ?.subscribe({
                     it.forEach { item ->

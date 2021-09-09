@@ -25,7 +25,12 @@ class ListOfCapitalsAdapter: BaseAdapter<CapitalDTO>() {
         val item = dataList[position]
 
         if (holder is CapitalViewHolder) {
-            holder.capital.text = item.capital
+
+            if (item.capital.isEmpty()) {
+                holder.capital.text = holder.itemView.context.getString(R.string.no_data_for_capital)                
+            } else {
+                holder.capital.text = item.capital
+            }
         }
     }
 }

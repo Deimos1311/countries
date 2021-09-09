@@ -14,6 +14,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         navController = Navigation.findNavController(this, R.id.nav_host_fragment)
 
         val toolbar = findViewById<Toolbar>(R.id.mytool)
@@ -25,13 +26,4 @@ class MainActivity : AppCompatActivity() {
             R.string.button_dialog_with_one_button, null
         )
     }
-
-    /*override fun onBackPressed() {
-        if (!navController.popBackStack()) {
-            super.onBackPressed()
-            super.onPause()
-            super.onStop()
-            super.onDestroy()
-        }
-    }*/
 }

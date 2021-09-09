@@ -12,10 +12,10 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
-import com.example.test_app.EQUATOR_LENGTH_FLOAT
-import com.example.test_app.FILTER_KEY
+import com.example.domain.EQUATOR_LENGTH_FLOAT
+import com.example.domain.FILTER_KEY
+import com.example.domain.SLIDERS_KEY
 import com.example.test_app.R
-import com.example.test_app.SLIDERS_KEY
 import com.example.test_app.base.mvvm.Outcome
 import com.example.test_app.databinding.FragmentSlidersBinding
 import com.google.android.material.slider.RangeSlider

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.test_app.base.mvvm.Outcome
@@ -53,18 +54,39 @@ class ListOfCapitalsFragment : ScopeFragment() {
         viewModel.getCapitals()
         viewModel.dataCapitalsLiveData.observe(viewLifecycleOwner, {
             when (it) {
-                is Outcome.Progress -> {}
-                is Outcome.Next -> {
-                    listOfCapitalsAdapter.addList(it.data)
+                is Outcome.Progress -> {
+                    if (it.loading) showProgress() else hideProgress()
                 }
-                is Outcome.Success -> {}
-                is Outcome.Failure -> {}
+                is Outcome.Next -> {
+                    listOfCapitalsAdapter.refresh(it.data)
+                    hideProgress()
+                }
+                is Outcome.Success -> {
+                }
+                is Outcome.Failure -> {
+                }
             }
         })
+
+        binding?.swipeRefreshCapitals?.setOnRefreshListener {
+            viewModel.getCapitals()
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
+    }
+
+    private fun showProgress() {
+        //binding?.swipeRefresh?.isRefreshing = false
+        binding?.progressBar?.isVisible = true
+        binding?.frameWithProgress?.isVisible = true
+    }
+
+    private fun hideProgress() {
+        //binding?.swipeRefresh?.isRefreshing = true
+        binding?.progressBar?.isVisible = false
+        binding?.frameWithProgress?.isVisible = false
     }
 }

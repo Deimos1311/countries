@@ -1,7 +1,6 @@
 package com.example.test_app.fragments.start_screen
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,14 +8,13 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
+import com.example.domain.RATIONALE_KEY
+import com.example.domain.RESULT_KEY
+import com.example.domain.SETTINGS_KEY
 import com.example.test_app.R
-import com.example.test_app.RATIONALE_KEY
-import com.example.test_app.RESULT_KEY
-import com.example.test_app.SETTINGS_KEY
 import com.example.test_app.base.mvp.BaseMvpFragment
 import com.example.test_app.databinding.FragmentStartScreenBinding
 import com.example.test_app.fragments.start_screen.bottom_sheet.BottomSheetDialogDontAskFragment

@@ -4,15 +4,13 @@ import android.app.Activity
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.TextView
-import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
-import com.example.test_app.DIALOG_WIDTH_DELTA_7
+import com.example.domain.DIALOG_WIDTH_DELTA_7
 import com.example.test_app.R
 
 fun createDialog(activity: Activity): Dialog {

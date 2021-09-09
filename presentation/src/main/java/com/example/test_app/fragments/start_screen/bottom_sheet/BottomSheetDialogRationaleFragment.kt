@@ -6,9 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
-import com.example.test_app.RATIONALE_KEY
-import com.example.test_app.RATIONALE_TAG
-import com.example.test_app.RESULT_KEY
+import com.example.domain.RATIONALE_KEY
+import com.example.domain.RATIONALE_TAG
+import com.example.domain.RESULT_KEY
 import com.example.test_app.databinding.FragmentBottomSheetDialogRationaleBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 

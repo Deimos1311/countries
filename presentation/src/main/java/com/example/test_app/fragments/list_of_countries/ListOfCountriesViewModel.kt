@@ -4,9 +4,9 @@ import android.location.Location
 import android.location.LocationManager
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
-import com.example.data.network.common.Common
-import com.example.data.transformers.transformCountryModelMutableListToDto
+import com.example.domain.DEBOUNCE_TIME
+import com.example.domain.MIN_SEARCH_STRING_LENGTH
+import com.example.domain.ONE_KILOMETER
 import com.example.domain.dto.CountryDTO
 import com.example.domain.dto.CountryLanguageCrossRefDTO
 import com.example.domain.dto.LanguageDTO
@@ -14,9 +14,6 @@ import com.example.domain.interactor.CountryInteractor
 import com.example.domain.usecase.impl.database.*
 import com.example.domain.usecase.impl.network.GetAllCountriesFromAPIUseCase
 import com.example.domain.usecase.impl.network.GetCountryListByNameFromAPIUseCase
-import com.example.test_app.DEBOUNCE_TIME
-import com.example.test_app.MIN_SEARCH_STRING_LENGTH
-import com.example.test_app.ONE_KILOMETER
 import com.example.test_app.base.mvvm.BaseViewModel
 import com.example.test_app.base.mvvm.Outcome
 import com.example.test_app.base.mvvm.executeJob
@@ -25,9 +22,6 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 class ListOfCountriesViewModel(
@@ -77,7 +71,13 @@ class ListOfCountriesViewModel(
             executeJobWithoutProgress(
                 mCountryInteractor.getCountryChannel()
                     .doOnNext {
-                        tempListByName.addAll(it)
+                        tempListByName = it
+                    }
+                    .doOnNext {
+                        it.forEach { country ->
+                            country.distance =
+                                calculateDistanceFromUserToCountry(country).toInt()
+                        }
                     }, dataLiveData
             )
         )
@@ -164,9 +164,15 @@ class ListOfCountriesViewModel(
                     }
                     .map {
                         it.filter { itemLocation ->
-                            calculateDistanceFromUserToCountry(itemLocation) <= distance * ONE_KILOMETER
+                            calculateDistanceFromUserToCountry(itemLocation) <= distance
                         }
                             .toMutableList()
+                    }
+                    .doOnNext {
+                        it.forEach { country ->
+                            country.distance =
+                                calculateDistanceFromUserToCountry(country).toInt()
+                        }
                     }, dataLiveData
             )
         )
@@ -180,7 +186,7 @@ class ListOfCountriesViewModel(
                     latitude = countryDTO.location[0]
                     longitude = countryDTO.location[1]
                 }
-            result = userLocation.distanceTo(currentCountryLocation)
+            result = userLocation.distanceTo(currentCountryLocation) / ONE_KILOMETER
         }
         return result
     }

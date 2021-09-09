@@ -2,7 +2,7 @@ package com.example.data.transformers
 
 import com.example.data.model.CapitalModel
 import com.example.domain.dto.CapitalDTO
-import com.example.test_app.STRING_NULL_VALUE
+import com.example.domain.STRING_NULL_VALUE
 
 fun CapitalModel.transformCapitalModelToDto(): CapitalDTO {
     val capitalDTO = CapitalDTO()

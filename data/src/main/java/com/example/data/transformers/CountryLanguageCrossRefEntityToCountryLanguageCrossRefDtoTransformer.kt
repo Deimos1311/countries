@@ -2,7 +2,7 @@ package com.example.data.transformers
 
 import com.example.data.room.entity.CountryLanguageCrossRefEntity
 import com.example.domain.dto.CountryLanguageCrossRefDTO
-import com.example.test_app.STRING_NULL_VALUE
+import com.example.domain.STRING_NULL_VALUE
 
 fun CountryLanguageCrossRefEntity.transformCountryLanguageCrossRefToDto(): CountryLanguageCrossRefDTO {
     val countryLanguageCrossRefDTO = CountryLanguageCrossRefDTO()

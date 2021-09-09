@@ -3,7 +3,7 @@ package com.example.domain.usecase.impl.network
 import com.example.domain.dto.CountryDTO
 import com.example.domain.repository.NetworkRepository
 import com.example.domain.usecase.UseCase
-import com.example.test_app.STRING_NULL_VALUE
+import com.example.domain.STRING_NULL_VALUE
 import io.reactivex.rxjava3.core.Flowable
 
 class GetCountryListByNameFromAPIUseCase(private val networkRepository: NetworkRepository) :

@@ -7,8 +7,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
-import com.example.test_app.base.mvp.BaseMvpFragment
+import androidx.navigation.fragment.findNavController
+import com.example.domain.DEFAULT_LATITUDE
+import com.example.domain.DEFAULT_LONGITUDE
+import com.example.domain.MY_LOCATION_ZOOM
+import com.example.domain.REQUEST_CODE
+import com.example.test_app.R
 import com.example.test_app.databinding.FragmentMyLocationBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -17,17 +23,27 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-//TODO need to be finalized
-class MyLocationFragment : BaseMvpFragment<MyLocationView>(), MyLocationView {
-    var binding: FragmentMyLocationBinding? = null
+import org.koin.androidx.scope.ScopeFragment
 
-    lateinit var googleMap: GoogleMap
-    var currentLocation: Location? = null
-    var fusedLocationProviderClient: FusedLocationProviderClient? = null
-    val REQUEST_CODE = 1
+class MyLocationFragment : ScopeFragment() {
+
+    private var binding: FragmentMyLocationBinding? = null
+
+    private var googleMap: GoogleMap? = null
+    private var currentLocation: Location? = null
+    private var fusedLocationProviderClient: FusedLocationProviderClient? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    findNavController().navigateUp()
+                }
+            }
+        )
 
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireContext())
@@ -41,15 +57,9 @@ class MyLocationFragment : BaseMvpFragment<MyLocationView>(), MyLocationView {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentMyLocationBinding.inflate(inflater, container, false)
-
         binding?.myLocationMap?.onCreate(savedInstanceState)
 
         return binding?.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        getPresenter().attachView(this)
     }
 
     override fun onResume() {
@@ -65,6 +75,7 @@ class MyLocationFragment : BaseMvpFragment<MyLocationView>(), MyLocationView {
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
+        googleMap = null
     }
 
     override fun onDestroy() {
@@ -108,14 +119,17 @@ class MyLocationFragment : BaseMvpFragment<MyLocationView>(), MyLocationView {
         }
     }
 
-    fun getMyLocation() {
-        val latLng = LatLng(currentLocation!!.latitude, currentLocation!!.longitude)
-        val markerPosition = MarkerOptions().position(latLng).title("I am here")
+    private fun getMyLocation() {
+        val latLng = LatLng(
+            currentLocation?.latitude ?: DEFAULT_LATITUDE,
+            currentLocation?.longitude ?: DEFAULT_LONGITUDE
+        )
+        val markerPosition = MarkerOptions().position(latLng).title(getString(R.string.i_am_here))
 
-        googleMap.uiSettings.isZoomControlsEnabled = true
-        googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 5f))
-        googleMap.addMarker(markerPosition)
+        googleMap?.uiSettings?.isZoomControlsEnabled = true
+        googleMap?.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+        googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, MY_LOCATION_ZOOM))
+        googleMap?.addMarker(markerPosition)
     }
 
     override fun onRequestPermissionsResult(
@@ -125,27 +139,9 @@ class MyLocationFragment : BaseMvpFragment<MyLocationView>(), MyLocationView {
     ) {
         when (requestCode) {
             REQUEST_CODE -> {
-                if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                     fetchLocation()
             }
         }
-    }
-
-    override fun createPresenter() {
-        mPresenter = MyLocationPresenter()
-    }
-
-    override fun getPresenter(): MyLocationPresenter = mPresenter as MyLocationPresenter
-
-    override fun showError(error: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun showProgress() {
-        TODO("Not yet implemented")
-    }
-
-    override fun hideProgress() {
-        TODO("Not yet implemented")
     }
 }
