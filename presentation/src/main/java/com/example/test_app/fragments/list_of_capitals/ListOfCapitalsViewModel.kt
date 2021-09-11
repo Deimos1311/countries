@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.domain.dto.CapitalDTO
 import com.example.domain.usecase.impl.coroutine.GetAllCapitalsFromAPICoroutineUseCase
 import com.example.test_app.base.mvvm.BaseViewModel
-import com.example.test_app.base.mvvm.Outcome
+import com.example.domain.outcome.Outcome
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

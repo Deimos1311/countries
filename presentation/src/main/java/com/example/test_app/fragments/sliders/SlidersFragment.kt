@@ -1,12 +1,9 @@
 package com.example.test_app.fragments.sliders
 
 import android.os.Bundle
-import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -16,7 +13,7 @@ import com.example.domain.EQUATOR_LENGTH_FLOAT
 import com.example.domain.FILTER_KEY
 import com.example.domain.SLIDERS_KEY
 import com.example.test_app.R
-import com.example.test_app.base.mvvm.Outcome
+import com.example.domain.outcome.Outcome
 import com.example.test_app.databinding.FragmentSlidersBinding
 import com.google.android.material.slider.RangeSlider
 import org.koin.androidx.scope.ScopeFragment

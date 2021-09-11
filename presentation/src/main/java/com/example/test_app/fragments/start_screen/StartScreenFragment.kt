@@ -72,6 +72,10 @@ class StartScreenFragment : BaseMvpFragment<StartScreenView>(), StartScreenView 
             findNavController().navigate(R.id.action_start_screen_to_listOfCapitalsFragment)
         }
 
+        binding?.buttonToRegion?.setOnClickListener {
+            findNavController().navigate(R.id.action_start_screen_to_regionFragment)
+        }
+
         setFragmentResultListener(RATIONALE_KEY) { _, bundle ->
             val isWantToAllowAfterRationale = bundle.getBoolean(RESULT_KEY)
             if (isWantToAllowAfterRationale) {

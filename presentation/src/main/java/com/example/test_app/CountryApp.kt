@@ -21,7 +21,8 @@ class CountryApp : Application() {
                 listOfCountriesModule,
                 slidersModule,
                 listOfCapitalsModule,
-                myLocationModule
+                myLocationModule,
+                regionModule
             )
         }
     }

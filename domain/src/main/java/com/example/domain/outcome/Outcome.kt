@@ -1,4 +1,4 @@
-package com.example.test_app.base.mvvm
+package com.example.domain.outcome
 
 sealed class Outcome<T> {
 

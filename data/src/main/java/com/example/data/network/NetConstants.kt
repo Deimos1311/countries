@@ -8,5 +8,6 @@ object NetConstants {
 
     const val GET_COUNTRY_DATE = "all"
     const val GET_CAPITAL = "all?fields=capital"
+    const val GET_REGION = "all?fields=region"
     const val GET_COUNTRY_BY_NAME = "name$PATH_URL"
 }

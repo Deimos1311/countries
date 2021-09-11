@@ -1,5 +1,6 @@
 package com.example.data.network.retrofit_client
 
+import com.chenxyu.retrofit.adapter.FlowCallAdapterFactory
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory
 import kotlinx.coroutines.CoroutineDispatcher
@@ -22,6 +23,11 @@ object RetrofitClient {
     fun getCoroutineRetrofitClient(baseURL: String): Retrofit? {
         addInterceptor()
         return getClient(CoroutineCallAdapterFactory.invoke(), baseURL)
+    }
+
+    fun getFlowRetrofitClient(baseURL: String): Retrofit? {
+        addInterceptor()
+        return getClient(FlowCallAdapterFactory(), baseURL)
     }
 
     private fun addInterceptor() {

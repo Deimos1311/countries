@@ -5,10 +5,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.test_app.base.mvvm.Outcome
+import com.example.domain.outcome.Outcome
 import com.example.test_app.databinding.FragmentListOfCapitalsBinding
 import org.koin.androidx.scope.ScopeFragment
 import org.koin.androidx.viewmodel.ext.android.stateViewModel
@@ -23,6 +25,18 @@ class ListOfCapitalsFragment : ScopeFragment() {
     lateinit var linearLayoutManager: LinearLayoutManager
 
     private val viewModel: ListOfCapitalsViewModel by stateViewModel()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    findNavController().navigateUp()
+                }
+            })
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

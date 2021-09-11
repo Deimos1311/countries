@@ -1,12 +1,12 @@
 package com.example.test_app.fragments.list_of_countries
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
 import android.location.Location
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.*
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
@@ -19,9 +19,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.domain.*
 import com.example.domain.dto.CountryDTO
 import com.example.test_app.*
-import com.example.test_app.base.mvvm.Outcome
+import com.example.domain.outcome.Outcome
 import com.example.test_app.databinding.FragmentListOfCountriesBinding
-import com.example.test_app.fragments.CustomView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
@@ -47,8 +46,11 @@ class ListOfCountriesFragment : ScopeFragment() {
 
     private val viewModel: ListOfCountriesViewModel by stateViewModel()
 
+    lateinit var sharedPreferences: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        getSortStatus()
 
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireContext())
@@ -78,7 +80,7 @@ class ListOfCountriesFragment : ScopeFragment() {
 
         getMyLocation()
 
-        //getSortStatus()
+
         return binding?.root
     }
 
@@ -181,7 +183,6 @@ class ListOfCountriesFragment : ScopeFragment() {
             return@setOnCloseListener false
         }
 
-
         searchButton.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 viewModel.searchSubject.onNext(query)
@@ -205,7 +206,6 @@ class ListOfCountriesFragment : ScopeFragment() {
                     item.setIcon(R.drawable.baseline_expand_less_24)
                 }
                 listOfCountriesAdapter.isSorted(isSorted)
-                //saveSortStatus()
                 isSorted = !isSorted
 
             }
@@ -229,8 +229,7 @@ class ListOfCountriesFragment : ScopeFragment() {
     }
 
     //todo sharedprefs
-    //not working yet
-    /*fun saveSortStatus() {
+    fun saveSortStatus() {
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         with(sharedPreferences.edit()) {
             putBoolean("SortStatus", isSorted)
@@ -242,7 +241,7 @@ class ListOfCountriesFragment : ScopeFragment() {
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val value = sharedPreferences.getBoolean("SortStatus", false)
         isSorted = value
-    }*/
+    }
 
     override fun onResume() {
         super.onResume()
@@ -253,6 +252,7 @@ class ListOfCountriesFragment : ScopeFragment() {
     }
 
     override fun onStop() {
+        saveSortStatus()
         super.onStop()
     }
 //todo transfer to dialogue and customize it
@@ -305,7 +305,5 @@ class ListOfCountriesFragment : ScopeFragment() {
             .setAction(actionId) {
                 showToastShort(toastId)
             }.show()
-
     }
 }
-

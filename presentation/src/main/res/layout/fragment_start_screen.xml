@@ -6,6 +6,20 @@
     android:id="@+id/frame_start_screen">
 
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_to_region"
+        android:background="@drawable/start_button_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_layout_margin"
+        android:layout_marginEnd="@dimen/base_layout_margin"
+        android:layout_gravity="center"
+        android:layout_marginBottom="75dp"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:text="Region"
+        tools:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_to_list_of_countries"
         android:background="@drawable/start_button_background"
         android:layout_width="match_parent"

@@ -53,5 +53,7 @@
     <dimen name="text_size_14sp">14sp</dimen>
     <dimen name="margin_2dp">2dp</dimen>
     <dimen name="margin_3dp">3dp</dimen>
+    <dimen name="height_60dp">60dp</dimen>
+    <dimen name="padding_8dp">8dp</dimen>
 
 </resources>

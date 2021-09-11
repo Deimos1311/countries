@@ -79,48 +79,4 @@ class CountryInteractorImpl(
             lastNetworkRequestTime == 0L
                     || System.currentTimeMillis() - lastNetworkRequestTime > HALF_MINUTE_MILLIS
         )
-
-    fun ad(): Flowable<Any> {
-        return Flowable.just(lastNetworkRequestTime == 0L)
-            .flatMap {
-                return@flatMap if (lastNetworkRequestTime == 0L) {
-                    lastNetworkRequestTime = System.currentTimeMillis()
-                    networkRepository.getCountryDate()
-                        .flatMap {
-                            it.forEach { item ->
-                                databaseRepository.addLanguage(item.languages)
-                            }
-                            databaseRepository.addAllCountries(it)
-                            cacheRepository.addAllCountries(it)
-                        }
-                        .onErrorReturn {
-                            databaseRepository.getAllCountries()
-                                .subscribe({ countrySubject.onNext(it) }, {})
-                            error("")
-
-                        }
-                    //.onErrorResumeNext {
-                    //    databaseRepository.getAllCountries()
-                    //}
-                } else {
-                    if (System.currentTimeMillis() - lastNetworkRequestTime > HALF_MINUTE_MILLIS) {
-                        lastNetworkRequestTime = System.currentTimeMillis()
-                        networkRepository.getCountryDate()
-                            .flatMap {
-                                it.forEach { item ->
-                                    databaseRepository.addLanguage(item.languages)
-                                }
-                                databaseRepository.addAllCountries(it)
-                                cacheRepository.addAllCountries(it)
-                            }
-                    } else {
-                        cacheRepository.getAllCountries()
-                    }
-                }
-            }
-            .doOnNext {
-                countrySubject.onNext(it)
-            }
-            .map { Any() }
-    }
 }

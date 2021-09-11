@@ -2,6 +2,7 @@ package com.example.test_app.fragments.list_of_countries
 
 import android.location.Location
 import android.location.LocationManager
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.example.domain.DEBOUNCE_TIME
@@ -15,7 +16,7 @@ import com.example.domain.usecase.impl.database.*
 import com.example.domain.usecase.impl.network.GetAllCountriesFromAPIUseCase
 import com.example.domain.usecase.impl.network.GetCountryListByNameFromAPIUseCase
 import com.example.test_app.base.mvvm.BaseViewModel
-import com.example.test_app.base.mvvm.Outcome
+import com.example.domain.outcome.Outcome
 import com.example.test_app.base.mvvm.executeJob
 import com.example.test_app.base.mvvm.executeJobWithoutProgress
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -53,7 +54,7 @@ class ListOfCountriesViewModel(
 
     var dataStatesLivaData = MutableLiveData<Outcome<MutableList<CountryDTO>>>()
 
-    private lateinit var userLocation: Location
+    private var userLocation: Location? = null
 
     var tempListByName: MutableList<CountryDTO> = mutableListOf()
 
@@ -73,6 +74,7 @@ class ListOfCountriesViewModel(
                     .doOnNext {
                         tempListByName = it
                     }
+                    //todo doesnt work correctly(missing location after fr B -> A)
                     .doOnNext {
                         it.forEach { country ->
                             country.distance =
@@ -186,7 +188,11 @@ class ListOfCountriesViewModel(
                     latitude = countryDTO.location[0]
                     longitude = countryDTO.location[1]
                 }
-            result = userLocation.distanceTo(currentCountryLocation) / ONE_KILOMETER
+            //todo need somth to synchronized userLocation
+            Log.e("userLocation", "")
+            userLocation?.let {
+                result = it.distanceTo(currentCountryLocation) / ONE_KILOMETER
+            }
         }
         return result
     }

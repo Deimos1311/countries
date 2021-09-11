@@ -21,6 +21,9 @@
         <action
             android:id="@+id/action_start_screen_to_listOfCapitalsFragment"
             app:destination="@id/listOfCapitalsFragment" />
+        <action
+            android:id="@+id/action_start_screen_to_regionFragment"
+            app:destination="@id/regionFragment" />
     </fragment>
     <fragment
         android:id="@+id/list_of_countries"
@@ -73,5 +76,9 @@
         android:id="@+id/listOfCapitalsFragment"
         android:name="com.example.test_app.fragments.list_of_capitals.ListOfCapitalsFragment"
         android:label="ListOfCapitalsFragment" />
+    <fragment
+        android:id="@+id/regionFragment"
+        android:name="com.example.test_app.fragments.region.RegionFragment"
+        android:label="RegionFragment" />
 
 </navigation>

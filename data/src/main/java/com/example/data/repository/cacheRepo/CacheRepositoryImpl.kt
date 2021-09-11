@@ -1,4 +1,4 @@
-package com.example.data.repository.cache
+package com.example.data.repository.cacheRepo
 
 import com.example.domain.dto.CountryDTO
 import com.example.domain.repository.CacheRepository
@@ -8,7 +8,7 @@ import io.reactivex.rxjava3.core.FlowableEmitter
 
 class CacheRepositoryImpl : CacheRepository {
 
-    private final val cacheList: MutableList<CountryDTO> = mutableListOf()
+    private val cacheList: MutableList<CountryDTO> = mutableListOf()
 
     override fun addAllCountries(list: MutableList<CountryDTO>): Flowable<MutableList<CountryDTO>> {
         return Flowable.create({
