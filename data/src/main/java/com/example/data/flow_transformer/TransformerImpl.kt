@@ -1,4 +1,4 @@
-package com.example.data.flow_trasformer
+package com.example.data.flow_transformer
 
 import com.example.domain.outcome.Outcome
 import kotlinx.coroutines.Dispatchers

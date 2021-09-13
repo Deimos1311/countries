@@ -20,9 +20,10 @@ import com.example.domain.*
 import com.example.domain.dto.CountryDTO
 import com.example.test_app.*
 import com.example.domain.outcome.Outcome
+import com.example.test_app.R
 import com.example.test_app.databinding.FragmentListOfCountriesBinding
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.google.android.datatransport.Priority
+import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.scope.ScopeFragment
 import org.koin.androidx.viewmodel.ext.android.stateViewModel
@@ -270,14 +271,34 @@ class ListOfCountriesFragment : ScopeFragment() {
     private fun getMyLocation() {
         DEFAULT_LOCATION.latitude = DEFAULT_LATITUDE
         DEFAULT_LOCATION.longitude = DEFAULT_LONGITUDE
-
         fusedLocationProviderClient?.lastLocation?.addOnSuccessListener { location ->
+
             if (location != null) {
                 viewModel.attachCurrentLocation(location)
             } else {
                 viewModel.attachCurrentLocation(DEFAULT_LOCATION)
             }
         }
+
+        /*val locationRequest = LocationRequest.create()
+        locationRequest.interval = 30000
+        //locationRequest.fastestInterval = 5000
+        locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+
+        val locationCallback :LocationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                for (location in locationResult.locations) {
+                    if (location != null) {
+                        viewModel.attachCurrentLocation(location)
+                    }
+                }
+            }
+        }
+
+        LocationServices.getFusedLocationProviderClient(requireContext()).requestLocationUpdates(
+            locationRequest, locationCallback, null
+        )*/
+
     }
 
     private fun showProgress() {

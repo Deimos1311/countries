@@ -1,8 +1,8 @@
 package com.example.domain.repository
 
-import com.example.domain.dto.CapitalDTO
+import com.example.domain.dto.RegionDTO
 
 interface CoroutineRepository {
 
-    suspend fun getCapitals(): MutableList<CapitalDTO>
+    suspend fun getRegions(): MutableList<RegionDTO>
 }

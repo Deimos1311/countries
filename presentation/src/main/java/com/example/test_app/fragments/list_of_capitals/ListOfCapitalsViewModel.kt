@@ -3,32 +3,50 @@ package com.example.test_app.fragments.list_of_capitals
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.example.domain.DEBOUNCE_TIME
 import com.example.domain.dto.CapitalDTO
-import com.example.domain.usecase.impl.coroutine.GetAllCapitalsFromAPICoroutineUseCase
-import com.example.test_app.base.mvvm.BaseViewModel
 import com.example.domain.outcome.Outcome
-import kotlinx.coroutines.CoroutineScope
+import com.example.domain.repository.FlowRepository
+import com.example.test_app.base.mvvm.BaseViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-//todo coroutine job as livedata outcome obj
 class ListOfCapitalsViewModel(
     savedStateHandle: SavedStateHandle,
-    private val mGetAllCapitalsFromAPICoroutineUseCase: GetAllCapitalsFromAPICoroutineUseCase
+    private val flowRepository: FlowRepository
 ): BaseViewModel(savedStateHandle) {
 
-    var dataCapitalsLiveData = MutableLiveData<Outcome<MutableList<CapitalDTO>>>()
+    val stateFlow = MutableStateFlow("")
+    val sharedFlow = MutableSharedFlow<Long>()
 
-    fun getCapitals() {
-        dataCapitalsLiveData.postValue(Outcome.loading(true))
+    var livaData = MutableLiveData<Outcome<MutableList<CapitalDTO>>>()
 
-        CoroutineScope(viewModelScope.coroutineContext + Dispatchers.IO).launch {
-            try {
-                val result = mGetAllCapitalsFromAPICoroutineUseCase.execute()
-                dataCapitalsLiveData.postValue(Outcome.loading(false))
-                dataCapitalsLiveData.postValue(Outcome.next(result))
-            } catch (e: Exception) {
-                dataCapitalsLiveData.postValue(Outcome.loading(false))
+    fun getCapitals(): Flow<Outcome<MutableList<CapitalDTO>>> = flowRepository.getCapitals()
+
+    fun getCapitalByName() {
+        viewModelScope.launch {
+            stateFlow
+                .filter { it.length >= 3 }
+                .debounce(DEBOUNCE_TIME)
+                .distinctUntilChanged()
+                .flatMapConcat { string ->
+                    flowRepository.getCapitalByName(string)
+                }
+                .flowOn(Dispatchers.IO)
+                .catch { emitAll(flowOf()) }
+                .collect {
+                    livaData.value = it
+                }
+        }
+    }
+
+    fun clickOnItem() {
+        viewModelScope.launch {
+            getCapitals().collect {
+                if (it is Outcome.Success<MutableList<CapitalDTO>>) {
+                    sharedFlow.emit(it.data.size.toLong())
+                }
             }
         }
     }

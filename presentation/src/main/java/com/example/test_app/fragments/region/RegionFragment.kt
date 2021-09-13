@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.domain.outcome.Outcome
@@ -21,10 +19,6 @@ class RegionFragment : ScopeFragment() {
 
     private val viewModel: RegionViewModel by stateViewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -36,7 +30,6 @@ class RegionFragment : ScopeFragment() {
     }
 
     private fun initRecyclerView(view: View) {
-
         linearLayoutManager = LinearLayoutManager(activity)
         binding?.recyclerViewRegion?.setHasFixedSize(true)
         binding?.recyclerViewRegion?.layoutManager = linearLayoutManager
@@ -52,19 +45,35 @@ class RegionFragment : ScopeFragment() {
         regionAdapter = RegionAdapter()
         binding?.recyclerViewRegion?.adapter = regionAdapter
 
-        viewModel.getAllRegionsFlow().asLiveData(lifecycleScope.coroutineContext)
-            .observe(viewLifecycleOwner, {
-                when (it) {
-                    is Outcome.Progress -> {
-                    }
-                    is Outcome.Next -> {
-                    }
-                    is Outcome.Success -> {
-                        regionAdapter.refresh(it.data)
-                    }
-                    is Outcome.Failure -> {
-                    }
+        viewModel.regionsLiveData.observe(viewLifecycleOwner, {
+            when (it) {
+                is Outcome.Progress -> {
                 }
-            })
+                is Outcome.Next -> {
+                    regionAdapter.addList(it.data)
+                }
+                is Outcome.Success -> {
+                }
+                is Outcome.Failure -> {
+                }
+            }
+        })
+
+        viewModel.getRegions()
+
+        //viewModel.getAllRegionsFlow().asLiveData(lifecycleScope.coroutineContext)
+        //    .observe(viewLifecycleOwner, {
+        //        when (it) {
+        //            is Outcome.Progress -> {
+        //            }
+        //            is Outcome.Next -> {
+        //            }
+        //            is Outcome.Success -> {
+        //                regionAdapter.refresh(it.data)
+        //            }
+        //            is Outcome.Failure -> {
+        //            }
+        //        }
+        //    })
     }
 }

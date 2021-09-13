@@ -75,7 +75,11 @@
     <fragment
         android:id="@+id/listOfCapitalsFragment"
         android:name="com.example.test_app.fragments.list_of_capitals.ListOfCapitalsFragment"
-        android:label="ListOfCapitalsFragment" />
+        android:label="ListOfCapitalsFragment" >
+        <action
+            android:id="@+id/action_listOfCapitalsFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+    </fragment>
     <fragment
         android:id="@+id/regionFragment"
         android:name="com.example.test_app.fragments.region.RegionFragment"

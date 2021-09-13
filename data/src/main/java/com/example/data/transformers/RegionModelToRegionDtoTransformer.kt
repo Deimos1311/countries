@@ -1,5 +1,6 @@
-package com.example.data.flow_trasformer
+package com.example.data.transformers
 
+import com.example.data.flow_transformer.Transformer
 import com.example.data.model.RegionModel
 import com.example.domain.STRING_NULL_VALUE
 import com.example.domain.dto.RegionDTO

@@ -188,8 +188,7 @@ class ListOfCountriesViewModel(
                     latitude = countryDTO.location[0]
                     longitude = countryDTO.location[1]
                 }
-            //todo need somth to synchronized userLocation
-            Log.e("userLocation", "")
+            //Log.e("userLocation", "")
             userLocation?.let {
                 result = it.distanceTo(currentCountryLocation) / ONE_KILOMETER
             }

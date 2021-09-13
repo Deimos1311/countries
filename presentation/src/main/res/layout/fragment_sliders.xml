@@ -98,23 +98,19 @@
         android:textColor="@color/text_color"
         android:padding="@dimen/edit_text_padding_sliders" />
 
-    <androidx.cardview.widget.CardView
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_sliders"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/decorate_color"
         android:layout_marginStart="@dimen/base_layout_margin"
-        android:layout_marginTop="@dimen/dp_530"
         android:layout_marginEnd="@dimen/base_layout_margin"
-        app:cardCornerRadius="@dimen/dp_45">
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/button_sliders"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/start_button_background"
-            android:text="@string/search"
-            android:textColor="@color/text_color" />
-    </androidx.cardview.widget.CardView>
+        android:layout_marginTop="@dimen/dimen_dp500"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:text="@string/search"
+        android:textColor="@color/text_color" />
 
     <FrameLayout
         android:id="@+id/frame_with_progress"

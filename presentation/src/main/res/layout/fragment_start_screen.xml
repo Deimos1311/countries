@@ -7,7 +7,7 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_to_region"
-        android:background="@drawable/start_button_background"
+        android:background="@color/decorate_color"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_layout_margin"
@@ -16,12 +16,12 @@
         android:layout_marginBottom="75dp"
         android:paddingStart="5dp"
         android:paddingEnd="5dp"
-        android:text="Region"
+        android:text="@string/list_of_regions"
         tools:visibility="visible" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_to_list_of_countries"
-        android:background="@drawable/start_button_background"
+        android:background="@color/decorate_color"
         android:layout_width="match_parent"
         android:layout_margin="@dimen/base_layout_margin"
         android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_to_map"
-        android:background="@drawable/start_button_background"
+        android:background="@color/decorate_color"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -45,7 +45,7 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_to_my_location_map"
-        android:background="@drawable/start_button_background"
+        android:background="@color/decorate_color"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_layout_margin"
@@ -59,7 +59,7 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_to_capitals"
-        android:background="@drawable/start_button_background"
+        android:background="@color/decorate_color"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_layout_margin"

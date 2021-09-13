@@ -1,23 +1,18 @@
 package com.example.data.transformers
 
+import com.example.data.flow_transformer.Transformer
 import com.example.data.model.CapitalModel
-import com.example.domain.dto.CapitalDTO
 import com.example.domain.STRING_NULL_VALUE
+import com.example.domain.dto.CapitalDTO
 
-fun CapitalModel.transformCapitalModelToDto(): CapitalDTO {
-    val capitalDTO = CapitalDTO()
-
-        this?.let {
-            capitalDTO.capital = capital ?: STRING_NULL_VALUE
+class CapitalModelToCapitalDtoTransformer :
+    Transformer<MutableList<CapitalModel>, MutableList<CapitalDTO>> {
+    override var convert: (MutableList<CapitalModel>) -> MutableList<CapitalDTO> =
+        { data ->
+            data.map {
+                CapitalDTO(
+                    capital = it.capital ?: STRING_NULL_VALUE
+                )
+            }.toMutableList()
         }
-    return capitalDTO
-}
-
-fun MutableList<CapitalModel>.transformMutableListCapitalModelToDto(): MutableList<CapitalDTO> {
-    val mutableListCapitalDTO = mutableListOf<CapitalDTO>()
-
-    for(capitalModel in this) {
-        mutableListCapitalDTO.add(capitalModel.transformCapitalModelToDto())
-    }
-    return mutableListCapitalDTO
 }

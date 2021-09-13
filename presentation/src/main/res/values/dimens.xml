@@ -55,5 +55,6 @@
     <dimen name="margin_3dp">3dp</dimen>
     <dimen name="height_60dp">60dp</dimen>
     <dimen name="padding_8dp">8dp</dimen>
+    <dimen name="dimen_dp500">500dp</dimen>
 
 </resources>

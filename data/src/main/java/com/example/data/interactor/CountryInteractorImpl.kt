@@ -12,6 +12,7 @@ import com.example.domain.repository.NetworkRepository
 import io.reactivex.rxjava3.core.BackpressureStrategy
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.subjects.PublishSubject
+import kotlinx.coroutines.delay
 import java.util.*
 
 class CountryInteractorImpl(
@@ -42,6 +43,7 @@ class CountryInteractorImpl(
                                 cacheRepository.addAllCountries(it)
                             }
                     } else {
+                        Thread.sleep(300)
                         cacheRepository.getAllCountries()
                     }
                 }

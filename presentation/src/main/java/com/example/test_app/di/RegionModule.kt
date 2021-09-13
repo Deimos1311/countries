@@ -1,7 +1,6 @@
 package com.example.test_app.di
 
-import com.example.data.repository.flowRepo.FlowRepositoryImpl
-import com.example.domain.repository.FlowRepository
+import com.example.domain.usecase.impl.coroutine.GetAllRegionsFromAPICoroutineUseCase
 import com.example.test_app.fragments.region.RegionFragment
 import com.example.test_app.fragments.region.RegionViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -11,7 +10,7 @@ val regionModule = module {
 
     scope<RegionFragment> {
 
-        scoped { FlowRepositoryImpl(get(), get()) }
+        scoped { GetAllRegionsFromAPICoroutineUseCase(get()) }
 
         viewModel {
             RegionViewModel(
