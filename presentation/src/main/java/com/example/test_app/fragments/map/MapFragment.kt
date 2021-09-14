@@ -59,7 +59,7 @@ class MapFragment : BaseMvpFragment<MapView>(), MapView {
         binding?.map?.getMapAsync(OnMapReadyCallback {
             googleMap = it
         })
-        getPresenter().getMap(true)
+        getPresenter().getMap(false)
     }
 
     override fun onResume() {

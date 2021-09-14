@@ -18,7 +18,6 @@ import com.example.test_app.base.adapter.BaseAdapter
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 
 class ListOfCountriesAdapter : BaseAdapter<CountryDTO>() {
-    var start = 0
 
     class CountryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val countryName: AppCompatTextView = itemView.findViewById(R.id.countryName)
@@ -26,9 +25,9 @@ class ListOfCountriesAdapter : BaseAdapter<CountryDTO>() {
         val population: AppCompatTextView = itemView.findViewById(R.id.population)
         val flag: AppCompatImageView = itemView.findViewById(R.id.flag)
         val distance: AppCompatTextView = itemView.findViewById(R.id.text_distance)
-        var imageUp: ImageView = itemView.findViewById(R.id.image_up)
-        var imageDown: ImageView = itemView.findViewById(R.id.image_down)
-        var tvSortText: TextView = itemView.findViewById(R.id.text_sort)
+        val imageUp: ImageView = itemView.findViewById(R.id.image_up)
+        val imageDown: ImageView = itemView.findViewById(R.id.image_down)
+        val tvSortText: TextView = itemView.findViewById(R.id.text_sort)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CountryViewHolder {
@@ -93,6 +92,5 @@ class ListOfCountriesAdapter : BaseAdapter<CountryDTO>() {
             Sort().descendingSort(dataList)
         }
         notifyItemRangeChanged(0, dataList.size)
-        //notifyDataSetChanged()
     }
 }

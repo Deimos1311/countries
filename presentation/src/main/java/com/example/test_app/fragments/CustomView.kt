@@ -13,9 +13,6 @@ class CustomView : ConstraintLayout {
 
     private var tvTextComments: TextView? = null
 
-    //private var ivImageUp: ImageView? = null
-    //private var ivImageDown: ImageView? = null
-
     constructor(context: Context) : super(context) {
         initView(context, null)
     }
@@ -45,28 +42,8 @@ class CustomView : ConstraintLayout {
 
         tvTextComments = findViewById(R.id.text_comments)
 
-        //ivImageUp = findViewById(R.id.image_up)
-        //ivImageDown = findViewById(R.id.image_down)
-
         attrs?.let {
             tvTextComments?.text = context.getString(R.string.comments)
         }
-
-        /*onClickImageUp {
-        }
-        onClickImageDown {
-        }*/
     }
-
-    /*private fun onClickImageUp(click: () -> Unit) {
-        //ivImageUp?.setOnClickListener {
-            click.invoke()
-        }
-    }
-
-    private fun onClickImageDown(click: () -> Unit) {
-        //ivImageDown?.setOnClickListener {
-            click.invoke()
-        }
-    }*/
 }

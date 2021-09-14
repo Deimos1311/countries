@@ -1,16 +1,23 @@
 package com.example.test_app.fragments.start_screen
 
 import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.location.Location
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
+import com.example.domain.LOCATION_ACTION
 import com.example.domain.RATIONALE_KEY
 import com.example.domain.RESULT_KEY
 import com.example.domain.SETTINGS_KEY
@@ -19,11 +26,14 @@ import com.example.test_app.base.mvp.BaseMvpFragment
 import com.example.test_app.databinding.FragmentStartScreenBinding
 import com.example.test_app.fragments.start_screen.bottom_sheet.BottomSheetDialogDontAskFragment
 import com.example.test_app.fragments.start_screen.bottom_sheet.BottomSheetDialogRationaleFragment
+import com.example.test_app.services.LocationService
 import com.google.android.material.snackbar.Snackbar
 
 class StartScreenFragment : BaseMvpFragment<StartScreenView>(), StartScreenView {
 
     private var binding: FragmentStartScreenBinding? = null
+    private lateinit var locationBroadcastReceiver: BroadcastReceiver
+    private val intentFilter = IntentFilter().apply { addAction(LOCATION_ACTION) }
 
     private val permissions =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -54,6 +64,22 @@ class StartScreenFragment : BaseMvpFragment<StartScreenView>(), StartScreenView 
         super.onViewCreated(view, savedInstanceState)
         getPresenter().attachView(this)
 
+        locationBroadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                if (intent != null && intent.action != null) {
+                    when (intent.action) {
+                        LOCATION_ACTION -> {
+                            Log.e(
+                                "location",
+                                intent.getParcelableExtra<Location>("location").toString()
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        context?.registerReceiver(locationBroadcastReceiver, intentFilter)
+
         binding?.buttonToListOfCountries?.setOnClickListener {
             if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
                 showRationaleDialog()
@@ -71,7 +97,6 @@ class StartScreenFragment : BaseMvpFragment<StartScreenView>(), StartScreenView 
         binding?.buttonToCapitals?.setOnClickListener {
             findNavController().navigate(R.id.action_start_screen_to_listOfCapitalsFragment)
         }
-
         binding?.buttonToRegion?.setOnClickListener {
             findNavController().navigate(R.id.action_start_screen_to_regionFragment)
         }
@@ -89,7 +114,24 @@ class StartScreenFragment : BaseMvpFragment<StartScreenView>(), StartScreenView 
                 openSettings()
             }
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.context?.startForegroundService(
+                Intent(
+                    this.context,
+                    LocationService::class.java
+                )
+            )
+        } else {
+            this.context?.startService(
+                Intent(
+                    this.context,
+                    LocationService::class.java
+                )
+            )
+        }
     }
+
 
     private fun showRationaleDialog() {
         BottomSheetDialogRationaleFragment()
@@ -134,5 +176,10 @@ class StartScreenFragment : BaseMvpFragment<StartScreenView>(), StartScreenView 
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
+        context?.unregisterReceiver(locationBroadcastReceiver)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 }

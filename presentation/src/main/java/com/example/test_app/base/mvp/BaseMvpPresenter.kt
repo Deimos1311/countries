@@ -46,6 +46,4 @@ abstract class BaseMvpPresenter<ViewType : BaseMvpView> {
     fun onDestroyView() {
         compositeDisposable.clear()
     }
-
-    //private fun isNotDetached(): Boolean = view != null
 }

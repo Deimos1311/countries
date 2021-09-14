@@ -44,4 +44,5 @@
     <string name="comments">3</string>
     <string name="distance">%1$s km</string>
     <string name="list_of_regions">List of regions</string>
+    <string name="notification_foreground_name">notification_name</string>
 </resources>

@@ -52,6 +52,13 @@ const val RESULT_KEY = "result_key"
 const val SETTINGS_TAG = "settings_tag"
 const val RATIONALE_TAG = "rationale_tag"
 
+//Location Service
+const val TIME_INTERVAL_UPDATES_MILLIS = 10000L
+const val DISTANCE_CHANGE_FOR_UPDATES = 0.0F
+const val CHANNEL_ID = "13"
+const val SERVICE_ID = 13
+const val LOCATION_ACTION = "LOCATION_ACTION"
+
 //todo all images should be black
 //todo put in order drawable
 //todo check all dimens and rename as "padding_12dp"(you should see the number)
