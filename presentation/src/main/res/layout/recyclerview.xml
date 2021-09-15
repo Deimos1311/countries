@@ -64,12 +64,12 @@
             android:layout_width="@dimen/flag_width"
             android:layout_height="@dimen/flag_height"
             android:foregroundGravity="center"
-            app:layout_constraintBottom_toTopOf="@+id/custom_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintBottom_toTopOf="@+id/custom_view"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.example.test_app.fragments.CustomView
+        <com.it_academy.countries_app.fragments.CustomView
             android:id="@+id/custom_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

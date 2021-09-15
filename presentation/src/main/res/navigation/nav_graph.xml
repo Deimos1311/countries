@@ -6,7 +6,7 @@
     app:startDestination="@id/start_screen">
     <fragment
         android:id="@+id/start_screen"
-        android:name="com.example.test_app.fragments.start_screen.StartScreenFragment"
+        android:name="com.it_academy.countries_app.fragments.start_screen.StartScreenFragment"
         android:label="fragment_start_screen"
         tools:layout="@layout/fragment_start_screen">
         <action
@@ -24,10 +24,13 @@
         <action
             android:id="@+id/action_start_screen_to_regionFragment"
             app:destination="@id/regionFragment" />
+        <action
+            android:id="@+id/action_start_screen_to_newsFragment"
+            app:destination="@id/newsFragment" />
     </fragment>
     <fragment
         android:id="@+id/list_of_countries"
-        android:name="com.example.test_app.fragments.list_of_countries.ListOfCountriesFragment"
+        android:name="com.it_academy.countries_app.fragments.list_of_countries.ListOfCountriesFragment"
         android:label="fragment_list_of_countries"
         tools:layout="@layout/fragment_list_of_countries">
         <action
@@ -45,7 +48,7 @@
     </fragment>
     <fragment
         android:id="@+id/country_details_fragment"
-        android:name="com.example.test_app.fragments.country_details.CountryDetailsFragment"
+        android:name="com.it_academy.countries_app.fragments.country_details.CountryDetailsFragment"
         android:label="fragment_country_details"
         tools:layout="@layout/fragment_country_details">
         <action
@@ -54,18 +57,18 @@
     </fragment>
     <fragment
         android:id="@+id/mapFragment"
-        android:name="com.example.test_app.fragments.map.MapFragment"
+        android:name="com.it_academy.countries_app.fragments.map.MapFragment"
         android:label="MapFragment"
         tools:layout="@layout/fragment_map"
         />
     <fragment
         android:id="@+id/myLocation"
-        android:name="com.example.test_app.fragments.my_location_map.MyLocationFragment"
+        android:name="com.it_academy.countries_app.fragments.my_location_map.MyLocationFragment"
         android:label="fragment_my_location"
         tools:layout="@layout/fragment_my_location"/>
     <fragment
         android:id="@+id/slidersFragment"
-        android:name="com.example.test_app.fragments.sliders.SlidersFragment"
+        android:name="com.it_academy.countries_app.fragments.sliders.SlidersFragment"
         android:label="fragment_sliders"
         tools:layout="@layout/fragment_sliders">
         <action
@@ -74,7 +77,7 @@
     </fragment>
     <fragment
         android:id="@+id/listOfCapitalsFragment"
-        android:name="com.example.test_app.fragments.list_of_capitals.ListOfCapitalsFragment"
+        android:name="com.it_academy.countries_app.fragments.list_of_capitals.ListOfCapitalsFragment"
         android:label="ListOfCapitalsFragment" >
         <action
             android:id="@+id/action_listOfCapitalsFragment_to_mapFragment"
@@ -82,7 +85,11 @@
     </fragment>
     <fragment
         android:id="@+id/regionFragment"
-        android:name="com.example.test_app.fragments.region.RegionFragment"
+        android:name="com.it_academy.countries_app.fragments.region.RegionFragment"
         android:label="RegionFragment" />
+    <fragment
+        android:id="@+id/newsFragment"
+        android:name="com.it_academy.countries_app.fragments.news.NewsFragment"
+        android:label="NewsFragment" />
 
 </navigation>
