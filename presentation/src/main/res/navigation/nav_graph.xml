@@ -24,9 +24,12 @@
         <action
             android:id="@+id/action_start_screen_to_regionFragment"
             app:destination="@id/regionFragment" />
-        <action
+        <!--<action
             android:id="@+id/action_start_screen_to_newsFragment"
-            app:destination="@id/newsFragment" />
+            app:destination="@id/newsFragment" />-->
+        <action
+            android:id="@+id/action_start_screen_to_newsFragmentMvi"
+            app:destination="@id/newsFragmentMvi" />
     </fragment>
     <fragment
         android:id="@+id/list_of_countries"
@@ -88,8 +91,12 @@
         android:name="com.it_academy.countries_app.fragments.region.RegionFragment"
         android:label="RegionFragment" />
     <fragment
+        android:id="@+id/newsFragmentMvi"
+        android:name="com.it_academy.countries_app.fragments.news.NewsFragmentMvi"
+        android:label="NewsFragmentMvi" />
+    <!--<fragment
         android:id="@+id/newsFragment"
         android:name="com.it_academy.countries_app.fragments.news.NewsFragment"
-        android:label="NewsFragment" />
+        android:label="NewsFragment" />-->
 
 </navigation>

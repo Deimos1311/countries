@@ -1,32 +1,25 @@
-/*
 package com.it_academy.countries_app.fragments.news
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.lifecycleScope
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.it_academy.countries_app.base.mvi.BaseFragment
 import com.it_academy.countries_app.databinding.FragmentNewsBinding
-import com.it_academy.domain.outcome.Outcome
-import org.koin.androidx.scope.ScopeFragment
 import org.koin.androidx.viewmodel.ext.android.stateViewModel
 
-class NewsFragment : ScopeFragment() {
+class NewsFragmentMvi : BaseFragment<NewsIntent, NewsAction, NewsState, NewsViewModelMvi>() {
 
-    var binding: FragmentNewsBinding? = null
+    private var binding: FragmentNewsBinding? = null
 
     lateinit var adapter: NewsAdapterDiff
     lateinit var linearLayoutManager: LinearLayoutManager
 
-    private val viewModel: NewsViewModel by stateViewModel()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private val viewModel: NewsViewModelMvi by stateViewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,24 +47,37 @@ class NewsFragment : ScopeFragment() {
         adapter = NewsAdapterDiff()
         binding?.recyclerViewNews?.adapter = adapter
 
-        viewModel.getAllNews().asLiveData(lifecycleScope.coroutineContext)
-            .observe(viewLifecycleOwner, {
-                when (it) {
-                    is Outcome.Progress -> {
-                    }
-                    is Outcome.Next -> {
-                    }
-                    is Outcome.Success -> {
-                        adapter.submitList(it.data)
-                    }
-                    is Outcome.Failure -> {
-                    }
-                }
-            })
+        viewModel.state.observe(viewLifecycleOwner, {
+            render(it)
+        })
+    }
+
+    override fun initData() {
+        viewModel.dispatchIntent(NewsIntent.LoadAllNews)
+    }
+
+    override fun render(state: NewsState) {
+        when (state) {
+            is NewsState.ResultAllNews -> adapter.submitList(state.data)
+            is NewsState.Exception -> state.ex
+            is NewsState.Loading -> if (state.loading) showProgress() else hideProgress()
+        }
+    }
+
+    private fun showProgress() {
+        //binding?.swipeRefresh?.isRefreshing = false
+        binding?.progressBar?.isVisible = true
+        binding?.frameWithProgress?.isVisible = true
+    }
+
+    private fun hideProgress() {
+        //binding?.swipeRefresh?.isRefreshing = true
+        binding?.progressBar?.isVisible = false
+        binding?.frameWithProgress?.isVisible = false
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         binding = null
+        super.onDestroyView()
     }
-}*/
+}

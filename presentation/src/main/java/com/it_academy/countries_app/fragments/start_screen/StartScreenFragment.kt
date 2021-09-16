@@ -101,7 +101,7 @@ class StartScreenFragment : BaseMvpFragment<StartScreenView>(), StartScreenView 
             findNavController().navigate(R.id.action_start_screen_to_regionFragment)
         }
         binding?.buttonToNews?.setOnClickListener {
-            findNavController().navigate(R.id.action_start_screen_to_newsFragment)
+            findNavController().navigate(R.id.action_start_screen_to_newsFragmentMvi)
         }
 
         setFragmentResultListener(RATIONALE_KEY) { _, bundle ->
