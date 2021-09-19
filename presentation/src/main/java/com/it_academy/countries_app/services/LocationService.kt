@@ -1,6 +1,7 @@
 package com.it_academy.countries_app.services
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.*
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -38,8 +39,7 @@ class LocationService : Service(), LocationListener {
 
     private fun initNotifications() {
         val intent = Intent()
-        val pendingIntent =
-            PendingIntent.getActivity(this, 0, intent, 0)
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -75,6 +75,7 @@ class LocationService : Service(), LocationListener {
         startForeground(SERVICE_ID, notificationBuilder.build())
     }
 
+    @SuppressLint("MissingPermission")
     private fun initLocationScan(): Location? {
         try {
             locationManager =
@@ -89,12 +90,12 @@ class LocationService : Service(), LocationListener {
                 applicationContext?.let {
                     if (ContextCompat.checkSelfPermission(
                             it,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
+                            Manifest.permission.ACCESS_FINE_LOCATION
                         ) == PackageManager.PERMISSION_GRANTED
                         &&
                         ContextCompat.checkSelfPermission(
                             it,
-                            Manifest.permission.ACCESS_FINE_LOCATION
+                            Manifest.permission.ACCESS_COARSE_LOCATION
                         ) == PackageManager.PERMISSION_GRANTED
                     ) {
                         locationManager?.requestLocationUpdates(

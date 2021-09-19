@@ -1,8 +1,7 @@
 package com.it_academy.countries_app.fragments.list_of_countries
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.SharedPreferences
+import android.content.*
 import android.location.Location
 import android.os.Bundle
 import android.os.Parcelable
@@ -16,16 +15,18 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.it_academy.countries_app.*
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
+import com.it_academy.countries_app.*
 import com.it_academy.countries_app.R
 import com.it_academy.countries_app.databinding.FragmentListOfCountriesBinding
 import com.it_academy.domain.*
 import com.it_academy.domain.dto.countries.CountryDTO
 import com.it_academy.domain.outcome.Outcome
+import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.scope.ScopeFragment
 import org.koin.androidx.viewmodel.ext.android.stateViewModel
+
 //todo maybe best practice to do all through one filter
 class ListOfCountriesFragment : ScopeFragment() {
 
@@ -64,7 +65,7 @@ class ListOfCountriesFragment : ScopeFragment() {
                     if (listOfCountriesAdapter.size() < COUNT_OF_COUNTRIES) {
                         viewModel.getListOfCountries()
                     } else {
-                        findNavController().navigate(R.id.action_list_of_countries_to_start_screen)
+                        findNavController().popBackStack(R.id.start_screen, false)
                     }
                 }
             })
@@ -131,7 +132,7 @@ class ListOfCountriesFragment : ScopeFragment() {
             }
         })
 
-        setFragmentResultListener(SLIDERS_KEY) {_, bundle ->
+        setFragmentResultListener(SLIDERS_KEY) { _, bundle ->
             val result = bundle.getParcelableArrayList<Parcelable>(FILTER_KEY) as MutableList<Float>
             viewModel.searchBySliderFragment(result[0], result[1], result[2], result[3], result[4])
         }
@@ -253,12 +254,13 @@ class ListOfCountriesFragment : ScopeFragment() {
         saveSortStatus()
         super.onStop()
     }
-//todo transfer to dialogue and customize it
-    /*override fun onDestroyView() {
-        if (createDialog(requireActivity()).isShowing) createDialog(requireActivity()).dismiss()
+
+    //todo transfer to dialogue and customize it
+    override fun onDestroyView() {
+        //if (createDialog(requireActivity()).isShowing) createDialog(requireActivity()).dismiss()
         super.onDestroyView()
         binding = null
-    }*/
+    }
 
     override fun onDestroy() {
         super.onDestroy()

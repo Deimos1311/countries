@@ -1,54 +1,49 @@
 package com.it_academy.countries_app.fragments.start_screen
 
-import android.Manifest
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.location.Location
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.fragment.app.setFragmentResultListener
+import androidx.activity.OnBackPressedCallback
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.Snackbar
 import com.it_academy.countries_app.R
 import com.it_academy.countries_app.base.mvp.BaseMvpFragment
 import com.it_academy.countries_app.databinding.FragmentStartScreenBinding
-import com.it_academy.countries_app.fragments.start_screen.bottom_sheet.BottomSheetDialogDontAskFragment
-import com.it_academy.countries_app.fragments.start_screen.bottom_sheet.BottomSheetDialogRationaleFragment
 import com.it_academy.countries_app.services.LocationService
 import com.it_academy.domain.LOCATION_ACTION
-import com.it_academy.domain.RATIONALE_KEY
-import com.it_academy.domain.RESULT_KEY
-import com.it_academy.domain.SETTINGS_KEY
+import javax.inject.Singleton
 
 class StartScreenFragment : BaseMvpFragment<StartScreenView>(), StartScreenView {
 
     private var binding: FragmentStartScreenBinding? = null
-    private lateinit var locationBroadcastReceiver: BroadcastReceiver
-    private val intentFilter = IntentFilter().apply { addAction(LOCATION_ACTION) }
 
-    private val permissions =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            when {
-                granted -> {
-                    findNavController().navigate(R.id.action_start_screen_to_first_fragment)
-                }
-                !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                    showSettingsDialog()
-                }
-                else -> {
-                    showSnackbarShort(R.string.permission_denied)
+    private val locationBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent != null && intent.action != null) {
+                when (intent.action) {
+                    LOCATION_ACTION -> {
+                        Log.e(
+                            "location",
+                            intent.getParcelableExtra<Location>("location").toString()
+                        )
+                    }
                 }
             }
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val intentFilter = IntentFilter().apply { addAction(LOCATION_ACTION) }
+        context?.registerReceiver(locationBroadcastReceiver, intentFilter)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,30 +59,9 @@ class StartScreenFragment : BaseMvpFragment<StartScreenView>(), StartScreenView 
         super.onViewCreated(view, savedInstanceState)
         getPresenter().attachView(this)
 
-        locationBroadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                if (intent != null && intent.action != null) {
-                    when (intent.action) {
-                        LOCATION_ACTION -> {
-                            Log.e(
-                                "location",
-                                intent.getParcelableExtra<Location>("location").toString()
-                            )
-                        }
-                    }
-                }
-            }
-        }
-        context?.registerReceiver(locationBroadcastReceiver, intentFilter)
-
         binding?.buttonToListOfCountries?.setOnClickListener {
-            if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                showRationaleDialog()
-            } else {
-                permissions.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-            }
+            findNavController().navigate(R.id.action_start_screen_to_first_fragment)
         }
-
         binding?.buttonToMap?.setOnClickListener {
             findNavController().navigate(R.id.action_start_screen_to_mapFragment)
         }
@@ -102,20 +76,6 @@ class StartScreenFragment : BaseMvpFragment<StartScreenView>(), StartScreenView 
         }
         binding?.buttonToNews?.setOnClickListener {
             findNavController().navigate(R.id.action_start_screen_to_newsFragmentMvi)
-        }
-
-        setFragmentResultListener(RATIONALE_KEY) { _, bundle ->
-            val isWantToAllowAfterRationale = bundle.getBoolean(RESULT_KEY)
-            if (isWantToAllowAfterRationale) {
-                permissions.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-            }
-        }
-
-        setFragmentResultListener(SETTINGS_KEY) { _, bundle ->
-            val isWantToOpenSettings = bundle.getBoolean(RESULT_KEY)
-            if (isWantToOpenSettings) {
-                openSettings()
-            }
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -133,28 +93,8 @@ class StartScreenFragment : BaseMvpFragment<StartScreenView>(), StartScreenView 
                 )
             )
         }
-    }
 
-    private fun showRationaleDialog() {
-        BottomSheetDialogRationaleFragment()
-            .show(parentFragmentManager, BottomSheetDialogRationaleFragment.TAG)
-    }
 
-    private fun showSettingsDialog() {
-        BottomSheetDialogDontAskFragment()
-            .show(parentFragmentManager, BottomSheetDialogDontAskFragment.TAG)
-    }
-
-    private fun showSnackbarShort(snackId: Int) {
-        Snackbar.make(requireView(), snackId, Snackbar.LENGTH_SHORT).show()
-    }
-
-    //todo read about this
-    private fun openSettings() {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-            .setData(Uri.fromParts("package", requireContext().packageName, null))
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        startActivity(intent)
     }
 
     override fun createPresenter() {
@@ -178,6 +118,10 @@ class StartScreenFragment : BaseMvpFragment<StartScreenView>(), StartScreenView 
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
+    }
+
+    override fun onDestroy() {
         context?.unregisterReceiver(locationBroadcastReceiver)
+        super.onDestroy()
     }
 }

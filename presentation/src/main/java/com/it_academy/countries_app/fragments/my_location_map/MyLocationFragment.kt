@@ -1,9 +1,14 @@
 package com.it_academy.countries_app.fragments.my_location_map
 
 import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,10 +25,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.it_academy.countries_app.R
 import com.it_academy.countries_app.databinding.FragmentMyLocationBinding
-import com.it_academy.domain.DEFAULT_LATITUDE
-import com.it_academy.domain.DEFAULT_LONGITUDE
-import com.it_academy.domain.MY_LOCATION_ZOOM
-import com.it_academy.domain.REQUEST_CODE
+import com.it_academy.domain.*
 import org.koin.androidx.scope.ScopeFragment
 
 class MyLocationFragment : ScopeFragment() {
@@ -59,7 +61,6 @@ class MyLocationFragment : ScopeFragment() {
     ): View? {
         binding = FragmentMyLocationBinding.inflate(inflater, container, false)
         binding?.myLocationMap?.onCreate(savedInstanceState)
-        showProgress()
         return binding?.root
     }
 
@@ -144,15 +145,5 @@ class MyLocationFragment : ScopeFragment() {
                     fetchLocation()
             }
         }
-        hideProgress()
-    }
-    private fun showProgress() {
-        binding?.frameWithProgress?.isVisible = true
-        binding?.progressBar?.isVisible = true
-    }
-
-    private fun hideProgress() {
-        binding?.frameWithProgress?.isVisible = false
-        binding?.progressBar?.isVisible = false
     }
 }

@@ -48,4 +48,5 @@
     <string name="search_by_capital">Search by capital name</string>
     <string name="countries_app">Countries Application</string>
     <string name="notification_content_text">This application get your current location</string>
+    <string name="click_to_start">Click to start</string>
 </resources>
