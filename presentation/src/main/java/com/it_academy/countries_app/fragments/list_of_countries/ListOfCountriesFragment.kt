@@ -161,7 +161,7 @@ class ListOfCountriesFragment : ScopeFragment() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.toolbar, menu)
+        inflater.inflate(R.menu.toolbar_countries_fragmnet, menu)
         viewModel.instantSearch(searchListByName)
 
         val searchButton = menu.findItem(R.id.search).actionView as SearchView

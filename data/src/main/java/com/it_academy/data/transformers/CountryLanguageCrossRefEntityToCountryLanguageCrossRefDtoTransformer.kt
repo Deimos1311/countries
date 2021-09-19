@@ -1,15 +1,15 @@
 package com.it_academy.data.transformers
 
 import com.it_academy.data.room.entity.CountryLanguageCrossRefEntity
-import com.it_academy.domain.STRING_NULL_VALUE
+import com.it_academy.domain.STRING_NOT_AVAILABLE
 import com.it_academy.domain.dto.countries.CountryLanguageCrossRefDTO
 
 fun CountryLanguageCrossRefEntity.transformCountryLanguageCrossRefToDto(): CountryLanguageCrossRefDTO {
     val countryLanguageCrossRefDTO = CountryLanguageCrossRefDTO()
 
     this?.let {
-        countryLanguageCrossRefDTO.countryName = countryName ?: STRING_NULL_VALUE
-        countryLanguageCrossRefDTO.languageName = languageName ?: STRING_NULL_VALUE
+        countryLanguageCrossRefDTO.countryName = countryName ?: STRING_NOT_AVAILABLE
+        countryLanguageCrossRefDTO.languageName = languageName ?: STRING_NOT_AVAILABLE
     }
     return countryLanguageCrossRefDTO
 }
@@ -31,8 +31,8 @@ fun CountryLanguageCrossRefDTO.transformCountryLanguageCrossRefDtoToEntity(): Co
     val countryLanguageCrossRefEntity = CountryLanguageCrossRefEntity()
 
     this?.let {
-        countryLanguageCrossRefEntity.countryName = countryName ?: STRING_NULL_VALUE
-        countryLanguageCrossRefEntity.languageName = languageName ?: STRING_NULL_VALUE
+        countryLanguageCrossRefEntity.countryName = countryName ?: STRING_NOT_AVAILABLE
+        countryLanguageCrossRefEntity.languageName = languageName ?: STRING_NOT_AVAILABLE
     }
     return countryLanguageCrossRefEntity
 }

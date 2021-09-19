@@ -16,5 +16,7 @@ class NewsFlowRepositoryImpl(
 ) : NewsFlowRepository {
 
     override fun getAllNews(): Flow<Outcome<MutableList<SourceDTO>>> =
-        modifyFlow(newsFlowService.getAllNews().map { it.sources }, sourceModelToSourceDTOTransformer)
+        modifyFlow(newsFlowService.getAllNews()
+            .map { it.sources }, sourceModelToSourceDTOTransformer
+        )
 }

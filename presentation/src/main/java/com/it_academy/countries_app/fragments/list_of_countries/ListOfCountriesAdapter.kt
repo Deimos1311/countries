@@ -24,7 +24,7 @@ class ListOfCountriesAdapter : BaseAdapter<CountryDTO>() {
         val distance: AppCompatTextView = itemView.findViewById(R.id.text_distance)
         val imageUp: ImageView = itemView.findViewById(R.id.image_up)
         val imageDown: ImageView = itemView.findViewById(R.id.image_down)
-        val tvSortText: TextView = itemView.findViewById(R.id.text_sort)
+        val tvSortText: AppCompatTextView = itemView.findViewById(R.id.text_sort)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CountryViewHolder {

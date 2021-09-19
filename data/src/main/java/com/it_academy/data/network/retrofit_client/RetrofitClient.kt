@@ -33,7 +33,7 @@ object RetrofitClient {
         interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
         client = OkHttpClient.Builder()
-        client.addInterceptor(interceptor)
+            .addInterceptor(interceptor)
     }
 
     private fun getClient(adapter: CallAdapter.Factory,  baseURL: String): Retrofit? {

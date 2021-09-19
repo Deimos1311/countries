@@ -10,6 +10,7 @@ import com.it_academy.domain.usecase.impl.coroutine.GetAllRegionsFromAPICoroutin
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class RegionViewModel(
     savedStateHandle: SavedStateHandle,
@@ -19,16 +20,21 @@ class RegionViewModel(
     var regionsLiveData = MutableLiveData<Outcome<MutableList<RegionDTO>>>()
 
     fun getRegions() {
-        regionsLiveData.postValue(Outcome.loading(true))
 
-        CoroutineScope(viewModelScope.coroutineContext + Dispatchers.IO).launch {
-            try {
-                val result = mGetAllRegionsFromAPICoroutineUseCase.execute()
-                regionsLiveData.postValue(Outcome.loading(false))
-                regionsLiveData.postValue(Outcome.next(result))
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-                regionsLiveData.postValue(Outcome.loading(false))
+        CoroutineScope(viewModelScope.coroutineContext).launch {
+            viewModelScope.launch {
+                try {
+                    regionsLiveData.value = Outcome.loading(true)
+                    val result = withContext(Dispatchers.IO) {
+                        mGetAllRegionsFromAPICoroutineUseCase.execute()
+                    }
+                    regionsLiveData.value = Outcome.loading(false)
+                    regionsLiveData.value = Outcome.next(result)
+
+                } catch (ex: Exception) {
+                    ex.printStackTrace()
+                    regionsLiveData.value = Outcome.loading(false)
+                }
             }
         }
     }

@@ -4,7 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +23,19 @@ class NewsFragmentMvi : BaseFragment<NewsIntent, NewsAction, NewsState, NewsView
     lateinit var linearLayoutManager: LinearLayoutManager
 
     private val viewModel: NewsViewModelMvi by stateViewModel()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    findNavController().popBackStack()
+                }
+            }
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,9 +74,13 @@ class NewsFragmentMvi : BaseFragment<NewsIntent, NewsAction, NewsState, NewsView
 
     override fun render(state: NewsState) {
         when (state) {
-            is NewsState.ResultAllNews -> adapter.submitList(state.data)
-            is NewsState.Exception -> state.ex
             is NewsState.Loading -> if (state.loading) showProgress() else hideProgress()
+            is NewsState.ResultAllNews -> if (state.data.isNotEmpty()) {
+                adapter.submitList(state.data)
+            } else {
+                Toast.makeText(requireContext(), "No data", Toast.LENGTH_SHORT).show()
+            }
+            is NewsState.Exception -> state.ex
         }
     }
 

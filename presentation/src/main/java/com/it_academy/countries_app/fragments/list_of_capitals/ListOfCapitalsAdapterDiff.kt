@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.it_academy.countries_app.R
+import com.it_academy.domain.BLANK_VALUE
 import com.it_academy.domain.dto.countries.CapitalDTO
 import kotlinx.android.extensions.LayoutContainer
 
@@ -52,7 +53,12 @@ class ListOfCapitalsAdapterDiff : ListAdapter<CapitalDTO, ListOfCapitalsAdapterD
             with(containerView) {
                 capital = findViewById(R.id.capital)
             }
-            capital?.text = item?.capital ?: (R.string.no_data_for_capital).toString()
+            capital?.text =
+                if (item?.capital.isNullOrBlank()) {
+                    BLANK_VALUE
+                } else {
+                    item?.capital
+                }
 
             itemView.setOnClickListener {
                 if (item != null) {

@@ -1,9 +1,9 @@
 package com.it_academy.domain
 
 //DTO
-const val STRING_NULL_VALUE = ""
-const val NULL_INT_VALUE = 0
-const val NULL_DOUBLE_VALUE = 0.0
+const val STRING_NOT_AVAILABLE = ""
+const val INT_NOT_AVAILABLE = 0
+const val DOUBLE_NOT_AVAILABLE = 0.0
 
 //bundle ListOfCountriesFragment to CountryDetailsFragment
 const val DEFAULT_VALUE = "0"
@@ -58,6 +58,8 @@ const val DISTANCE_CHANGE_FOR_UPDATES = 0.0F
 const val CHANNEL_ID = "13"
 const val SERVICE_ID = 13
 const val LOCATION_ACTION = "LOCATION_ACTION"
+
+const val BLANK_VALUE = "data N/A"
 
 //todo all images should be black
 //todo put in order drawable

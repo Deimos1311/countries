@@ -26,7 +26,7 @@
         android:layout_marginStart="@dimen/base_layout_margin"
         android:layout_marginTop="@dimen/dp_85"
         android:layout_marginEnd="@dimen/base_layout_margin"
-        android:background="@drawable/slider_population">
+        android:background="@color/decorate_color">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/population_text"
@@ -60,7 +60,7 @@
         android:layout_marginStart="@dimen/base_layout_margin"
         android:layout_marginTop="@dimen/dp_240"
         android:layout_marginEnd="@dimen/base_layout_margin"
-        android:background="@drawable/slider_area">
+        android:background="@color/decorate_color">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/area_text"

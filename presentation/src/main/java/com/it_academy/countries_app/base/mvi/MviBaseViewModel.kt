@@ -17,7 +17,7 @@ abstract class MviBaseViewModel<INTENT : ViewIntent, ACTION : ViewAction, STATE 
             return mState
         }
 
-    fun launchOnUi(block: suspend CoroutineScope.() -> Unit) {
+    fun launchOnUI(block: suspend CoroutineScope.() -> Unit) {
         viewModelScope.launch { block() }
     }
 

@@ -26,7 +26,7 @@ val appModule = module {
     single { CountryDatabase.getInstance(get()) }
     single { CommonCountries.retrofitService }
     single { CommonCountries.coroutineService }
-    single { CommonCountries.countriesFlowService }
+    single { CommonCountries.capitalsFlowService }
     single { CommonNews.newsFlowService }
 
     //Data level

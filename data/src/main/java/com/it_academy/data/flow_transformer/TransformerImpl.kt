@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.*
 
 fun <InputType, OutputType> modifyFlow(
     data: Flow<InputType>,
-    transformer: com.it_academy.data.flow_transformer.Transformer<InputType, OutputType>
+    transformer: Transformer<InputType, OutputType>
 ): Flow<Outcome<OutputType>> {
     return data.execute(transformer.convert)
 }

@@ -74,11 +74,12 @@ class ListOfCountriesViewModel(
                         tempListByName = it
                     }
                     //todo doesnt work correctly(missing location after fr B -> A)
-                    .doOnNext {
+                    .map {
                         it.forEach { country ->
                             country.distance =
                                 calculateDistanceFromUserToCountry(country).toInt()
                         }
+                        return@map it
                     }, dataLiveData
             )
         )
@@ -169,11 +170,12 @@ class ListOfCountriesViewModel(
                         }
                             .toMutableList()
                     }
-                    .doOnNext {
+                    .map {
                         it.forEach { country ->
                             country.distance =
                                 calculateDistanceFromUserToCountry(country).toInt()
                         }
+                        return@map it
                     }, dataLiveData
             )
         )

@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import retrofit2.http.GET
 import retrofit2.http.Path
 
-interface CountriesFlowService {
+interface CapitalsFlowService {
 
     @GET(CountriesNetConstants.GET_CAPITAL)
     fun getCapital(): Flow<MutableList<CapitalModel>>

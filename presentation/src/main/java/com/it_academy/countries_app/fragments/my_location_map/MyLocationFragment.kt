@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -58,7 +59,7 @@ class MyLocationFragment : ScopeFragment() {
     ): View? {
         binding = FragmentMyLocationBinding.inflate(inflater, container, false)
         binding?.myLocationMap?.onCreate(savedInstanceState)
-
+        showProgress()
         return binding?.root
     }
 
@@ -143,5 +144,15 @@ class MyLocationFragment : ScopeFragment() {
                     fetchLocation()
             }
         }
+        hideProgress()
+    }
+    private fun showProgress() {
+        binding?.frameWithProgress?.isVisible = true
+        binding?.progressBar?.isVisible = true
+    }
+
+    private fun hideProgress() {
+        binding?.frameWithProgress?.isVisible = false
+        binding?.progressBar?.isVisible = false
     }
 }

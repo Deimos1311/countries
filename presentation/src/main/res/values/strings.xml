@@ -38,11 +38,14 @@
     <string name="sorted">Sorted!</string>
     <string name="sort_screen">Sort screen</string>
     <string name="list_of_capitals">List of capitals</string>
-    <string name="no_data_for_capital">No data available for this Country</string>
     <string name="i_am_here">I am here</string>
     <string name="error">Error!</string>
     <string name="comments">3</string>
     <string name="distance">%1$s km</string>
     <string name="list_of_regions">List of regions</string>
-    <string name="notification_foreground_name">notification_name</string>
+    <string name="notification_foreground_name">Location service by Country Application</string>
+    <string name="news">news</string>
+    <string name="search_by_capital">Search by capital name</string>
+    <string name="countries_app">Countries Application</string>
+    <string name="notification_content_text">This application get your current location</string>
 </resources>

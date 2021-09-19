@@ -8,6 +8,7 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
+import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -22,7 +23,7 @@ class LocationService : Service(), LocationListener {
     private var userLocation: Location? = null
     private var checkGPSStatus = false
     private var checkNetworkStatus = false
-//todo understand where i should kill service
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
             if (!it.hasExtra("kill_service")) {
@@ -61,8 +62,8 @@ class LocationService : Service(), LocationListener {
                 .setWhen(System.currentTimeMillis())
                 .setStyle(textStyle)
                 .setContentIntent(pendingIntent)
-                .setContentTitle("Countries Application")
-                .setContentText("This application get your current location")
+                .setContentTitle(getString(R.string.countries_app))
+                .setContentText(getString(R.string.notification_content_text))
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -105,7 +106,6 @@ class LocationService : Service(), LocationListener {
                         if (locationManager != null) {
                             userLocation =
                                 locationManager?.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-                            Log.e("GPS", "got user location")
                         }
                     }
                 }
@@ -122,6 +122,9 @@ class LocationService : Service(), LocationListener {
             putExtra("location", location)
         }
         sendBroadcast(intent)
+    }
+
+    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
     }
 
     private fun stopListening() {

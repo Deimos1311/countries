@@ -1,6 +1,5 @@
 package com.it_academy.countries_app.fragments.list_of_capitals
-//todo design recyclerview
-//todo do some new recyclerview to consolidate knowledge
+
 import android.os.Bundle
 import android.view.*
 import androidx.activity.OnBackPressedCallback
@@ -23,10 +22,8 @@ import org.koin.androidx.viewmodel.ext.android.stateViewModel
 
 class ListOfCapitalsFragment : ScopeFragment() {
 
-    //Binding
     private var binding: FragmentListOfCapitalsBinding? = null
 
-    //Adapter
     lateinit var listOfCapitalsAdapterDiff: ListOfCapitalsAdapterDiff
     lateinit var linearLayoutManager: LinearLayoutManager
 
@@ -69,7 +66,6 @@ class ListOfCapitalsFragment : ScopeFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView(view)
-        viewModel.getCapitalByName()
         sharedFlowJob = Job()
 
         listOfCapitalsAdapterDiff = ListOfCapitalsAdapterDiff()
@@ -77,6 +73,20 @@ class ListOfCapitalsFragment : ScopeFragment() {
 
         listOfCapitalsAdapterDiff.setItemClick { viewModel.clickOnItem() }
 
+        getCapitalsFromAPI()
+
+        CoroutineScope(lifecycleScope.coroutineContext + sharedFlowJob).launch {
+            viewModel.sharedFlow.collect {
+                findNavController().navigate(R.id.action_listOfCapitalsFragment_to_mapFragment)
+            }
+        }
+
+        binding?.swipeRefresh?.setOnRefreshListener {
+            getCapitalsFromAPI()
+        }
+    }
+
+    private fun getCapitalsFromAPI() {
         viewModel.getCapitals().asLiveData(lifecycleScope.coroutineContext)
             .observe(viewLifecycleOwner, {
                 when (it) {
@@ -92,36 +102,15 @@ class ListOfCapitalsFragment : ScopeFragment() {
                     }
                 }
             })
-
-        viewModel.livaData.observe(viewLifecycleOwner, {
-            when (it) {
-                is Outcome.Progress -> {
-                    if (it.loading) showProgress() else hideProgress()
-                }
-                is Outcome.Next -> {
-                }
-                is Outcome.Success -> {
-                    listOfCapitalsAdapterDiff.submitList(it.data)
-                }
-                is Outcome.Failure -> {
-                }
-            }
-        })
-
-        CoroutineScope(lifecycleScope.coroutineContext + sharedFlowJob).launch {
-            viewModel.sharedFlow.collect {
-                findNavController().navigate(R.id.action_listOfCapitalsFragment_to_mapFragment)
-            }
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.toolbar, menu)
+        inflater.inflate(R.menu.toolbar_capitals_fragment, menu)
         super.onCreateOptionsMenu(menu, inflater)
 
         val searchButton = menu.findItem(R.id.search).actionView as SearchView
 
-        searchButton.queryHint = "Search by capital name"
+        searchButton.queryHint = getString(R.string.search_by_capital)
 
         searchButton.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -129,19 +118,26 @@ class ListOfCapitalsFragment : ScopeFragment() {
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                viewModel.stateFlow.value = newText
+                viewModel.getCapitalByName(newText).asLiveData(lifecycleScope.coroutineContext)
+                    .observe(
+                        viewLifecycleOwner, {
+                            if (it is Outcome.Success) {
+                                listOfCapitalsAdapterDiff.submitList(it.data)
+                            }
+                        })
                 return false
             }
         })
 
         searchButton.setOnCloseListener {
-            viewModel.getCapitals()
+            viewModel.getCapitals().asLiveData(lifecycleScope.coroutineContext)
+                .observe(viewLifecycleOwner, {
+                    if (it is Outcome.Success) {
+                        listOfCapitalsAdapterDiff.submitList(it.data)
+                    }
+                })
             false
         }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onDestroyView() {
@@ -151,13 +147,14 @@ class ListOfCapitalsFragment : ScopeFragment() {
     }
 
     private fun showProgress() {
-        //binding?.swipeRefresh?.isRefreshing = false
-        binding?.progressBar?.isVisible = true
-        binding?.frameWithProgress?.isVisible = true
+        if (binding?.swipeRefresh?.isRefreshing == false) {
+            binding?.progressBar?.isVisible = true
+            binding?.frameWithProgress?.isVisible = true
+        }
     }
 
     private fun hideProgress() {
-        //binding?.swipeRefresh?.isRefreshing = true
+        binding?.swipeRefresh?.isRefreshing = false
         binding?.progressBar?.isVisible = false
         binding?.frameWithProgress?.isVisible = false
     }

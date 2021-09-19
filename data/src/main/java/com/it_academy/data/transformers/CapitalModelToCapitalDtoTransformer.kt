@@ -2,7 +2,7 @@ package com.it_academy.data.transformers
 
 import com.it_academy.data.flow_transformer.Transformer
 import com.it_academy.data.models.countriesAPI.CapitalModel
-import com.it_academy.domain.STRING_NULL_VALUE
+import com.it_academy.domain.STRING_NOT_AVAILABLE
 import com.it_academy.domain.dto.countries.CapitalDTO
 
 class CapitalModelToCapitalDtoTransformer :
@@ -11,7 +11,7 @@ class CapitalModelToCapitalDtoTransformer :
         { data ->
             data.map {
                 CapitalDTO(
-                    capital = it.capital ?: STRING_NULL_VALUE
+                    capital = it.capital ?: STRING_NOT_AVAILABLE
                 )
             }.toMutableList()
         }
