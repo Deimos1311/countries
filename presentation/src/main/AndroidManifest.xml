@@ -3,10 +3,12 @@
     package="com.it_academy.countries_app">
     <!-- Internet -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- GPS -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- GPS -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" /> <!-- Service -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <!-- Service -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
@@ -36,7 +38,7 @@
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyCLLYn5mLs13XRaxkWDxbo6dhUW6_YYLpU" />
+            android:value="${MAPS_API_KEY}" />
 
         <service
             android:name=".services.LocationService"

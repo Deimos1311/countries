@@ -3,8 +3,8 @@ plugins {
     id 'kotlin-android'
     id "androidx.navigation.safeargs"
     id 'kotlin-kapt'
-    id 'com.google.secrets_gradle_plugin' version '0.5'
     id 'kotlin-android-extensions'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
 android {
